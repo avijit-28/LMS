@@ -1,0 +1,435 @@
+﻿@model IEnumerable<LMS.Models.Lesson>
+@{
+    var module = ViewBag.Module as LMS.Models.Module;
+    ViewBag.Title = "Lessons - " + (module?.ModuleName ?? "Module");
+}
+
+<div class="py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Instructor")" class="text-decoration-none">Studio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Courses", "Instructor")" class="text-decoration-none">My Courses</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Modules", "Instructor", new { courseId = module?.CourseId })" class="text-decoration-none">Modules</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Lessons</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <span class="badge badge-info-subtle px-3 py-1 rounded-pill mb-2 fw-semibold">
+                <span class="pulse-dot pulse-primary"></span> Lesson Management
+            </span>
+            <h2 class="fw-extrabold mb-1 tracking-tight">Lessons: @(module?.ModuleName ?? "Module")</h2>
+            <p class="text-muted small mb-0">Publish video lectures, interactive articles, downloadable assets, and assessments</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Modules", "Instructor", new { courseId = module?.CourseId })" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Back to Modules
+            </a>
+            <button class="btn btn-outline-info rounded-pill px-3 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#uploadPdfModal">
+                <i class="bi bi-file-earmark-pdf-fill me-1 text-danger"></i> Add PDF Document
+            </button>
+            <button class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm" style="background-color: #FF7A18 !important; border-color: #FF7A18 !important;" data-bs-toggle="modal" data-bs-target="#addLessonModal">
+                <i class="bi bi-plus-circle me-1"></i> Add Lesson
+            </button>
+        </div>
+    </div>
+
+    <!-- Dedicated Cloudinary PDF Documents Section -->
+    @{
+        var pdfLessons = Model.Where(l => l.LessonType == "PDF" || (!string.IsNullOrEmpty(l.ResourceUrl) && l.ResourceUrl.ToLower().EndsWith(".pdf"))).ToList();
+    }
+    <div class="card card-custom p-4 mb-4 shadow-sm" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(39, 184, 214, 0.25); border-radius: 18px;">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center p-3" style="width: 48px; height: 48px; background: rgba(39, 184, 214, 0.15); border: 1px solid rgba(39, 184, 214, 0.35);">
+                    <i class="bi bi-file-earmark-pdf-fill fs-3 text-danger"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h5 class="fw-bold text-white mb-0">PDF Learning Resources &amp; Guides</h5>
+                        <span class="badge rounded-pill" style="background: rgba(39, 184, 214, 0.2); color: #27B8D6; border: 1px solid rgba(39, 184, 214, 0.4); font-size: 11px;">
+                            <i class="bi bi-cloud-check-fill me-1"></i> Cloudinary Document Storage
+                        </span>
+                    </div>
+                    <p class="small mb-0" style="color: #94A3B8;">
+                        Upload textbooks, lecture notes, formula sheets, or lab exercises. Files are hosted on Cloudinary high-speed CDN and embedded directly in the classroom reader.
+                    </p>
+                </div>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 py-2 fw-semibold shadow-sm" style="background-color: #FF7A18 !important; border-color: #FF7A18 !important;" data-bs-toggle="modal" data-bs-target="#uploadPdfModal">
+                    <i class="bi bi-cloud-arrow-up-fill me-1"></i> Upload PDF Guide
+                </button>
+            </div>
+        </div>
+
+        @if (pdfLessons.Any())
+        {
+            <div class="row g-3">
+                @foreach (var pdf in pdfLessons)
+                {
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" style="background: rgba(4, 24, 34, 0.7); border: 1px solid rgba(255, 255, 255, 0.08);">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 small">
+                                        <i class="bi bi-filetype-pdf me-1"></i> PDF Guide
+                                    </span>
+                                    <span class="small font-monospace" style="color: #94A3B8;">Lesson #@pdf.LessonOrder</span>
+                                </div>
+                                <h6 class="fw-bold text-white mb-1">@pdf.Title</h6>
+                                <p class="small text-truncate mb-3" style="color: #94A3B8;">@(string.IsNullOrWhiteSpace(pdf.Description) ? "Reading reference guide" : pdf.Description)</p>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
+                                <span class="badge" style="background: rgba(39, 184, 214, 0.15); color: #27B8D6; font-size: 10px;">
+                                    <i class="bi bi-hdd-network me-1"></i> Cloudinary CDN
+                                </span>
+                                @if (!string.IsNullOrEmpty(pdf.ResourceUrl))
+                                {
+                                    <a href="@pdf.ResourceUrl" target="_blank" class="btn btn-xs btn-outline-info rounded-pill px-2 py-1" style="font-size: 11px;">
+                                        <i class="bi bi-box-arrow-up-right me-1"></i> View PDF
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="p-3 rounded-3 text-center" style="background: rgba(4, 24, 34, 0.4); border: 1px dashed rgba(255, 255, 255, 0.15);">
+                <span class="small text-white-50"><i class="bi bi-info-circle me-1 text-cyan"></i> No PDF materials added yet in this module. Click <strong>Upload PDF Guide</strong> above to add textbooks, lecture slides, or cheat sheets.</span>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card card-custom p-5 text-center shadow-lg border-0" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12) !important; color: #FFFFFF;">
+            <div class="rounded-circle p-4 d-inline-flex mx-auto mb-3" style="background: rgba(39, 184, 214, 0.12); border: 1px solid rgba(39, 184, 214, 0.35);">
+                <i class="bi bi-play-circle display-4" style="color: #27B8D6;"></i>
+            </div>
+            <h4 class="fw-bold text-white">No lessons added to this module yet</h4>
+            <p class="small mb-3" style="color: #94A3B8;">Create video lessons, reading articles, quizzes, or assignments for students.</p>
+            <div>
+                <button class="btn btn-primary rounded-pill px-4 fw-semibold" style="background-color: #FF7A18 !important; border-color: #FF7A18 !important;" data-bs-toggle="modal" data-bs-target="#addLessonModal">
+                    <i class="bi bi-plus-circle me-1"></i> Add First Lesson
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card card-custom shadow-lg overflow-hidden border-0" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12) !important;">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-white" style="border-color: rgba(255, 255, 255, 0.08);">
+                    <thead class="small" style="background: rgba(4, 24, 34, 0.9); color: #94A3B8;">
+                        <tr>
+                            <th class="ps-4">Sequence</th>
+                            <th>Lesson Title</th>
+                            <th>Delivery Format</th>
+                            <th>Duration</th>
+                            <th>Access Model</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var l in Model)
+                        {
+                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+                                <td class="ps-4">
+                                    <span class="badge rounded-pill px-3 py-1 font-monospace" style="background: rgba(255, 255, 255, 0.08); color: #E2E8F0; border: 1px solid rgba(255, 255, 255, 0.15);">#@l.LessonOrder</span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-white">@l.Title</div>
+                                    <small class="text-truncate d-inline-block" style="max-width: 350px; color: #94A3B8;">
+                                        @(string.IsNullOrEmpty(l.Description) ? "Comprehensive pedagogical lesson unit." : l.Description)
+                                    </small>
+                                </td>
+                                <td>
+                                    @if (l.LessonType == "Video")
+                                    {
+                                        <span class="badge badge-primary-subtle rounded-pill px-3 py-1"><i class="bi bi-play-circle me-1"></i>Video</span>
+                                    }
+                                    else if (l.LessonType == "Quiz")
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-1"><i class="bi bi-patch-question me-1"></i>Quiz</span>
+                                    }
+                                    else if (l.LessonType == "Assignment")
+                                    {
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-3 py-1"><i class="bi bi-file-earmark-code me-1"></i>Project</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-dark border rounded-pill px-3 py-1"><i class="bi bi-file-text me-1"></i>Article</span>
+                                    }
+                                </td>
+                                <td><span class="small text-muted font-monospace"><i class="bi bi-clock me-1"></i>@l.DurationInMinutes min</span></td>
+                                <td>
+                                    @if (l.IsPreview)
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                                            <i class="bi bi-eye me-1"></i>Free Preview
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-muted border rounded-pill px-3 py-1">
+                                            <i class="bi bi-lock me-1"></i>Enrolled Only
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4 text-nowrap">
+                                    <div class="d-inline-flex align-items-center gap-1">
+                                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#editLessonModal_@l.LessonId">
+                                            <i class="bi bi-pencil me-1"></i> Edit
+                                        </button>
+                                        @using (Html.BeginForm("DeleteLesson", "Instructor", new { id = l.LessonId }, FormMethod.Post, new { @class = "d-inline" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="return confirm('Are you sure you want to permanently delete lesson \'@Html.Raw(HttpUtility.JavaScriptStringEncode(l.Title))\'?');">
+                                                <i class="bi bi-trash me-1"></i> Delete
+                                            </button>
+                                        }
+                                    </div>
+
+                                    <!-- Edit Lesson Modal for @l.LessonId -->
+                                    <div class="modal fade text-start" id="editLessonModal_@l.LessonId" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                            <div class="modal-content border-0 shadow-lg rounded-4" style="background: #062330; border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;">
+                                                <div class="modal-header border-bottom py-3" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                                                    <h5 class="modal-title fw-bold text-white"><i class="bi bi-pencil-square me-2 text-warning"></i>Edit Lesson</h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                @using (Html.BeginForm("EditLesson", "Instructor", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                                {
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="LessonId" value="@l.LessonId" />
+                                                    <input type="hidden" name="ModuleId" value="@l.ModuleId" />
+                                                    <div class="modal-body p-4">
+                                                        <div class="row g-3">
+                                                            <div class="col-md-8">
+                                                                <label class="form-label fw-bold small text-white">Lesson Title</label>
+                                                                <input type="text" name="Title" class="form-control" value="@l.Title" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <label class="form-label fw-bold small text-white">Lesson Format</label>
+                                                                <select name="LessonType" class="form-select text-white" style="background: rgba(4, 24, 34, 0.95); border: 1px solid rgba(255, 255, 255, 0.15);">
+                                                                    <option value="Video" style="background: #062330;" @(l.LessonType == "Video" ? "selected" : "")>Video Stream</option>
+                                                                    <option value="Article" style="background: #062330;" @(l.LessonType == "Article" ? "selected" : "")>Article / Notes</option>
+                                                                    <option value="PDF" style="background: #062330;" @(l.LessonType == "PDF" ? "selected" : "")>PDF Reference Guide</option>
+                                                                    <option value="Link" style="background: #062330;" @(l.LessonType == "Link" ? "selected" : "")>External Link / Lab</option>
+                                                                    <option value="Quiz" style="background: #062330;" @(l.LessonType == "Quiz" ? "selected" : "")>Quiz Assessment</option>
+                                                                    <option value="Assignment" style="background: #062330;" @(l.LessonType == "Assignment" ? "selected" : "")>Practical Project</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="form-label fw-bold small text-white">Video Stream / Embed URL</label>
+                                                                <input type="text" name="VideoUrl" class="form-control" value="@l.VideoUrl" placeholder="https://www.youtube.com/embed/... or CDN link" style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="form-label fw-bold small text-white">PDF Document Upload (Cloudinary / CDN)</label>
+                                                                <input type="file" name="pdfFile" class="form-control" accept=".pdf,application/pdf" style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(39, 184, 214, 0.3); color: #FFFFFF;" />
+                                                                @if (!string.IsNullOrEmpty(l.ResourceUrl) && l.ResourceUrl.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                                                                {
+                                                                    <div class="small mt-1 text-cyan"><i class="bi bi-file-earmark-pdf me-1"></i>Current: <a href="@l.ResourceUrl" target="_blank" class="text-cyan text-decoration-underline">View active PDF file</a></div>
+                                                                }
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <label class="form-label fw-bold small text-white">Duration (Minutes)</label>
+                                                                <input type="number" name="DurationInMinutes" class="form-control" value="@l.DurationInMinutes" min="1" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <label class="form-label fw-bold small text-white">Sequence Order</label>
+                                                                <input type="number" name="LessonOrder" class="form-control" value="@l.LessonOrder" min="1" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label fw-bold small text-white">Downloadable Assets / GitHub Repo Link</label>
+                                                                <input type="text" name="ResourceUrl" class="form-control" value="@l.ResourceUrl" placeholder="https://github.com/repository or drive link" style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label fw-bold small text-white">Summary Overview</label>
+                                                                <textarea name="Description" class="form-control" rows="4" placeholder="Brief outline of concepts mastered in this lesson..." style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;">@l.Description</textarea>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label fw-bold small text-white">Article Notes & Code Documentation</label>
+                                                                <textarea name="Content" class="form-control font-monospace small" rows="5" placeholder="Formatted explanation, code snippets, reference architectural notes..." style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;">@l.Content</textarea>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="p-3 rounded-3" style="background: rgba(4, 24, 34, 0.7); border: 1px solid rgba(255, 255, 255, 0.15);">
+                                                                    <div class="form-check form-switch mb-0">
+                                                                        <input type="checkbox" name="IsPreview" id="chkPreview_@l.LessonId" value="true" class="form-check-input" @(l.IsPreview ? "checked" : "") />
+                                                                        <input type="hidden" name="IsPreview" value="false" />
+                                                                        <label class="form-check-label fw-semibold small text-white" for="chkPreview_@l.LessonId">
+                                                                            Allow Free Preview (Non-enrolled prospective students can preview this lesson)
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer border-top py-3" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                                                        <button type="button" class="btn btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" style="background-color: #FF7A18 !important; border-color: #FF7A18 !important;">Save Changes</button>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Add Lesson Modal -->
+<div class="modal fade" id="addLessonModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4" style="background: #062330; border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;">
+            <div class="modal-header border-bottom py-3" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                <h5 class="modal-title fw-bold text-white"><i class="bi bi-plus-circle me-2 text-warning"></i>Create New Lesson</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            @using (Html.BeginForm("CreateLesson", "Instructor", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ModuleId" value="@(module?.ModuleId ?? 0)" />
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold small text-white">Lesson Title</label>
+                            <input type="text" name="Title" class="form-control" placeholder="e.g. Asynchronous Controller Patterns" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-white">Lesson Format</label>
+                            <select name="LessonType" class="form-select text-white" style="background: rgba(4, 24, 34, 0.95); border: 1px solid rgba(255, 255, 255, 0.15);">
+                                <option value="Video" style="background: #062330;">Video Stream</option>
+                                <option value="Article" style="background: #062330;">Article / Notes</option>
+                                <option value="PDF" style="background: #062330;">PDF Reference Guide</option>
+                                <option value="Link" style="background: #062330;">External Link / Lab</option>
+                                <option value="Quiz" style="background: #062330;">Quiz Assessment</option>
+                                <option value="Assignment" style="background: #062330;">Practical Project</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-white">Video Stream / Embed URL</label>
+                            <input type="text" name="VideoUrl" class="form-control" placeholder="https://www.youtube.com/embed/... or CDN link" style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-white">PDF Document Upload (Cloudinary / CDN)</label>
+                            <input type="file" name="pdfFile" class="form-control" accept=".pdf,application/pdf" style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(39, 184, 214, 0.3); color: #FFFFFF;" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small text-white">Duration (Minutes)</label>
+                            <input type="number" name="DurationInMinutes" class="form-control" value="15" min="1" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold small text-white">Sequence Order</label>
+                            <input type="number" name="LessonOrder" class="form-control" value="@(Model.Count() + 1)" min="1" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold small text-white">Downloadable Assets / GitHub Repo Link</label>
+                            <input type="text" name="ResourceUrl" class="form-control" placeholder="https://github.com/repository or drive link" style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold small text-white">Summary Overview</label>
+                            <textarea name="Description" class="form-control" rows="4" placeholder="Brief outline of concepts mastered in this lesson..." style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold small text-white">Article Notes & Code Documentation</label>
+                            <textarea name="Content" class="form-control font-monospace small" rows="5" placeholder="Formatted explanation, code snippets, reference architectural notes..." style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="p-3 rounded-3" style="background: rgba(4, 24, 34, 0.7); border: 1px solid rgba(255, 255, 255, 0.15);">
+                                <div class="form-check form-switch mb-0">
+                                    <input type="checkbox" name="IsPreview" id="chkPreview" value="true" class="form-check-input" />
+                                    <input type="hidden" name="IsPreview" value="false" />
+                                    <label class="form-check-label fw-semibold small text-white" for="chkPreview">
+                                        Allow Free Preview (Non-enrolled prospective students can preview this lesson)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top py-3" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                    <button type="button" class="btn btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" style="background-color: #FF7A18 !important; border-color: #FF7A18 !important;">Save Lesson</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Upload Dedicated PDF Modal (Cloudinary Document Storage) -->
+<div class="modal fade" id="uploadPdfModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4" style="background: #062330; border: 1px solid rgba(39, 184, 214, 0.3); color: #FFFFFF;">
+            <div class="modal-header border-bottom py-3" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="background: rgba(239, 68, 68, 0.2); color: #EF4444;">
+                        <i class="bi bi-file-earmark-pdf-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-white mb-0">Upload PDF Learning Resource</h5>
+                        <div class="small" style="font-size: 11px; color: #27B8D6;">Direct Cloudinary API Upload &bull; Secure Storage</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            @using (Html.BeginForm("UploadPdfLesson", "Instructor", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="moduleId" value="@(module?.ModuleId ?? 0)" />
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-white">Document Title / Chapter Name <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control" placeholder="e.g. Chapter 4 - Architecture Reference Manual" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-white">Select PDF File <span class="text-danger">*</span></label>
+                        <input type="file" name="pdfFile" class="form-control" accept=".pdf,application/pdf" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(39, 184, 214, 0.4); color: #FFFFFF;" />
+                        <div class="form-text small" style="color: #94A3B8;">Max 25MB. PDF will be indexed and embedded into the student interactive reader.</div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-white">Sequence Order</label>
+                            <input type="number" name="lessonOrder" class="form-control" value="@(Model.Count() + 1)" min="1" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-white">Est. Reading Time (Mins)</label>
+                            <input type="number" name="durationInMinutes" class="form-control" value="20" min="1" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded-3" style="background: rgba(4, 24, 34, 0.7); border: 1px solid rgba(255, 255, 255, 0.15);">
+                        <div class="form-check form-switch mb-0">
+                            <input type="checkbox" name="isPreview" id="chkPdfPreview" value="true" class="form-check-input" />
+                            <input type="hidden" name="isPreview" value="false" />
+                            <label class="form-check-label fw-semibold small text-white" for="chkPdfPreview">
+                                Allow Free Preview for Prospective Students
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top py-3" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                    <button type="button" class="btn btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" style="background-color: #FF7A18 !important; border-color: #FF7A18 !important;">
+                        <i class="bi bi-cloud-arrow-up-fill me-1"></i> Upload to Cloudinary
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+</div>

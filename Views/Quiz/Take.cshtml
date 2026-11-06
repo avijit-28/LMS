@@ -1,0 +1,140 @@
+@model LMS.ViewModels.QuizAttemptViewModel
+@{
+    ViewBag.Title = "Assessment: " + Model.Quiz.Title;
+    var timeLimitMins = Model.TimeLimitMinutes ?? 30;
+    var totalSeconds = timeLimitMins * 60;
+}
+
+<div class="row justify-content-center py-4">
+    <!-- Sticky Question Quick-Palette Sidebar (Desktop) -->
+    <div class="col-lg-3 order-lg-2 mb-4">
+        <div class="card card-custom p-4 shadow-sm sticky-top border-0 rounded-4" style="top: 85px; background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-white">
+                    <i class="bi bi-grid-3x3-gap-fill text-cyan me-1"></i> Question Map
+                </h6>
+                <span class="badge rounded-pill px-3 py-1 small" id="answeredCounter" style="background: rgba(39, 184, 214, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.25);">
+                    0 / @Model.Questions.Count
+                </span>
+            </div>
+
+            <!-- Answered Progress Bar -->
+            <div class="progress mb-3" style="height: 6px; background: rgba(255, 255, 255, 0.1);">
+                <div id="quizAnsweredProgressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%;"></div>
+            </div>
+
+            <!-- Question Palette Grid -->
+            <div class="d-flex flex-wrap gap-2 mb-3" id="quizQuestionPalette">
+                <!-- Rendered dynamically via LMS.initQuiz -->
+            </div>
+
+            <hr class="my-2" style="border-color: rgba(255, 255, 255, 0.1);">
+            <div class="small d-flex flex-column gap-1" style="font-size: 11px; color: rgba(255, 255, 255, 0.65);">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="quiz-palette-btn palette-answered d-inline-flex align-items-center justify-content-center" style="width: 16px; height: 16px; font-size: 11px;"><i class="bi bi-check"></i></span>
+                    <span>Answered question</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="quiz-palette-btn palette-flagged" style="width: 16px; height: 16px;"></span>
+                    <span>Flagged for review</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="quiz-palette-btn" style="width: 16px; height: 16px;"></span>
+                    <span>Unanswered</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Assessment Stream -->
+    <div class="col-lg-8 order-lg-1">
+        <!-- Assessment Header -->
+        <div class="card card-custom p-4 shadow-sm mb-4 border-0 rounded-4" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <span class="badge rounded-pill mb-2 fw-semibold px-3 py-1" style="background: rgba(255, 122, 24, 0.15); color: #FF7A18; border: 1px solid rgba(255, 122, 24, 0.3);">
+                        <i class="bi bi-patch-question-fill me-1"></i> Live Assessment
+                    </span>
+                    <h3 class="fw-bold mb-1 text-white">@Model.Quiz.Title</h3>
+                    <p class="small mb-0" style="color: rgba(255, 255, 255, 0.7);">Passing standard: <strong class="text-white">@Model.Quiz.PassingPercentage%</strong> &bull; Total Questions: <strong class="text-white">@Model.Questions.Count</strong></p>
+                </div>
+                <div class="text-end">
+                    <div class="small fw-semibold mb-1" style="font-size: 11px; color: rgba(255, 255, 255, 0.65);">Time Remaining</div>
+                    <span class="badge bg-danger px-3 py-2 rounded-pill fs-6 shadow-sm" id="timerBadge">
+                        <i class="bi bi-stopwatch me-1"></i> <span id="timeRemainingDisplay">@(timeLimitMins):00</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Timer Progress Bar -->
+            <div class="progress mt-3" style="height: 6px; background: rgba(255, 255, 255, 0.1);">
+                <div id="quizTimerBar" class="progress-bar bg-success" role="progressbar" style="width: 100%;"></div>
+            </div>
+        </div>
+
+        <!-- Quiz Questions Form -->
+        @using (Html.BeginForm("Submit", "Quiz", FormMethod.Post, new { id = "quizForm" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="AttemptId" value="@Model.AttemptId" />
+
+            for (int i = 0; i < Model.Questions.Count; i++)
+            {
+                var q = Model.Questions[i];
+                <div class="card card-custom p-4 shadow-sm mb-4 question-card border-0 rounded-4" data-qindex="@i" id="question_block_@i" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); border-left: 4px solid #27B8D6 !important; backdrop-filter: blur(8px);">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge rounded-pill px-3 py-2 fw-bold text-white" style="background: #0B3445; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                Question @(i + 1) of @Model.Questions.Count
+                            </span>
+                            <span class="badge rounded-pill px-3 py-1 small" style="background: rgba(39, 184, 214, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.25);">@q.Marks Marks</span>
+                        </div>
+
+                        <!-- Flag for Review Checkbox -->
+                        <div class="form-check form-switch small">
+                            <input class="form-check-input flag-toggle-checkbox" type="checkbox" id="flag_q_@i" data-qindex="@i">
+                            <label class="form-check-label fw-semibold" style="color: rgba(255, 255, 255, 0.7);" for="flag_q_@i">Flag for review</label>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-white mb-4" style="line-height: 1.5;">@q.QuestionText</h5>
+
+                    <input type="hidden" name="Answers[@i].QuestionId" value="@q.QuestionId" />
+
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var opt in q.Options)
+                        {
+                            <div class="form-check p-3 rounded-3 quiz-option-container" style="background: rgba(11, 52, 69, 0.6); border: 1px solid rgba(255, 255, 255, 0.12);">
+                                <input class="form-check-input ms-0 me-3 quiz-option-radio" type="radio"
+                                       name="Answers[@i].SelectedOptionId"
+                                       id="opt_@(opt.OptionId)"
+                                       value="@opt.OptionId" />
+                                <label class="form-check-label fw-semibold text-white w-100" for="opt_@(opt.OptionId)" style="cursor: pointer;">
+                                    @opt.OptionText
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="card card-custom p-4 shadow-sm text-center border-0 rounded-4 mb-5" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+                <h5 class="fw-bold mb-2 text-white">Ready to Submit?</h5>
+                <p class="small mb-3" style="color: rgba(255, 255, 255, 0.7);">Please review your question map to ensure you have answered all questions before finalizing.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="submit" id="submitQuizBtn" class="btn btn-primary px-5 py-3 rounded-pill fw-bold shadow text-white" onclick="return confirm('Are you sure you want to finalize and submit your assessment answers?');">
+                        <i class="bi bi-send-check-fill me-1"></i> Finalize and Submit Assessment
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            LMS.initQuiz(@Model.Questions.Count, @totalSeconds);
+        });
+    </script>
+}

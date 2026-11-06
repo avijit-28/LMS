@@ -1,0 +1,279 @@
+@model LMS.ViewModels.StudentDashboardViewModel
+@{
+    ViewBag.Title = "Student Learning Hub";
+}
+
+<div class="py-4">
+    <!-- Visually Distinct Personal Productivity Header -->
+    <div class="card border-0 p-4 p-md-5 mb-4 rounded-4 shadow-sm text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #062330 0%, #073549 60%, #084B66 100%);">
+        <div class="position-absolute top-0 end-0 p-4 opacity-15 d-none d-md-block pointer-events-none">
+            <i class="bi bi-mortarboard display-1 text-white"></i>
+        </div>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center position-relative z-1 gap-3">
+            <div>
+                <span class="badge bg-white bg-opacity-15 text-orange px-3 py-1 rounded-pill mb-2 fw-semibold">
+                    <span class="pulse-dot pulse-primary"></span> Personal Productivity Dashboard
+                </span>
+                <h2 class="fw-extrabold mb-1 tracking-tight text-white">Good Morning, @(Model.StudentFirstName ?? "Student") 👋</h2>
+                <p class="text-light text-opacity-75 small mb-0">Ready to continue learning and level up your skills today?</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="@Url.Action("MyCourses", "Student")" class="btn btn-outline-light rounded-pill px-3 fw-semibold">
+                    <i class="bi bi-journal-bookmark me-1"></i> My Courses
+                </a>
+                <a href="@Url.Action("Index", "Courses")" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                    <i class="bi bi-compass me-1"></i> Browse Catalog
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4 Distinctly Tinted KPI Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-custom stat-card-courses p-4 shadow-sm h-100 card-hover" style="border-left: 4px solid var(--lms-cyan) !important;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small text-muted fw-bold text-uppercase" style="font-size: 11px;">Active Tracks</div>
+                        <div class="fs-2 fw-extrabold text-primary mt-1">@Model.ActiveCourses</div>
+                        <small class="text-muted">In-progress courses</small>
+                    </div>
+                    <div class="rounded-circle bg-primary-subtle text-primary p-3 shadow-xs">
+                        <i class="bi bi-journal-code fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-custom stat-card-completed p-4 shadow-sm h-100 card-hover" style="border-left: 4px solid #10b981 !important;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small text-muted fw-bold text-uppercase" style="font-size: 11px;">Completed</div>
+                        <div class="fs-2 fw-extrabold text-success mt-1">@Model.CompletedCourses</div>
+                        <small class="text-muted">100% finished tracks</small>
+                    </div>
+                    <div class="rounded-circle bg-success-subtle text-success p-3 shadow-xs">
+                        <i class="bi bi-check-circle-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-custom stat-card-certificates p-4 shadow-sm h-100 card-hover" style="border-left: 4px solid #f59e0b !important;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small text-muted fw-bold text-uppercase" style="font-size: 11px;">Certificates</div>
+                        <div class="fs-2 fw-extrabold text-warning mt-1">@Model.CertificatesCount</div>
+                        <small class="text-muted">Official credentials</small>
+                    </div>
+                    <div class="rounded-circle bg-warning-subtle text-warning p-3 shadow-xs">
+                        <i class="bi bi-award-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-custom stat-card-progress p-4 shadow-sm h-100 card-hover" style="border-left: 4px solid var(--lms-purple) !important;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small text-muted fw-bold text-uppercase" style="font-size: 11px;">Quizzes Taken</div>
+                        <div class="fs-2 fw-extrabold mt-1" style="color: var(--lms-purple);">@Model.CompletedQuizzes</div>
+                        <small class="text-muted">Knowledge evaluations</small>
+                    </div>
+                    <div class="rounded-circle p-3 shadow-xs" style="background: #F3E8FF; color: var(--lms-purple);">
+                        <i class="bi bi-lightning-charge-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Courses Grid & Recent History -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="card card-custom p-4 shadow-sm mb-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-collection-play me-2 text-primary"></i> Current Learning Paths</h5>
+                    <a href="@Url.Action("MyCourses", "Student")" class="small text-primary text-decoration-none fw-semibold">View All Courses &rarr;</a>
+                </div>
+
+                @if (!Model.EnrolledCourses.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-journal-x fs-1 text-muted mb-2"></i>
+                        <h6 class="fw-bold text-dark">You have not enrolled in any courses yet.</h6>
+                        <p class="text-muted small mb-3">Explore our published course tracks and start learning today!</p>
+                        <a href="@Url.Action("Index", "Courses")" class="btn btn-sm btn-primary rounded-pill px-4">Browse Courses</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="row g-3">
+                        @foreach (var enrollment in Model.EnrolledCourses.Take(4))
+                        {
+                            <div class="col-md-6">
+                                <div class="card card-custom p-3 h-100 bg-light border card-hover">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <span class="badge badge-primary-subtle small">
+                                            @(enrollment.Course?.Category?.CategoryName ?? "Course")
+                                        </span>
+                                        <span class="badge @(enrollment.Status == "Completed" ? "bg-success" : "bg-primary") small">
+                                            @enrollment.Status
+                                        </span>
+                                    </div>
+
+                                    <h6 class="fw-bold mb-2 text-dark">@enrollment.Course.Title</h6>
+
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center small text-muted mb-1">
+                                            <span>Progress</span>
+                                            <strong class="text-dark">@enrollment.CompletionPercentage%</strong>
+                                        </div>
+                                        <div class="progress" style="height: 7px;">
+                                            <div class="progress-bar @(enrollment.Status == "Completed" ? "bg-success" : "bg-primary")" role="progressbar" style="width: @enrollment.CompletionPercentage%;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center mt-auto pt-2">
+                                        <small class="text-muted"><i class="bi bi-clock me-1"></i> @enrollment.Course.DurationInHours hrs</small>
+                                        <a href="@Url.Action("Index", "Learning", new { courseId = enrollment.CourseId })" class="btn btn-sm btn-primary rounded-pill px-3 shadow-xs fw-semibold">
+                                            Resume &rarr;
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Recent Quiz Results & Assessments -->
+            <div class="card card-custom p-4 shadow-sm bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-patch-question me-2 text-warning"></i> Recent Assessment Results</h5>
+                    <a href="@Url.Action("Quizzes", "Student")" class="small text-primary text-decoration-none fw-semibold">View History &rarr;</a>
+                </div>
+
+                @if (!Model.RecentQuizResults.Any())
+                {
+                    <p class="text-muted small py-3 mb-0">No quiz assessments completed yet.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle small mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Assessment</th>
+                                    <th>Course</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var q in Model.RecentQuizResults)
+                                {
+                                    <tr>
+                                        <td class="fw-bold text-dark">@q.Quiz.Title</td>
+                                        <td>@(q.Quiz.Course?.Title ?? "Course")</td>
+                                        <td class="fw-bold">@q.Score% (@q.ObtainedMarks / @q.TotalMarks)</td>
+                                        <td>
+                                            <span class="badge @(q.IsPassed ? "bg-success" : "bg-danger") px-2 py-1 rounded-pill">
+                                                @(q.IsPassed ? "PASSED" : "FAILED")
+                                            </span>
+                                        </td>
+                                        <td><small class="text-muted">@(q.CompletedAt.HasValue ? q.CompletedAt.Value.ToString("MMM dd, yyyy") : "-")</small></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Sidebar: Announcements & Upcoming Tasks -->
+        <div class="col-lg-4">
+            <!-- Announcements Card -->
+            <div class="card card-custom p-4 shadow-sm mb-4 border-0 rounded-4" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+                <h5 class="fw-bold mb-3 text-white"><i class="bi bi-megaphone me-2 text-orange"></i> Platform Bulletins</h5>
+                @if (!Model.Announcements.Any())
+                {
+                    <p class="small mb-0" style="color: rgba(255, 255, 255, 0.65);">No active announcements at this time.</p>
+                }
+                else
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var a in Model.Announcements)
+                        {
+                            <div class="p-3 rounded-3" style="background: rgba(11, 52, 69, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #FF7A18 !important;">
+                                <h6 class="fw-bold text-white mb-1 small">@a.Title</h6>
+                                <p class="small mb-1" style="color: rgba(255, 255, 255, 0.75);">@a.Message</p>
+                                <small style="font-size: 11px; color: rgba(255, 255, 255, 0.5);"><i class="bi bi-clock me-1 text-orange"></i>@a.CreatedDate.ToString("MMM dd, yyyy")</small>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Upcoming Assignments / Practical Tasks Card -->
+            <div class="card card-custom p-4 shadow-sm border-0 rounded-4" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-white"><i class="bi bi-file-earmark-code me-2 text-cyan"></i> Practical Tasks</h5>
+                    <a href="@Url.Action("Assignments", "Student")" class="small text-cyan text-decoration-none fw-semibold">View All &rarr;</a>
+                </div>
+                @if (!Model.PracticalTasks.Any())
+                {
+                    <p class="small mb-0" style="color: rgba(255, 255, 255, 0.65);">No practical assignments assigned in your enrolled courses.</p>
+                }
+                else
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var task in Model.PracticalTasks)
+                        {
+                            <div class="p-3 rounded-3 card-hover" style="background: rgba(11, 52, 69, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #27B8D6 !important;">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <h6 class="fw-bold mb-0 text-white small text-truncate" style="max-width: 220px;" title="@task.Title">@task.Title</h6>
+                                    <span class="badge rounded-pill small" style="background: rgba(255, 255, 255, 0.1); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.15);">@task.MaxMarks pts</span>
+                                </div>
+                                <div class="small mb-2" style="color: #38BDF8;">@task.CourseTitle</div>
+                                
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    @if (task.IsSubmitted)
+                                    {
+                                        if (task.SubmissionStatus == "Graded")
+                                        {
+                                            <span class="badge rounded-pill py-1 px-2 small" style="background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(52, 211, 153, 0.3);">
+                                                <i class="bi bi-check-circle-fill me-1"></i> Graded: @(task.MarksAwarded.HasValue ? task.MarksAwarded.Value.ToString("0.0") : "0.0")/@task.MaxMarks
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill py-1 px-2 small" style="background: rgba(255, 122, 24, 0.2); color: #FF7A18; border: 1px solid rgba(255, 122, 24, 0.3);">
+                                                <i class="bi bi-clock-history me-1"></i> In Review
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill py-1 px-2 small" style="background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.15);">
+                                            <i class="bi bi-circle me-1"></i> Not Submitted
+                                        </span>
+                                    }
+                                </div>
+
+                                <a href="@Url.Action("Details", "Assignment", new { id = task.AssignmentId })" class="btn btn-sm @(task.IsSubmitted ? "btn-outline-light" : "btn-primary") rounded-pill w-100 fw-bold py-2 text-white shadow-xs">
+                                    <i class="bi @(task.IsSubmitted ? "bi-eye" : "bi-upload") me-1"></i> @(task.IsSubmitted ? (task.SubmissionStatus == "Graded" ? "View Faculty Review" : "View Submission") : "Submit Task") &rarr;
+                                </a>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

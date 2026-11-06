@@ -1,0 +1,266 @@
+﻿@model LMS.ViewModels.CourseFilterViewModel
+@{
+    ViewBag.Title = "Course Catalog & Curriculums";
+}
+
+<div class="py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")" class="text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Courses Catalog</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-extrabold mb-1 tracking-tight">Explore Learning Tracks</h2>
+            <p class="text-muted small mb-0">Discover structured curriculums taught by industry engineers and instructors</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge px-3 py-2 rounded-pill shadow-sm" style="background: rgba(6, 35, 48, 0.9); color: #FFFFFF; border: 1px solid rgba(39, 184, 214, 0.35); font-weight: 600;">
+                <span class="text-cyan fw-bold">@Model.TotalItems</span> Courses in Database
+            </span>
+            <a href="@Url.Action("Index", "Courses")" class="btn btn-sm btn-outline-light rounded-pill px-3" style="border-color: rgba(255, 255, 255, 0.25);">
+                <i class="bi bi-arrow-clockwise me-1"></i> Reset Filters
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Category Chips Bar -->
+    <div class="card card-custom p-3 mb-4 shadow-sm" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12);">
+        <div class="d-flex align-items-center gap-2 overflow-auto py-1">
+            <span class="small fw-bold text-uppercase me-2 text-nowrap" style="font-size: 11px; color: #94A3B8;">
+                <i class="bi bi-funnel-fill text-cyan me-1"></i> Subject:
+            </span>
+            <a href="@Url.Action("Index", "Courses", new { search = Model.Search, level = Model.Level, priceType = Model.PriceType, sortBy = Model.SortBy })"
+               class="btn btn-sm category-chip-btn @(Model.CategoryId == null ? "active btn-primary" : "btn-outline-light") rounded-pill px-3 text-nowrap" style="@(Model.CategoryId == null ? "background-color: #FF7A18 !important; border-color: #FF7A18 !important;" : "border-color: rgba(255, 255, 255, 0.2); color: #E2E8F0;")"
+               data-cat-id="">
+                All Subjects
+            </a>
+            @foreach (var cat in Model.Categories)
+            {
+                <a href="@Url.Action("Index", "Courses", new { categoryId = cat.CategoryId, search = Model.Search, level = Model.Level, priceType = Model.PriceType, sortBy = Model.SortBy })"
+                   class="btn btn-sm category-chip-btn @(Model.CategoryId == cat.CategoryId ? "active btn-primary" : "btn-outline-light") rounded-pill px-3 text-nowrap" style="@(Model.CategoryId == cat.CategoryId ? "background-color: #FF7A18 !important; border-color: #FF7A18 !important;" : "border-color: rgba(255, 255, 255, 0.2); color: #E2E8F0;")"
+                   data-cat-id="@cat.CategoryId">
+                    @cat.CategoryName
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Sidebar Filter Card -->
+        <div class="col-lg-3">
+            <div class="card card-custom p-4 shadow-sm sticky-top" style="top: 85px; background: rgba(6, 35, 48, 0.95); border: 1px solid rgba(39, 184, 214, 0.25); color: #FFFFFF;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0 text-white"><i class="bi bi-sliders me-1 text-cyan"></i> Filter Options</h6>
+                    <a href="@Url.Action("Index", "Courses")" class="small text-danger text-decoration-none fw-semibold">Reset All</a>
+                </div>
+
+                @using (Html.BeginForm("Index", "Courses", FormMethod.Get, new { id = "filterForm" }))
+                {
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-white">Keyword Search</label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="search" id="catalogSearchInput" class="form-control" value="@Model.Search" placeholder="Search title, skills..." style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                            <button class="btn btn-primary" type="submit" style="background-color: #FF7A18 !important; border-color: #FF7A18 !important;"><i class="bi bi-search"></i></button>
+                        </div>
+                    </div>
+
+                    if (Model.CategoryId.HasValue)
+                    {
+                        <input type="hidden" name="categoryId" value="@Model.CategoryId.Value" />
+                    }
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-white">Difficulty Level</label>
+                        <input type="hidden" name="level" id="filterLevelInput" value="@Model.Level" />
+                        <div class="d-flex flex-wrap gap-1">
+                            <button type="button" class="btn btn-xs level-chip-btn @(string.IsNullOrEmpty(Model.Level) || Model.Level == "All" ? "active btn-primary" : "btn-outline-light") rounded-pill px-2 py-1 small" data-level="" style="@(string.IsNullOrEmpty(Model.Level) || Model.Level == "All" ? "background-color: #FF7A18 !important; border-color: #FF7A18 !important;" : "border-color: rgba(255, 255, 255, 0.2); color: #E2E8F0;")">All</button>
+                            <button type="button" class="btn btn-xs level-chip-btn @(Model.Level == "Beginner" ? "active btn-primary" : "btn-outline-light") rounded-pill px-2 py-1 small" data-level="Beginner" style="@(Model.Level == "Beginner" ? "background-color: #FF7A18 !important; border-color: #FF7A18 !important;" : "border-color: rgba(255, 255, 255, 0.2); color: #E2E8F0;")">Beginner</button>
+                            <button type="button" class="btn btn-xs level-chip-btn @(Model.Level == "Intermediate" ? "active btn-primary" : "btn-outline-light") rounded-pill px-2 py-1 small" data-level="Intermediate" style="@(Model.Level == "Intermediate" ? "background-color: #FF7A18 !important; border-color: #FF7A18 !important;" : "border-color: rgba(255, 255, 255, 0.2); color: #E2E8F0;")">Mid</button>
+                            <button type="button" class="btn btn-xs level-chip-btn @(Model.Level == "Advanced" ? "active btn-primary" : "btn-outline-light") rounded-pill px-2 py-1 small" data-level="Advanced" style="@(Model.Level == "Advanced" ? "background-color: #FF7A18 !important; border-color: #FF7A18 !important;" : "border-color: rgba(255, 255, 255, 0.2); color: #E2E8F0;")">Adv</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-white">Pricing Model</label>
+                        <div class="p-3 rounded-3" style="background: rgba(4, 24, 34, 0.7); border: 1px solid rgba(255, 255, 255, 0.12);">
+                            <div class="form-check small mb-2">
+                                <input class="form-check-input" type="radio" name="priceType" id="priceAll" value="" @(string.IsNullOrEmpty(Model.PriceType) ? "checked" : "") onchange="this.form.submit()">
+                                <label class="form-check-label fw-semibold text-white" for="priceAll">All Tracks</label>
+                            </div>
+                            <div class="form-check small mb-2">
+                                <input class="form-check-input" type="radio" name="priceType" id="priceFree" value="Free" @(Model.PriceType == "Free" ? "checked" : "") onchange="this.form.submit()">
+                                <label class="form-check-label fw-semibold" style="color: #35C98A;" for="priceFree">Free Only</label>
+                            </div>
+                            <div class="form-check small">
+                                <input class="form-check-input" type="radio" name="priceType" id="pricePaid" value="Paid" @(Model.PriceType == "Paid" ? "checked" : "") onchange="this.form.submit()">
+                                <label class="form-check-label fw-semibold" style="color: #27B8D6;" for="pricePaid">Premium Only</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-white">Sort By</label>
+                        <select name="sortBy" class="form-select form-select-sm" onchange="this.form.submit()" style="background-color: #062330 !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.2) !important;">
+                            <option value="newest" @(Model.SortBy == "newest" ? "selected" : "")>Newest Additions</option>
+                            <option value="rating" @(Model.SortBy == "rating" ? "selected" : "")>Highest Rated</option>
+                            <option value="popular" @(Model.SortBy == "popular" ? "selected" : "")>Most Learners</option>
+                            <option value="price_asc" @(Model.SortBy == "price_asc" ? "selected" : "")>Price: Low to High</option>
+                            <option value="price_desc" @(Model.SortBy == "price_desc" ? "selected" : "")>Price: High to Low</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-sm btn-primary w-100 rounded-pill fw-semibold">
+                        Apply Criteria
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Course Cards Grid -->
+        <div class="col-lg-9">
+            <div id="catalogNoMatchMessage" class="card card-custom p-5 text-center shadow-sm d-none">
+                <i class="bi bi-search fs-1 text-muted mb-3"></i>
+                <h5 class="fw-bold">No courses match your filter.</h5>
+                <p class="text-muted small mb-3">Try adjusting your keyword, resetting filters, or choosing another category.</p>
+                <div>
+                    <a href="@Url.Action("Index", "Courses")" class="btn btn-outline-primary rounded-pill px-4">
+                        Clear Filters
+                    </a>
+                </div>
+            </div>
+
+            @if (!Model.Courses.Any())
+            {
+                <div class="card card-custom p-5 text-center shadow-sm">
+                    <i class="bi bi-search fs-1 text-muted mb-3"></i>
+                    <h5 class="fw-bold">No published courses found matching your criteria.</h5>
+                    <p class="text-muted small mb-3">Try adjusting your filters, searching for a different keyword, or resetting all filters.</p>
+                    <div>
+                        <a href="@Url.Action("Index", "Courses")" class="btn btn-outline-primary rounded-pill px-4">
+                            Clear All Filters
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row g-4" id="coursesGridContainer">
+                    @foreach (var course in Model.Courses)
+                    {
+                        <div class="col-md-6 col-xl-4 course-catalog-item"
+                             data-title="@course.Title"
+                             data-cat-id="@course.CategoryId"
+                             data-level="@course.Level">
+                            <div class="card card-custom card-hover h-100 overflow-hidden d-flex flex-column">
+                                @if (!string.IsNullOrWhiteSpace(course.Thumbnail))
+                                {
+                                    <div class="position-relative overflow-hidden bg-dark" style="height: 160px;">
+                                        <img src="@course.Thumbnail" alt="@course.Title" class="w-100 h-100" style="object-fit: cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'bg-light text-center py-4 h-100 d-flex align-items-center justify-content-center\'><i class=\'bi bi-mortarboard-fill display-4 text-primary opacity-25\'></i></div>';" />
+                                        <span class="position-absolute top-0 end-0 m-2 badge bg-dark bg-opacity-75 rounded-pill px-3 py-1 small">
+                                            @course.Level
+                                        </span>
+                                        <span class="position-absolute bottom-0 start-0 m-2 badge rounded-pill px-3 py-1 shadow-sm small" style="background: rgba(4, 24, 34, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.2); color: #FFFFFF; font-weight: 600;">
+                                            <i class="bi bi-clock me-1 text-orange"></i> @course.DurationInHours hrs
+                                        </span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="bg-dark text-center py-4 border-bottom position-relative" style="height: 160px; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #041822 0%, #062330 50%, #0B3445 100%);">
+                                        <i class="bi bi-mortarboard-fill display-4 text-orange opacity-75"></i>
+                                        <span class="position-absolute top-0 end-0 m-2 badge bg-dark bg-opacity-75 rounded-pill px-3 py-1 small">
+                                            @course.Level
+                                        </span>
+                                        <span class="position-absolute bottom-0 start-0 m-2 badge rounded-pill px-3 py-1 shadow-sm small" style="background: rgba(4, 24, 34, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.2); color: #FFFFFF; font-weight: 600;">
+                                            <i class="bi bi-clock me-1 text-orange"></i> @course.DurationInHours hrs
+                                        </span>
+                                    </div>
+                                }
+                                <div class="card-body d-flex flex-column p-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge badge-primary-subtle small">
+                                            @(course.Category?.CategoryName ?? "General")
+                                        </span>
+                                        <div class="rating-stars small">
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                            <span class="fw-bold text-dark ms-1">@course.Rating.ToString("0.0")</span>
+                                            <span class="text-muted">(@course.TotalStudents)</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Instructor Tag -->
+                                    <div class="d-flex align-items-center gap-1 text-muted small mb-2">
+                                        <i class="bi bi-person-circle text-primary"></i>
+                                        <span class="fw-semibold text-truncate" style="max-width: 200px;">
+                                            @(course.Instructor != null && !string.IsNullOrEmpty(course.Instructor.FullName) ? course.Instructor.FullName : (course.Instructor != null ? course.Instructor.UserName : "Faculty Instructor"))
+                                        </span>
+                                    </div>
+
+                                    <h5 class="card-title fw-bold mb-2">@course.Title</h5>
+                                    <p class="card-text text-secondary small flex-grow-1" style="line-height: 1.5;">
+                                        @(string.IsNullOrEmpty(course.Description) ? "Comprehensive curriculum designed for practical industry mastery." : (course.Description.Length > 90 ? course.Description.Substring(0, 87) + "..." : course.Description))
+                                    </p>
+
+                                    <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-3">
+                                        <div>
+                                            @if (course.Price == 0)
+                                            {
+                                                <span class="badge bg-success-subtle text-success fs-6 fw-bold">FREE</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="fs-5 fw-extrabold text-dark"><span class="rupee-symbol">&#8377;</span>@course.Price.ToString("N2")</span>
+                                            }
+                                        </div>
+                                        <a href="@Url.Action("Details", "Courses", new { id = course.CourseId })" class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold text-white shadow-xs" style="background-color: #FF7A18 !important; border-color: #FF7A18 !important;">
+                                            Details &rarr;
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                if (Model.TotalPages > 1)
+                {
+                    <div class="d-flex justify-content-center mt-5">
+                        <nav aria-label="Course catalog navigation">
+                            <ul class="pagination pagination-sm shadow-sm rounded-pill overflow-hidden">
+                                <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", "Courses", new { page = Model.Page - 1, search = Model.Search, categoryId = Model.CategoryId, level = Model.Level, priceType = Model.PriceType, sortBy = Model.SortBy })">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                @for (int p = 1; p <= Model.TotalPages; p++)
+                                {
+                                    <li class="page-item @(p == Model.Page ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", "Courses", new { page = p, search = Model.Search, categoryId = Model.CategoryId, level = Model.Level, priceType = Model.PriceType, sortBy = Model.SortBy })">@p</a>
+                                    </li>
+                                }
+                                <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", "Courses", new { page = Model.Page + 1, search = Model.Search, categoryId = Model.CategoryId, level = Model.Level, priceType = Model.PriceType, sortBy = Model.SortBy })">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            LMS.initCatalogFilter();
+        });
+    </script>
+}

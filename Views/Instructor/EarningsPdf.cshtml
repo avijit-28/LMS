@@ -1,0 +1,109 @@
+@model LMS.ViewModels.InstructorPaymentsViewModel
+@{
+    Layout = null;
+    var completed = Model.Transactions.Where(t => t.PaymentStatus == "Completed").ToList();
+    var totalGross = completed.Sum(t => t.Amount);
+    var totalAdmin = completed.Sum(t => t.AdminCommission);
+    var totalEarnings = completed.Sum(t => t.InstructorEarnings);
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Instructor Earnings Statement</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #ffffff; color: #1e293b; padding: 20px; font-size: 11px; line-height: 1.4; }
+        .header { border-bottom: 2px solid #10b981; padding-bottom: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .logo-title { font-size: 20px; font-weight: 800; color: #064e3b; }
+        .logo-title span { color: #10b981; }
+        .doc-title { font-size: 13px; font-weight: 600; color: #047857; text-transform: uppercase; letter-spacing: 1px; }
+        .summary-bar { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px 15px; margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 12px; }
+        .summary-bar strong { color: #064e3b; }
+        table.data-table { width: 100%; border-collapse: collapse; }
+        table.data-table th { background: #f1f5f9; color: #334155; font-weight: 700; text-align: left; padding: 6px 8px; border: 1px solid #cbd5e1; font-size: 10px; text-transform: uppercase; }
+        table.data-table td { padding: 6px 8px; border: 1px solid #e2e8f0; font-size: 10.5px; }
+        table.data-table tfoot td { background: #f8fafc; font-weight: 700; border-top: 2px solid #cbd5e1; }
+        .text-right { text-align: right; }
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9.5px; font-weight: 600; }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .footer { border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 20px; font-size: 10px; color: #64748b; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div class="logo-title">Edu<span>Platform</span> Faculty Studio</div>
+            <div class="doc-title">Course Earnings &amp; Financial Statement</div>
+        </div>
+        <div style="text-align: right; font-size: 10px; color: #64748b;">
+            Statement Date: @DateTime.UtcNow.ToString("dd MMM yyyy, HH:mm") UTC<br />
+            Filter: @Model.CurrentFilter | Author Records: @Model.Transactions.Count
+        </div>
+    </div>
+
+    <div class="summary-bar">
+        <div>Total Enrolled Learners: <strong>@Model.TotalPaidEnrollments</strong></div>
+        <div>Gross Sales: <strong>&#8377;@totalGross.ToString("N2")</strong></div>
+        <div>Platform Fee (5%): <strong style="color: #dc2626;">-&#8377;@totalAdmin.ToString("N2")</strong></div>
+        <div>Net Faculty Earnings (95%): <strong style="color: #059669; font-size: 13px;">&#8377;@totalEarnings.ToString("N2")</strong></div>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Txn ID</th>
+                <th>Date (UTC)</th>
+                <th>Course Title</th>
+                <th>Buyer Name</th>
+                <th>Buyer Email</th>
+                <th>Role</th>
+                <th class="text-right">Course Price</th>
+                <th class="text-right">Platform 5%</th>
+                <th class="text-right">Net Share 95%</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Transactions.Any())
+            {
+                <tr><td colspan="10" style="text-align: center; padding: 20px; color: #64748b;">No transactions recorded for the selected filter.</td></tr>
+            }
+            else
+            {
+                foreach (var t in Model.Transactions)
+                {
+                    <tr>
+                        <td style="font-family: monospace;">@t.TransactionId</td>
+                        <td>@t.PaymentDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td><strong>@t.CourseTitle</strong></td>
+                        <td>@t.BuyerName</td>
+                        <td>@t.BuyerEmail</td>
+                        <td>@t.BuyerRole</td>
+                        <td class="text-right">&#8377;@t.Amount.ToString("N2")</td>
+                        <td class="text-right" style="color: #dc2626;">-&#8377;@t.AdminCommission.ToString("N2")</td>
+                        <td class="text-right" style="color: #059669; font-weight: bold;">&#8377;@t.InstructorEarnings.ToString("N2")</td>
+                        <td><span class="badge badge-success">@t.PaymentStatus</span></td>
+                    </tr>
+                }
+            }
+        </tbody>
+        @if (Model.Transactions.Any())
+        {
+            <tfoot>
+                <tr>
+                    <td colspan="6">NET DISBURSEMENTS:</td>
+                    <td class="text-right">&#8377;@totalGross.ToString("N2")</td>
+                    <td class="text-right" style="color: #dc2626;">-&#8377;@totalAdmin.ToString("N2")</td>
+                    <td class="text-right" style="color: #059669;">&#8377;@totalEarnings.ToString("N2")</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        }
+    </table>
+
+    <div class="footer">
+        EduPlatform LMS Faculty Payout Infrastructure &bull; Local SQL Server &bull; Page 1 of 1
+    </div>
+</body>
+</html>

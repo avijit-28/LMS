@@ -1,0 +1,133 @@
+@model IEnumerable<LMS.Models.Course>
+@{
+    ViewBag.Title = "Course Portfolio Studio";
+}
+
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Course Studio</h2>
+            <p class="text-muted small">Manage all created courses, curriculum structure, quizzes, and publish states</p>
+        </div>
+        <a href="@Url.Action("CreateCourse", "Instructor")" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Add New Course
+        </a>
+    </div>
+
+    <div class="card card-custom shadow-sm border-0 mb-5" style="overflow: visible !important; min-height: 380px; padding-bottom: 90px;">
+        <div class="table-responsive" style="overflow: visible !important; min-height: 300px;">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light small">
+                    <tr>
+                        <th style="min-width: 260px;">Course Title</th>
+                        <th>Category</th>
+                        <th>Level</th>
+                        <th>Price</th>
+                        <th>Students</th>
+                        <th>Rating</th>
+                        <th>Status</th>
+                        <th class="text-end" style="min-width: 250px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">No courses found. Click "Add New Course" to get started.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var c in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        @if (!string.IsNullOrWhiteSpace(c.Thumbnail))
+                                        {
+                                            <img src="@c.Thumbnail" class="rounded-3 shadow-xs me-3 flex-shrink-0" style="width: 52px; height: 38px; object-fit: cover;" alt="" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'45\' viewBox=\'0 0 60 45\'><rect fill=\'%23062330\' width=\'60\' height=\'45\'/><text fill=\'%23FF7A18\' font-family=\'sans-serif\' font-size=\'10\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dominant-baseline=\'middle\'>LMS</text></svg>';" />
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-3 bg-primary-subtle text-primary d-flex align-items-center justify-content-center shadow-xs me-3 flex-shrink-0" style="width: 52px; height: 38px;">
+                                                <i class="bi bi-collection-play-fill fs-5"></i>
+                                            </div>
+                                        }
+                                        <div>
+                                            <a href="@Url.Action("Details", "Courses", new { id = c.CourseId })" target="_blank" class="fw-bold text-dark text-decoration-none d-block">
+                                                @c.Title
+                                            </a>
+                                            <small class="text-muted">Created: @c.CreatedDate.ToString("MMM dd, yyyy")</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge rounded-pill px-2 py-1" style="background: rgba(39, 184, 214, 0.15); color: #27B8D6; border: 1px solid rgba(39, 184, 214, 0.35);">@(c.Category?.CategoryName ?? "General")</span></td>
+                                <td><span class="badge rounded-pill px-2 py-1" style="background: rgba(255, 255, 255, 0.08); color: #E2E8F0; border: 1px solid rgba(255, 255, 255, 0.15);">@c.Level</span></td>
+                                <td class="fw-semibold">@if (c.Price == 0) { <span class="text-success fw-bold">FREE</span> } else { <span><span class="rupee-symbol">&#8377;</span>@c.Price.ToString("N2")</span> }</td>
+                                <td>
+                                    <a href="@Url.Action("Students", "Instructor", new { courseId = c.CourseId })" class="text-decoration-none">
+                                        @c.TotalStudents students &rarr;
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="rating-stars small"><i class="bi bi-star-fill text-warning"></i> @c.Rating.ToString("0.0")</span>
+                                </td>
+                                <td>
+                                    <span class="badge @(c.Status == "Published" ? "bg-success" : (c.Status == "Draft" ? "bg-secondary" : "bg-dark")) px-2 py-1 rounded-pill">
+                                        @c.Status
+                                    </span>
+                                </td>
+                                <td class="text-end text-nowrap">
+                                    <div class="d-inline-flex align-items-center gap-1">
+                                        <a href="@Url.Action("Modules", "Instructor", new { courseId = c.CourseId })" class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold shadow-sm" title="Manage Modules and Lessons">
+                                            <i class="bi bi-diagram-3 me-1"></i> Modules
+                                        </a>
+                                        <a href="@Url.Action("EditCourse", "Instructor", new { id = c.CourseId })" class="btn btn-sm btn-outline-secondary rounded-pill px-3" title="Edit Course Details">
+                                            <i class="bi bi-pencil me-1"></i> Edit
+                                        </a>
+                                        <div class="btn-group dropstart d-inline-block">
+                                            <button class="btn btn-sm rounded-pill px-2 text-white" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2);" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="More Options">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu shadow-lg border-0 py-2 studio-dropdown-menu" style="z-index: 99999; min-width: 200px;">
+                                                <li><a class="dropdown-item py-2" href="@Url.Action("Documents", "Instructor", new { courseId = c.CourseId })"><i class="bi bi-file-earmark-pdf text-info me-2"></i> AI Knowledge Docs</a></li>
+                                                <li><a class="dropdown-item py-2" href="@Url.Action("Quizzes", "Instructor", new { courseId = c.CourseId })"><i class="bi bi-patch-question text-warning me-2"></i> Quizzes &amp; Exams</a></li>
+                                                <li><a class="dropdown-item py-2" href="@Url.Action("Assignments", "Instructor", new { courseId = c.CourseId })"><i class="bi bi-file-earmark-text text-info me-2"></i> Tasks &amp; Assignments</a></li>
+                                                <li><a class="dropdown-item py-2" href="@Url.Action("Students", "Instructor", new { courseId = c.CourseId })"><i class="bi bi-people text-primary me-2"></i> Enrolled Students</a></li>
+                                                <li><hr class="dropdown-divider my-1"></li>
+                                                @if (c.Status != "Published")
+                                                {
+                                                    <li>
+                                                        @using (Html.BeginForm("PublishCourse", "Instructor", new { id = c.CourseId }, FormMethod.Post))
+                                                        {
+                                                            @Html.AntiForgeryToken()
+                                                            <button type="submit" class="dropdown-item py-2 text-success fw-bold">
+                                                                <i class="bi bi-cloud-upload me-2"></i> Publish Course
+                                                            </button>
+                                                        }
+                                                    </li>
+                                                }
+                                                @if (c.TotalStudents == 0 || c.Status == "Draft")
+                                                {
+                                                    <li>
+                                                        @using (Html.BeginForm("DeleteCourse", "Instructor", new { id = c.CourseId }, FormMethod.Post))
+                                                        {
+                                                            @Html.AntiForgeryToken()
+                                                            <button type="submit" class="dropdown-item py-2 text-danger" onclick="return confirm('Are you sure you want to permanently delete course \'@Html.Raw(HttpUtility.JavaScriptStringEncode(c.Title))\'? This cannot be undone.');">
+                                                                <i class="bi bi-trash me-2"></i> Delete Course
+                                                            </button>
+                                                        }
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

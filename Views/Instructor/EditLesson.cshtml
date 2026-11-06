@@ -1,0 +1,104 @@
+@model LMS.ViewModels.LessonFormViewModel
+@{
+    var lesson = ViewBag.Lesson as LMS.Models.Lesson;
+    var module = ViewBag.Module as LMS.Models.Module;
+    ViewBag.Title = "Edit Lesson - " + Model.Title;
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Instructor")" class="text-decoration-none">Studio</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Courses", "Instructor")" class="text-decoration-none">My Courses</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Modules", "Instructor", new { courseId = module?.CourseId })" class="text-decoration-none">Modules</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Lessons", "Instructor", new { moduleId = Model.ModuleId })" class="text-decoration-none">Lessons</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit Lesson</li>
+            </ol>
+        </nav>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-0">Edit Lesson</h3>
+                <p class="text-muted small">Update lesson media, curriculum materials, and access configuration</p>
+            </div>
+            <a href="@Url.Action("Lessons", "Instructor", new { moduleId = Model.ModuleId })" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Back to Lessons
+            </a>
+        </div>
+
+        <div class="card card-custom p-4 p-md-5 shadow-sm bg-white">
+            @using (Html.BeginForm("EditLesson", "Instructor", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.LessonId)
+                @Html.HiddenFor(m => m.ModuleId)
+                @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        @Html.LabelFor(m => m.Title, new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.Title, new { @class = "form-control", placeholder = "e.g. Asynchronous Controller Patterns" })
+                        @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-md-4">
+                        @Html.LabelFor(m => m.LessonType, new { @class = "form-label fw-semibold" })
+                        <select name="LessonType" class="form-select">
+                            <option value="Video" @(Model.LessonType == "Video" ? "selected" : "")>Video Stream</option>
+                            <option value="Article" @(Model.LessonType == "Article" ? "selected" : "")>Article / Notes</option>
+                            <option value="PDF" @(Model.LessonType == "PDF" ? "selected" : "")>PDF Reference Guide</option>
+                            <option value="Link" @(Model.LessonType == "Link" ? "selected" : "")>External Link / Lab</option>
+                            <option value="Quiz" @(Model.LessonType == "Quiz" ? "selected" : "")>Quiz Assessment</option>
+                            <option value="Assignment" @(Model.LessonType == "Assignment" ? "selected" : "")>Practical Project</option>
+                        </select>
+                        @Html.ValidationMessageFor(m => m.LessonType, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.VideoUrl, new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.VideoUrl, new { @class = "form-control", placeholder = "https://www.youtube.com/embed/... or CDN link" })
+                        @Html.ValidationMessageFor(m => m.VideoUrl, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.DurationInMinutes, new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.DurationInMinutes, new { @class = "form-control", type = "number", min = "1" })
+                        @Html.ValidationMessageFor(m => m.DurationInMinutes, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.LessonOrder, new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.LessonOrder, new { @class = "form-control", type = "number", min = "1" })
+                        @Html.ValidationMessageFor(m => m.LessonOrder, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-12">
+                        @Html.LabelFor(m => m.ResourceUrl, new { @class = "form-label fw-semibold" })
+                        @Html.TextBoxFor(m => m.ResourceUrl, new { @class = "form-control", placeholder = "https://github.com/repository or drive link" })
+                        @Html.ValidationMessageFor(m => m.ResourceUrl, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-12">
+                        @Html.LabelFor(m => m.Description, new { @class = "form-label fw-semibold" })
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = "5", placeholder = "Brief outline of concepts mastered in this lesson..." })
+                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-12">
+                        @Html.LabelFor(m => m.Content, new { @class = "form-label fw-semibold" })
+                        @Html.TextAreaFor(m => m.Content, new { @class = "form-control font-monospace small", rows = "6", placeholder = "Formatted explanation, code snippets, reference architectural notes..." })
+                        @Html.ValidationMessageFor(m => m.Content, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-12">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <div class="form-check form-switch mb-0">
+                                @Html.CheckBoxFor(m => m.IsPreview, new { @class = "form-check-input", id = "chkPreviewPage" })
+                                <label class="form-check-label fw-semibold small text-dark" for "chkPreviewPage">
+                                    Allow Free Preview (Non-enrolled prospective students can preview this lesson)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 text-end mt-4">
+                        <a href="@Url.Action("Lessons", "Instructor", new { moduleId = Model.ModuleId })" class="btn btn-secondary rounded-pill px-4 me-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Save Changes</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

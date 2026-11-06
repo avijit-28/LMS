@@ -1,0 +1,161 @@
+@model LMS.ViewModels.LoginViewModel
+@{
+    ViewBag.Title = "Sign In to Your Account";
+}
+
+<div class="row justify-content-center py-4 py-lg-5">
+    <div class="col-xl-10 col-lg-11">
+        <div class="login-split-card row g-0">
+            <!-- Left Hero Composition (Deep Navy + Glows + Brand Identity) -->
+            <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-between login-hero-side">
+                <div class="position-absolute top-0 start-0 w-100 h-100 pointer-events-none overflow-hidden">
+                    <div class="lms-orb lms-orb-orange" style="width: 250px; height: 250px; top: -40px; right: -40px;"></div>
+                    <div class="lms-orb lms-orb-cyan" style="width: 220px; height: 220px; bottom: -30px; left: -30px;"></div>
+                </div>
+
+                <div class="position-relative z-1">
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <div class="bg-orange text-white rounded-3 p-2 d-inline-flex shadow-sm">
+                            <i class="bi bi-mortarboard-fill fs-4"></i>
+                        </div>
+                        <div>
+                            <span class="fs-4 fw-extrabold tracking-tight text-white">LMS</span>
+                            <div class="text-white-50 small" style="font-size: 11px;">Learning Management System</div>
+                        </div>
+                    </div>
+
+                    <div class="badge bg-white bg-opacity-10 text-orange border border-white border-opacity-10 rounded-pill px-3 py-1 mb-4 small fw-semibold">
+                        <i class="bi bi-stars me-1"></i> Gateway to Technical Mastery
+                    </div>
+
+                    <h1 class="display-6 fw-extrabold text-white mb-3" style="line-height: 1.2;">
+                        Learn.<br />
+                        <span class="text-orange">Build.</span><br />
+                        Grow.
+                    </h1>
+
+                    <p class="text-light text-opacity-75 small mb-4" style="line-height: 1.7;">
+                        Accelerate your career with industry-guided software engineering curriculums, interactive video classrooms, real-time quizzes, and verifiable credentials.
+                    </p>
+                </div>
+
+                <div class="position-relative z-1 pt-4 border-top border-white border-opacity-10">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-white bg-opacity-10 p-2 text-cyan">
+                            <i class="bi bi-shield-check fs-4"></i>
+                        </div>
+                        <div class="small">
+                            <div class="text-white fw-bold">Enterprise Security</div>
+                            <div class="text-white-50" style="font-size: 11px;">ASP.NET Identity + Role-Based Access Control</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Login Form Composition (Clean White Surface) -->
+            <div class="col-lg-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-white">
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 d-lg-none mb-3">
+                        <i class="bi bi-mortarboard-fill text-orange fs-3"></i>
+                        <span class="fw-extrabold text-dark fs-4">LMS</span>
+                    </div>
+                    <span class="badge badge-primary-subtle px-3 py-1 rounded-pill mb-2 fw-semibold">
+                        <i class="bi bi-lock-fill me-1"></i> Secure Authentication
+                    </span>
+                    <h2 class="fw-extrabold tracking-tight mb-1 text-dark">Welcome Back</h2>
+                    <p class="text-muted small mb-0">Sign in to resume your learning track and dashboard</p>
+                </div>
+
+                @if (!string.IsNullOrEmpty(ViewBag.StatusMessage as string))
+                {
+                    <div class="alert alert-info py-2 small border-0 border-start border-4 border-info mb-3">
+                        <i class="bi bi-info-circle me-1"></i> @ViewBag.StatusMessage
+                    </div>
+                }
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success py-2 small border-0 border-start border-4 border-success mb-3">
+                        <i class="bi bi-check-circle-fill me-1"></i> @TempData["SuccessMessage"]
+                    </div>
+                }
+
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger py-2 small border-0 border-start border-4 border-danger" })
+
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Email, new { @class = "form-label fw-bold small text-dark" })
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control border-start-0", placeholder = "name@example.com", id = "loginEmail", required = "required" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            @Html.LabelFor(m => m.Password, new { @class = "form-label fw-bold small text-dark mb-0" })
+                            <a href="@Url.Action("ForgotPassword", "Account")" class="small text-decoration-none fw-semibold" style="color: #FF7A18;">
+                                <i class="bi bi-question-circle me-1"></i>Forgot Password?
+                            </a>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-key text-muted"></i></span>
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control border-start-0 border-end-0", placeholder = "Enter your password", id = "loginPassword", required = "required" })
+                            <button type="button" class="btn btn-outline-secondary border-start-0 toggle-password-btn" title="Toggle password visibility">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="form-check mb-4">
+                        @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input", id = "rememberMeCheck" })
+                        <label class="form-check-label small text-muted" for="rememberMeCheck">Keep me signed in on this device</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm mb-3">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Account
+                    </button>
+                }
+
+                <!-- Quick-fill demo credentials for easy testing -->
+                <div class="p-3 bg-light rounded-3 mt-2 border">
+                    <div class="small fw-bold text-muted mb-2 text-uppercase d-flex justify-content-between align-items-center" style="font-size: 11px;">
+                        <span><i class="bi bi-lightning-charge-fill text-warning me-1"></i> One-Click Test Accounts:</span>
+                        <span class="badge bg-white text-muted border">Dev/QA</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger fw-semibold rounded-pill flex-grow-1" onclick="fillCreds('admin@lms.com', 'Admin@123')">
+                            <i class="bi bi-shield-lock me-1"></i> Admin
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-info text-dark fw-semibold rounded-pill flex-grow-1" onclick="fillCreds('instructor@lms.com', 'Instructor@123')">
+                            <i class="bi bi-mortarboard me-1"></i> Instructor
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary fw-semibold rounded-pill flex-grow-1" onclick="fillCreds('student@lms.com', 'Student@123')">
+                            <i class="bi bi-person me-1"></i> Student
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4 small text-muted">
+                    Don't have an account yet? <a href="@Url.Action("Register", "Account")" class="text-primary fw-bold text-decoration-none">Create Free Account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        function fillCreds(email, password) {
+            document.getElementById('loginEmail').value = email;
+            document.getElementById('loginPassword').value = password;
+            if (window.LMS && LMS.toast) {
+                LMS.toast('Filled credentials for ' + email, 'info');
+            }
+        }
+    </script>
+}

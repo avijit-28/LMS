@@ -1,0 +1,63 @@
+@model LMS.ViewModels.CategoryViewModel
+@{
+    ViewBag.Title = "Create Category";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-lg-7">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin")" class="text-decoration-none">Admin</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Categories", "Admin")" class="text-decoration-none">Categories</a></li>
+                <li class="breadcrumb-item active" aria-current="page">New Category</li>
+            </ol>
+        </nav>
+
+        <div class="card card-custom p-4 p-md-5 shadow-sm bg-white card-gradient-top border-0">
+            <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                <div class="rounded-circle bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center shadow-xs" style="width: 50px; height: 50px;">
+                    <i class="bi bi-tag-fill fs-4"></i>
+                </div>
+                <div>
+                    <h3 class="fw-extrabold mb-0 tracking-tight">Create Course Category</h3>
+                    <p class="text-muted small mb-0">Define a new technical domain or subject specialization track</p>
+                </div>
+            </div>
+
+            @using (Html.BeginForm("CreateCategory", "Admin", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger rounded-3" })
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.CategoryName, "Subject / Category Name", new { @class = "form-label fw-bold small text-dark" })
+                    @Html.TextBoxFor(m => m.CategoryName, new { @class = "form-control", placeholder = "e.g. Cloud Architecture & Kubernetes" })
+                    @Html.ValidationMessageFor(m => m.CategoryName, "", new { @class = "text-danger small" })
+                    <small class="text-muted">This subject will automatically appear in the category dropdown when instructors create a course.</small>
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Description, "Domain Description", new { @class = "form-label fw-bold small text-dark" })
+                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 4, placeholder = "Outline the scope, competencies, and technology stacks represented by this domain category..." })
+                    @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="p-3 bg-light rounded-3 border mb-4">
+                    <div class="form-check form-switch mb-0">
+                        @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input", @checked = "checked" })
+                        @Html.LabelFor(m => m.IsActive, "Active & Visible (Appears immediately in teacher course creation and catalog filters)", new { @class = "form-check-label fw-semibold small text-dark" })
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <a href="@Url.Action("Categories", "Admin")" class="btn btn-outline-secondary rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                        <i class="bi bi-check-lg me-1"></i> Save Subject / Category
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,340 @@
+@model IEnumerable<LMS.Models.Course>
+@{
+    ViewBag.Title = "Course Catalog Governance";
+    var totalCourses = Model != null ? Model.Count() : 0;
+    var publishedCount = Model != null ? Model.Count(c => c.Status == "Published") : 0;
+    var draftCount = Model != null ? Model.Count(c => c.Status == "Draft") : 0;
+    var totalLearners = Model != null ? Model.Sum(c => c.TotalStudents) : 0;
+    var catalogValue = Model != null ? Model.Where(c => c.Status == "Published").Sum(c => c.Price) : 0;
+    var categories = Model != null ? Model.Select(c => c.Category != null ? c.Category.CategoryName : "Unassigned").Distinct().OrderBy(c => c).ToList() : new List<string>();
+}
+
+<div class="py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin")" class="text-decoration-none">Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Course Governance</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge badge-primary-subtle px-3 py-1 rounded-pill fw-semibold">
+                    <span class="pulse-dot pulse-primary"></span> Curriculum Management
+                </span>
+                <span class="badge rounded-pill px-3 py-1 small" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #94A3B8;">
+                    Admin Center
+                </span>
+            </div>
+            <h2 class="fw-extrabold mb-1 tracking-tight">Course Catalog Governance</h2>
+            <p class="text-muted small mb-0">Oversee all platform tracks, inspect learning modules, verify quality, and manage publication lifecycle</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index", "Admin")" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Admin Dashboard
+            </a>
+            <a href="@Url.Action("Categories", "Admin")" class="btn btn-outline-primary rounded-pill px-3 fw-semibold">
+                <i class="bi bi-tag-fill me-1"></i> Manage Categories
+            </a>
+            <a href="@Url.Action("CreateCourse", "Instructor")" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> New Course
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm border-0 border-start border-4 border-success mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2 text-success"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- KPI Matrix Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg">
+            <div class="card p-3 rounded-4 shadow-sm h-100" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); color: #FFFFFF;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small fw-semibold text-uppercase tracking-wider" style="color: #94A3B8;">Total Courses</div>
+                        <div class="fs-3 fw-extrabold text-white mt-1">@totalCourses</div>
+                    </div>
+                    <div class="rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: rgba(39, 184, 214, 0.15); color: #27B8D6;">
+                        <i class="bi bi-collection-play-fill fs-5"></i>
+                    </div>
+                </div>
+                <div class="small mt-2" style="color: #94A3B8;">All registered tracks</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg">
+            <div class="card p-3 rounded-4 shadow-sm h-100" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); color: #FFFFFF;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small fw-semibold text-uppercase tracking-wider" style="color: #94A3B8;">Published</div>
+                        <div class="fs-3 fw-extrabold text-success mt-1">@publishedCount</div>
+                    </div>
+                    <div class="rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: rgba(53, 201, 138, 0.15); color: #35C98A;">
+                        <i class="bi bi-broadcast fs-5"></i>
+                    </div>
+                </div>
+                <div class="small mt-2" style="color: #94A3B8;">Active in public catalog</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg">
+            <div class="card p-3 rounded-4 shadow-sm h-100" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); color: #FFFFFF;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small fw-semibold text-uppercase tracking-wider" style="color: #94A3B8;">Draft / Review</div>
+                        <div class="fs-3 fw-extrabold text-warning mt-1">@draftCount</div>
+                    </div>
+                    <div class="rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: rgba(255, 122, 24, 0.15); color: #FF7A18;">
+                        <i class="bi bi-hourglass-split fs-5"></i>
+                    </div>
+                </div>
+                <div class="small mt-2" style="color: #94A3B8;">Pending publication</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg">
+            <div class="card p-3 rounded-4 shadow-sm h-100" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); color: #FFFFFF;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small fw-semibold text-uppercase tracking-wider" style="color: #94A3B8;">Learners</div>
+                        <div class="fs-3 fw-extrabold text-info mt-1">@totalLearners</div>
+                    </div>
+                    <div class="rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: rgba(39, 184, 214, 0.15); color: #27B8D6;">
+                        <i class="bi bi-people-fill fs-5"></i>
+                    </div>
+                </div>
+                <div class="small mt-2" style="color: #94A3B8;">Total enrollments</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg">
+            <div class="card p-3 rounded-4 shadow-sm h-100" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); color: #FFFFFF;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small fw-semibold text-uppercase tracking-wider" style="color: #94A3B8;">Catalog Value</div>
+                        <div class="fs-3 fw-extrabold text-white mt-1"><span class="rupee-symbol">&#8377;</span>@catalogValue.ToString("N0")</div>
+                    </div>
+                    <div class="rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.08); color: #FFFFFF;">
+                        <i class="bi bi-cash-stack fs-5"></i>
+                    </div>
+                </div>
+                <div class="small mt-2" style="color: #94A3B8;">Active curriculum pricing</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="card p-3 rounded-4 shadow-sm mb-4" style="background: rgba(11, 52, 69, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text border-end-0" style="background: rgba(6, 35, 48, 0.9); border-color: rgba(255, 255, 255, 0.15); color: #94A3B8;"><i class="bi bi-search"></i></span>
+                    <input type="text" id="courseSearchInput" class="form-control border-start-0" placeholder="Filter by course title, category, or instructor..." style="background: rgba(6, 35, 48, 0.9); border-color: rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <select id="categoryFilter" class="form-select text-white" style="background: rgba(6, 35, 48, 0.9); border-color: rgba(255, 255, 255, 0.15);">
+                    <option value="" style="background: #062330;">All Categories</option>
+                    @foreach (var cat in categories)
+                    {
+                        <option value="@cat" style="background: #062330;">@cat</option>
+                    }
+                </select>
+            </div>
+            <div class="col-sm-6 col-md-2">
+                <select id="statusFilter" class="form-select text-white" style="background: rgba(6, 35, 48, 0.9); border-color: rgba(255, 255, 255, 0.15);">
+                    <option value="" style="background: #062330;">All Statuses</option>
+                    <option value="Published" style="background: #062330;">Published</option>
+                    <option value="Draft" style="background: #062330;">Draft</option>
+                    <option value="Archived" style="background: #062330;">Archived</option>
+                </select>
+            </div>
+            <div class="col-md-2 text-md-end">
+                <button type="button" id="btnResetFilters" class="btn btn-outline-light rounded-pill w-100" style="border-color: rgba(255, 255, 255, 0.2);">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Catalog Table Card -->
+    <div class="card shadow-sm border-0 overflow-hidden rounded-4" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(255, 255, 255, 0.12) !important;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-white" id="coursesTable" style="color: #FFFFFF;">
+                <thead class="small" style="background: rgba(11, 52, 69, 0.85); color: #94A3B8; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                    <tr>
+                        <th class="ps-4" style="min-width: 280px;">Course Curriculum</th>
+                        <th>Category</th>
+                        <th>Level</th>
+                        <th>Price</th>
+                        <th>Enrollments</th>
+                        <th>Rating</th>
+                        <th>Current State</th>
+                        <th class="text-end pe-4" style="min-width: 260px;">Management Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var course in Model)
+                    {
+                        var catName = course.Category != null ? course.Category.CategoryName : "Unassigned";
+                        <tr class="course-row" 
+                            data-title="@course.Title.ToLower()" 
+                            data-category="@catName.ToLower()" 
+                            data-status="@course.Status" 
+                            data-level="@course.Level"
+                            style="border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="position-relative me-3 flex-shrink-0" style="width: 58px; height: 42px;">
+                                        @if (!string.IsNullOrWhiteSpace(course.Thumbnail))
+                                        {
+                                            <img src="@course.Thumbnail" class="rounded-3 shadow-xs" style="width: 58px; height: 42px; object-fit: cover;" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                        }
+                                        <div class="rounded-3 bg-primary-subtle text-primary align-items-center justify-content-center shadow-xs" style="width: 58px; height: 42px; display: @(string.IsNullOrWhiteSpace(course.Thumbnail) ? "flex" : "none");">
+                                            <i class="bi bi-collection-play-fill fs-5"></i>
+                                        </div>
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <a href="@Url.Action("Details", "Courses", new { id = course.CourseId })" target="_blank" class="fw-bold text-white text-decoration-none d-block text-truncate" style="max-width: 280px;" title="View public course page">
+                                            @course.Title <i class="bi bi-box-arrow-up-right text-cyan small ms-1" style="font-size: 10px;"></i>
+                                        </a>
+                                        <div class="small" style="font-size: 11px; color: #94A3B8;">
+                                            <i class="bi bi-calendar3 me-1"></i> Created @course.CreatedDate.ToString("MMM dd, yyyy")
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill px-3 py-1 small fw-semibold" style="background: rgba(39, 184, 214, 0.18); color: #27B8D6; border: 1px solid rgba(39, 184, 214, 0.4);">
+                                    @catName
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill px-2 py-1 small" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #E2E8F0;">
+                                    @course.Level
+                                </span>
+                            </td>
+                            <td>
+                                @if (course.Price == 0)
+                                {
+                                    <span class="badge rounded-pill px-2 py-1 fw-bold" style="background: rgba(53, 201, 138, 0.2); color: #35C98A; border: 1px solid rgba(53, 201, 138, 0.4);">Free</span>
+                                }
+                                else
+                                {
+                                    <span class="fw-bold text-white font-monospace"><span class="rupee-symbol">&#8377;</span>@course.Price.ToString("N2")</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill px-2 py-1 small" style="background: rgba(39, 184, 214, 0.15); color: #27B8D6; border: 1px solid rgba(39, 184, 214, 0.3);">
+                                    <i class="bi bi-people-fill me-1"></i> @course.TotalStudents learners
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-1">
+                                    <i class="bi bi-star-fill text-warning small"></i>
+                                    <span class="fw-bold text-white small">@course.Rating.ToString("0.0")</span>
+                                </div>
+                            </td>
+                            <td>
+                                @if (course.Status == "Published")
+                                {
+                                    <span class="badge rounded-pill px-3 py-1 fw-bold" style="background: rgba(53, 201, 138, 0.2); color: #35C98A; border: 1px solid rgba(53, 201, 138, 0.4);">
+                                        <i class="bi bi-broadcast me-1"></i> Published
+                                    </span>
+                                }
+                                else if (course.Status == "Draft")
+                                {
+                                    <span class="badge rounded-pill px-3 py-1 fw-bold" style="background: rgba(255, 255, 255, 0.1); color: #E2E8F0; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                        <i class="bi bi-pencil-fill me-1"></i> Draft
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge rounded-pill px-3 py-1 fw-bold" style="background: rgba(255, 122, 24, 0.2); color: #FF7A18; border: 1px solid rgba(255, 122, 24, 0.4);">
+                                        <i class="bi bi-archive-fill me-1"></i> Archived
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-end pe-4 text-nowrap">
+                                <div class="d-inline-flex align-items-center gap-2 justify-content-end">
+                                    <a href="@Url.Action("Modules", "Instructor", new { courseId = course.CourseId })" class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold shadow-xs" title="Manage Curriculum Modules">
+                                        <i class="bi bi-diagram-3 me-1"></i> Modules
+                                    </a>
+                                    <a href="@Url.Action("EditCourse", "Instructor", new { id = course.CourseId })" class="btn btn-sm btn-outline-light rounded-pill px-3 fw-semibold" style="border-color: rgba(255, 255, 255, 0.2); color: #FFFFFF;" title="Edit Course Details">
+                                        <i class="bi bi-pencil me-1"></i> Edit
+                                    </a>
+
+                                    @using (Html.BeginForm("UpdateCourseStatus", "Admin", FormMethod.Post, new { @class = "d-inline-flex align-items-center" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="courseId" value="@course.CourseId" />
+                                        <select name="status" class="form-select form-select-sm rounded-pill px-2 py-1 small me-1 text-white" style="width: 105px; font-size: 12px; background: rgba(6, 35, 48, 0.95); border: 1px solid rgba(255, 255, 255, 0.2);" onchange="this.form.submit();" title="Quick change course publication state">
+                                            <option value="Published" style="background: #062330;" @(course.Status == "Published" ? "selected" : "")>Published</option>
+                                            <option value="Draft" style="background: #062330;" @(course.Status == "Draft" ? "selected" : "")>Draft</option>
+                                            <option value="Archived" style="background: #062330;" @(course.Status == "Archived" ? "selected" : "")>Archived</option>
+                                        </select>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var searchInput = document.getElementById('courseSearchInput');
+            var categoryFilter = document.getElementById('categoryFilter');
+            var statusFilter = document.getElementById('statusFilter');
+            var btnReset = document.getElementById('btnResetFilters');
+            var rows = document.querySelectorAll('.course-row');
+
+            function applyFilters() {
+                var query = (searchInput.value || '').toLowerCase().trim();
+                var cat = (categoryFilter.value || '').toLowerCase();
+                var status = statusFilter.value || '';
+
+                rows.forEach(function (row) {
+                    var title = row.getAttribute('data-title') || '';
+                    var rowCat = row.getAttribute('data-category') || '';
+                    var rowStatus = row.getAttribute('data-status') || '';
+
+                    var matchQuery = !query || title.indexOf(query) !== -1 || rowCat.indexOf(query) !== -1;
+                    var matchCat = !cat || rowCat === cat;
+                    var matchStatus = !status || rowStatus === status;
+
+                    if (matchQuery && matchCat && matchStatus) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            if (searchInput) searchInput.addEventListener('input', applyFilters);
+            if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
+            if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+
+            if (btnReset) {
+                btnReset.addEventListener('click', function () {
+                    if (searchInput) searchInput.value = '';
+                    if (categoryFilter) categoryFilter.value = '';
+                    if (statusFilter) statusFilter.value = '';
+                    applyFilters();
+                });
+            }
+        });
+    </script>
+}

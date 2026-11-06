@@ -1,0 +1,438 @@
+@{
+    string activeCtrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string activeAct = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    bool isHome = (activeCtrl == "Home" && (activeAct == "Index" || string.IsNullOrEmpty(activeAct)));
+
+    string pageClass = ViewBag.PageClass as string;
+    if (string.IsNullOrEmpty(pageClass))
+    {
+        if (isHome) { pageClass = "page-home"; }
+        else if (activeCtrl == "Home" && activeAct == "Instructors") { pageClass = "page-instructors"; }
+        else if (activeCtrl == "Home" && activeAct == "About") { pageClass = "page-about"; }
+        else if (activeCtrl == "Home" && activeAct == "Contact") { pageClass = "page-contact"; }
+        else if (activeCtrl == "Courses" && activeAct == "Index") { pageClass = "page-courses"; }
+        else if (activeCtrl == "Courses" && activeAct == "Details") { pageClass = "page-course-details"; }
+        else if (activeCtrl == "Student" && activeAct == "Index") { pageClass = "page-student-dashboard"; }
+        else if (activeCtrl == "Student" && activeAct == "MyCourses") { pageClass = "page-my-courses"; }
+        else if (activeCtrl == "Student" && (activeAct == "Receipt" || activeAct == "AllReceipts")) { pageClass = "page-receipt"; }
+        else if (activeCtrl == "Student" && activeAct == "Payments") { pageClass = "page-my-courses"; }
+        else if (activeCtrl == "Student" && activeAct == "Quizzes") { pageClass = "page-quiz"; }
+        else if (activeCtrl == "Student" && (activeAct == "Assignments" || activeAct == "AssignmentDetails")) { pageClass = "page-assignment"; }
+        else if (activeCtrl == "Student" && activeAct == "Certificates") { pageClass = "page-certificate"; }
+        else if (activeCtrl == "Learning") { pageClass = "page-learning"; }
+        else if (activeCtrl == "Quiz" && activeAct == "Take") { pageClass = "page-quiz"; }
+        else if (activeCtrl == "Quiz" && (activeAct == "Result" || activeAct == "Results")) { pageClass = "page-quiz-result"; }
+        else if (activeCtrl == "Certificate" && activeAct == "ViewCertificate") { pageClass = "page-certificate"; }
+        else if (activeCtrl == "Certificate" && (activeAct == "Verify" || activeAct == "VerifyCertificate")) { pageClass = "page-certificate-verify"; }
+        else if (activeCtrl == "Instructor" && activeAct == "Index") { pageClass = "page-instructor-dashboard"; }
+        else if (activeCtrl == "Instructor" && (activeAct == "Courses" || activeAct == "CreateCourse" || activeAct == "EditCourse" || activeAct == "Modules" || activeAct == "Lessons" || activeAct == "EditLesson" || activeAct == "Earnings" || activeAct == "Payments")) { pageClass = "page-instructor-management"; }
+        else if (activeCtrl == "Instructor" && (activeAct == "Assignments" || activeAct == "Grade" || activeAct == "Submissions")) { pageClass = "page-assignment"; }
+        else if (activeCtrl == "Admin" && activeAct == "Index") { pageClass = "page-admin-dashboard"; }
+        else if (activeCtrl == "Admin") { pageClass = "page-admin-management"; }
+        else if (activeCtrl == "Account" && (activeAct == "Login" || activeAct == "ForgotPassword" || activeAct == "ForgotPasswordConfirmation" || activeAct == "ResetPassword" || activeAct == "ResetPasswordConfirmation" || activeAct == "ResetPasswordError" || activeAct == "PendingApproval")) { pageClass = "page-login"; }
+        else if (activeCtrl == "Account" && activeAct == "Register") { pageClass = "page-register"; }
+        else if (activeCtrl == "Account" && (activeAct == "Profile" || activeAct == "ChangePassword")) { pageClass = "page-profile"; }
+        else if (activeCtrl == "Notifications") { pageClass = "page-notifications"; }
+        else if (activeCtrl == "ChatBot") { pageClass = "page-ai-assistant"; }
+        else if (activeCtrl == "Account") { pageClass = "page-login"; }
+        else { pageClass = "page-" + activeCtrl.ToLower(); }
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - EduPlatform LMS</title>
+    
+    <!-- Title / Favicon Icons -->
+    <link rel="icon" type="image/png" href="@Url.Content("~/Content/images/logo-icon.png")" />
+    <link rel="shortcut icon" type="image/png" href="@Url.Content("~/Content/images/logo-icon.png")" />
+    <link rel="apple-touch-icon" href="@Url.Content("~/Content/images/logo-icon.png")" />
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    
+    <!-- Modern Google Fonts: Playfair Display + Plus Jakarta Sans + Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- EduPlatform Master LMS Theme -->
+    <link href="~/Content/lms-theme.css?v=20261105_0840" rel="stylesheet" />
+    
+    @RenderSection("Styles", required: false)
+</head>
+<body class="@pageClass" style="background-color: #041822; color: #FFFFFF;">
+    <!-- Global Brand Preloader (ONLY displays on the first time the website is opened in a session) -->
+    <script>
+        try {
+            if (sessionStorage.getItem('lms_preloader_shown')) {
+                document.write('<style>#globalPreloader { display: none !important; }</style>');
+            }
+        } catch (e) { }
+    </script>
+    <div id="globalPreloader" aria-hidden="true">
+        <div class="preloader-card">
+            <div class="preloader-logo-wrap">
+                <img src="@Url.Content("~/Content/images/logo-icon.png")" alt="LMS" class="preloader-logo" />
+                <div class="preloader-spinner-ring"></div>
+            </div>
+            <div class="preloader-title">LMS</div>
+            <div class="preloader-subtitle">Loading EduPlatform LMS...</div>
+            <div class="preloader-bar-wrap">
+                <div class="preloader-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var preloader = document.getElementById('globalPreloader');
+            if (!preloader) return;
+
+            try {
+                if (sessionStorage.getItem('lms_preloader_shown')) {
+                    preloader.remove();
+                    return;
+                }
+                sessionStorage.setItem('lms_preloader_shown', 'true');
+            } catch (e) { }
+
+            function dismiss() {
+                if (preloader && !preloader.classList.contains('fade-out')) {
+                    preloader.classList.add('fade-out');
+                    setTimeout(function () {
+                        if (preloader.parentNode) preloader.remove();
+                    }, 400);
+                }
+            }
+
+            if (document.readyState === 'complete') {
+                setTimeout(dismiss, 100);
+            } else {
+                window.addEventListener('load', function () {
+                    setTimeout(dismiss, 120);
+                });
+                setTimeout(dismiss, 1200);
+            }
+        })();
+    </script>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-lms sticky-top py-2 px-lg-4">
+            <div class="container-fluid max-w-7xl">
+                <!-- Left: Brand Logo -->
+                <a class="navbar-brand-lms me-3 d-flex align-items-center gap-2" href="@Url.Action("Index", "Home")">
+                    <img src="@Url.Content("~/Content/images/logo-icon.png")" alt="LMS Logo" class="brand-logo-img rounded-3 shadow-xs" style="width: 36px; height: 36px; object-fit: contain;" />
+                    <div class="d-flex flex-column text-start">
+                        <span class="brand-title">LMS</span>
+                        <span class="brand-subtitle d-none d-sm-inline">Learning Management System</span>
+                    </div>
+                </a>
+
+                <!-- Mobile Hamburger Toggle -->
+                <button class="navbar-toggler border-0 text-white shadow-none p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="bi bi-list fs-2 text-white"></i>
+                </button>
+
+                <!-- Middle: Navigation Links -->
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3 gap-1">
+                        @if (!Request.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(isHome ? "active" : "")" href="@Url.Action("Index", "Home")">
+                                    Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Courses" ? "active" : "")" href="@Url.Action("Index", "Courses")">
+                                    Courses
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="programsNav" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Programs
+                                </a>
+                                <ul class="dropdown-menu shadow-lg border-0 rounded-3 mt-2 py-2" aria-labelledby="programsNav">
+                                    <li><h6 class="dropdown-header text-uppercase small">Learning Tracks</h6></li>
+                                    <li><a class="dropdown-item py-2" href="@Url.Action("Index", "Courses", new { search = "Programming" })"><i class="bi bi-code-slash me-2 text-warning"></i> Software Engineering</a></li>
+                                    <li><a class="dropdown-item py-2" href="@Url.Action("Index", "Courses", new { search = "Data" })"><i class="bi bi-bar-chart-fill me-2 text-info"></i> Data Science &amp; Analytics</a></li>
+                                    <li><a class="dropdown-item py-2" href="@Url.Action("Index", "Courses", new { search = "Machine Learning" })"><i class="bi bi-cpu me-2 text-success"></i> Artificial Intelligence</a></li>
+                                    <li><a class="dropdown-item py-2" href="@Url.Action("Index", "Courses", new { level = "Beginner" })"><i class="bi bi-compass me-2 text-primary"></i> Beginner Fast-Track</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Home" && activeAct == "Instructors" ? "active" : "")" href="@Url.Action("Instructors", "Home")">
+                                    Instructors
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Home" && activeAct == "About" ? "active" : "")" href="@Url.Action("About", "Home")">
+                                    About
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Home" && activeAct == "Contact" ? "active" : "")" href="@Url.Action("Contact", "Home")">
+                                    Contact
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "ChatBot" ? "active" : "")" href="@Url.Action("Index", "ChatBot")">
+                                    <i class="bi bi-robot me-1 text-cyan"></i> AI Advisor
+                                </a>
+                            </li>
+                        }
+                        else if (User.IsInRole("Admin"))
+                        {
+                            int adminPendingApprovals = 0;
+                            try
+                            {
+                                using (var layoutDb = new LMS.Data.ApplicationDbContext())
+                                {
+                                    adminPendingApprovals = layoutDb.Users.Count(u => !u.IsApproved && (u.ApprovalStatus == "Pending" || u.ApprovalStatus == null));
+                                }
+                            }
+                            catch { }
+
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Admin" && activeAct == "Index" ? "active" : "")" href="@Url.Action("Index", "Admin")">
+                                    <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Admin" && activeAct == "Courses" ? "active" : "")" href="@Url.Action("Courses", "Admin")">
+                                    <i class="bi bi-journal-text me-1"></i> Courses
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Admin" && (activeAct == "Categories" || activeAct == "CreateCategory" || activeAct == "EditCategory") ? "active" : "")" href="@Url.Action("Categories", "Admin")">
+                                    <i class="bi bi-tags me-1"></i> Subjects
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Admin" && (activeAct == "PendingApprovals" || activeAct == "InstructorApplications") ? "active" : "")" href="@Url.Action("PendingApprovals", "Admin")">
+                                    <i class="bi bi-shield-check me-1"></i> Approvals
+                                    @if (adminPendingApprovals > 0)
+                                    {
+                                        <span class="badge bg-danger rounded-pill ms-1" style="font-size: 11px;">@adminPendingApprovals</span>
+                                    }
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Admin" && activeAct == "Payments" ? "active" : "")" href="@Url.Action("Payments", "Admin")">
+                                    <i class="bi bi-credit-card me-1"></i> Payments
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="adminMoreNav" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-grid me-1"></i> More
+                                </a>
+                                <ul class="dropdown-menu shadow-lg border-0 rounded-3 mt-2 py-2" aria-labelledby="adminMoreNav">
+                                    <li><h6 class="dropdown-header text-uppercase small text-muted">User Directory</h6></li>
+                                    <li><a class="dropdown-item py-2" href="@Url.Action("Users", "Admin")"><i class="bi bi-people me-2 text-primary"></i> All Users</a></li>
+                                    <li><a class="dropdown-item py-2" href="@Url.Action("Students", "Admin")"><i class="bi bi-mortarboard me-2 text-success"></i> Students</a></li>
+                                    <li><a class="dropdown-item py-2" href="@Url.Action("Instructors", "Admin")"><i class="bi bi-person-badge me-2 text-info"></i> Instructors</a></li>
+                                    <li><a class="dropdown-item py-2" href="@Url.Action("InstructorApplications", "Admin")"><i class="bi bi-file-earmark-person me-2 text-warning"></i> Teacher Applications</a></li>
+                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li><h6 class="dropdown-header text-uppercase small text-muted">Operations &amp; Insights</h6></li>
+                                    <li><a class="dropdown-item py-2" href="@Url.Action("Enrollments", "Admin")"><i class="bi bi-person-lines-fill me-2 text-success"></i> Enrollments</a></li>
+                                    <li><a class="dropdown-item py-2" href="@Url.Action("Announcements", "Admin")"><i class="bi bi-megaphone me-2 text-primary"></i> Announcements</a></li>
+                                    <li><a class="dropdown-item py-2" href="@Url.Action("Reports", "Admin")"><i class="bi bi-graph-up me-2 text-warning"></i> Reports &amp; Analytics</a></li>
+                                </ul>
+                            </li>
+                        }
+                        else if (User.IsInRole("Instructor"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Courses" ? "active" : "")" href="@Url.Action("Index", "Courses")">
+                                    <i class="bi bi-compass me-1"></i> Courses
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Instructor" && activeAct == "Index" ? "active" : "")" href="@Url.Action("Index", "Instructor")">
+                                    <i class="bi bi-speedometer2 me-1"></i> Studio
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Instructor" && activeAct == "Courses" ? "active" : "")" href="@Url.Action("Courses", "Instructor")">
+                                    <i class="bi bi-collection-play me-1"></i> My Courses
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Instructor" && activeAct == "CreateCourse" ? "active" : "")" href="@Url.Action("CreateCourse", "Instructor")">
+                                    <i class="bi bi-plus-circle me-1"></i> New Course
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Instructor" && (activeAct == "Payments" || activeAct == "Earnings") ? "active" : "")" href="@Url.Action("Earnings", "Instructor")">
+                                    <i class="bi bi-cash-coin me-1"></i> Earnings
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Courses" ? "active" : "")" href="@Url.Action("Index", "Courses")">
+                                    <i class="bi bi-compass me-1"></i> Courses
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Student" && activeAct == "Index" ? "active" : "")" href="@Url.Action("Index", "Student")">
+                                    <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Student" && activeAct == "MyCourses" ? "active" : "")" href="@Url.Action("MyCourses", "Student")">
+                                    <i class="bi bi-journal-bookmark me-1"></i> My Courses
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Student" && activeAct == "Assignments" ? "active" : "")" href="@Url.Action("Assignments", "Student")">
+                                    <i class="bi bi-file-earmark-check me-1"></i> Assignments
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Student" && activeAct == "Quizzes" ? "active" : "")" href="@Url.Action("Quizzes", "Student")">
+                                    <i class="bi bi-patch-question me-1"></i> Quizzes
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "Student" && (activeAct == "Payments" || activeAct == "Receipt" || activeAct == "AllReceipts") ? "active" : "")" href="@Url.Action("Payments", "Student")">
+                                    <i class="bi bi-receipt me-1"></i> Receipts
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(activeCtrl == "ChatBot" ? "active" : "")" href="@Url.Action("Index", "ChatBot")">
+                                    <i class="bi bi-robot me-1 text-cyan"></i> AI Advisor
+                                </a>
+                            </li>
+                        }
+                    </ul>
+
+                    <!-- Right: Notification Bell, Search & User Auth Actions -->
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow-1 main-content-wrapper @pageClass">
+        @if (isHome)
+        {
+            @RenderBody()
+        }
+        else
+        {
+            <div class="container-fluid max-w-7xl py-4 px-3 px-lg-4">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center rounded-3 shadow-sm border-0 border-start border-4 border-success mb-4" role="alert">
+                        <i class="bi bi-check-circle-fill fs-5 me-2 text-success"></i>
+                        <div class="fw-semibold">@TempData["SuccessMessage"]</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center rounded-3 shadow-sm border-0 border-start border-4 border-danger mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-5 me-2 text-danger"></i>
+                        <div class="fw-semibold">@TempData["ErrorMessage"]</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["InfoMessage"] != null)
+                {
+                    <div class="alert alert-info alert-dismissible fade show d-flex align-items-center rounded-3 shadow-sm border-0 border-start border-4 border-info mb-4" role="alert">
+                        <i class="bi bi-info-circle-fill fs-5 me-2 text-info"></i>
+                        <div class="fw-semibold">@TempData["InfoMessage"]</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @RenderBody()
+            </div>
+        }
+    </main>
+
+    <!-- Global Toast Container -->
+    <div id="lmsToastContainer"></div>
+
+    <!-- Master Footer (Deep Petrol Navy) -->
+    <footer class="footer-lms py-5">
+        <div class="container-fluid max-w-7xl px-3 px-lg-4">
+            <div class="row g-4 justify-content-between">
+                <div class="col-lg-4">
+                    <div class="navbar-brand-lms text-white mb-3 d-flex align-items-center gap-2">
+                        <img src="@Url.Content("~/Content/images/logo-icon.png")" alt="LMS Logo" class="rounded-3 shadow-xs" style="width: 36px; height: 36px; object-fit: contain;" />
+                        <div class="d-flex flex-column text-start">
+                            <span class="brand-title">LMS</span>
+                            <span class="brand-subtitle text-light opacity-75">Learning Management System</span>
+                        </div>
+                    </div>
+                    <p class="small text-light opacity-75 mb-3" style="line-height: 1.7;">
+                        A next-generation enterprise Learning Management System engineered with ASP.NET MVC 5, Entity Framework 6, and Microsoft SQL Server. Built for high-impact software, AI, and cloud upskilling.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-dark border border-secondary text-light px-2 py-1 small">
+                            <span class="pulse-dot pulse-success"></span> SQL Server Live
+                        </span>
+                        <span class="badge bg-dark border border-secondary text-light px-2 py-1 small">
+                            <i class="bi bi-shield-check text-success me-1"></i> Identity Auth
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold mb-3 small text-uppercase tracking-wider">Curriculum</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                        <li><a href="@Url.Action("Index", "Courses")"><i class="bi bi-chevron-right me-1 text-orange"></i> All Courses</a></li>
+                        <li><a href="@Url.Action("Index", "Courses", new { level = "Beginner" })"><i class="bi bi-chevron-right me-1 text-orange"></i> Beginner Tracks</a></li>
+                        <li><a href="@Url.Action("Index", "Courses", new { level = "Advanced" })"><i class="bi bi-chevron-right me-1 text-orange"></i> Advanced Tracks</a></li>
+                        <li><a href="@Url.Action("VerifyCertificate", "Certificate")"><i class="bi bi-chevron-right me-1 text-orange"></i> Verify Credential</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold mb-3 small text-uppercase tracking-wider">Portals</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                        <li><a href="@Url.Action("Login", "Account")"><i class="bi bi-chevron-right me-1 text-orange"></i> Student Portal</a></li>
+                        <li><a href="@Url.Action("Register", "Account")"><i class="bi bi-chevron-right me-1 text-orange"></i> Become Instructor</a></li>
+                        <li><a href="@Url.Action("Index", "Admin")"><i class="bi bi-chevron-right me-1 text-orange"></i> Admin Center</a></li>
+                        <li><a href="@Url.Action("About", "Home")"><i class="bi bi-chevron-right me-1 text-orange"></i> About Platform</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <h6 class="text-white fw-bold mb-3 small text-uppercase tracking-wider">Stay Updated</h6>
+                    <p class="small text-light opacity-75 mb-3">Subscribe for new curriculum drops, project assignments, and industry skill reports.</p>
+                    <form onsubmit="event.preventDefault(); LMS.toast('Thank you for subscribing to EduPlatform updates!', 'success'); this.reset();" class="d-flex gap-2">
+                        <input type="email" class="form-control form-control-sm bg-dark border-secondary text-white" placeholder="you@work.com" required style="border-radius: 9999px;">
+                        <button type="submit" class="btn btn-sm btn-primary px-3 rounded-pill text-nowrap">Join</button>
+                    </form>
+                </div>
+            </div>
+
+            <hr class="border-secondary my-4" style="opacity: 0.15;">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center small text-light opacity-75">
+                <div>&copy; @DateTime.UtcNow.Year LMS. Designed with precision for professional learners.</div>
+                <div class="d-flex gap-3 mt-2 mt-sm-0">
+                    <a href="@Url.Action("VerifyCertificate", "Certificate")">Credential Verification</a>
+                    <a href="@Url.Action("Contact", "Home")">Support</a>
+                    <a href="@Url.Action("About", "Home")">Architecture</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/Scripts/jquery-3.7.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/lms-app.js"></script>
+    @RenderSection("Scripts", required: false)
+
+    <!-- EduPlatform RAG AI ChatBot Widget -->
+    @Html.Partial("_ChatBotWidget")
+</body>
+</html>

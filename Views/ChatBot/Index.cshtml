@@ -1,0 +1,1269 @@
+﻿@model LMS.ViewModels.AiStudioViewModel
+@{
+    ViewBag.Title = "EduPlatform AI Learning Studio";
+    ViewBag.PageClass = "page-ai-studio";
+}
+
+<div class="py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")" class="text-cyan text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item active text-white-50" aria-current="page">AI Learning Studio</li>
+        </ol>
+    </nav>
+
+    <!-- Studio Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge px-3 py-1 rounded-pill fw-semibold" style="background: rgba(39, 184, 214, 0.2); color: #27B8D6; border: 1px solid rgba(39, 184, 214, 0.4);">
+                    <i class="bi bi-cpu-fill me-1"></i> Enterprise Agentic RAG Platform v2.0
+                </span>
+                <span class="badge px-2 py-1 rounded-pill" style="background: rgba(53, 201, 138, 0.2); color: #35C98A;">
+                    <i class="bi bi-shield-check me-1"></i> Hard RBAC Grounding
+                </span>
+                <span class="badge px-2 py-1 rounded-pill" style="background: rgba(255, 122, 24, 0.2); color: #FF7A18;">
+                    <i class="bi bi-lightning-charge me-1"></i> Semantic Caching (<50ms)
+                </span>
+            </div>
+            <h2 class="fw-extrabold mb-1 tracking-tight text-white">AI Learning Studio &amp; Cognitive Tutor</h2>
+            <p class="small mb-0" style="color: #94A3B8;">
+                Interactive multimodal tutor grounded in official course syllabi, slides, and academic textbooks. Select a course and learning mode below.
+            </p>
+        </div>
+
+        <!-- Quick Launch Features -->
+        <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn rounded-pill px-3 fw-semibold text-white shadow-sm" style="background: rgba(255, 122, 24, 0.15); border: 1px solid #FF7A18;" onclick="launchStudioQuizDirectly()">
+                <i class="bi bi-patch-question-fill text-orange me-1"></i> AI Quiz Generator
+            </button>
+            <button type="button" class="btn rounded-pill px-3 fw-semibold text-white shadow-sm" style="background: rgba(39, 184, 214, 0.15); border: 1px solid #27B8D6;" onclick="launchStudioSummaryDirectly()">
+                <i class="bi bi-file-earmark-text text-cyan me-1"></i> Summarizer
+            </button>
+            <button type="button" class="btn rounded-pill px-3 fw-semibold text-white shadow-sm" style="background: rgba(53, 201, 138, 0.15); border: 1px solid #35C98A;" onclick="launchStudioStudyPlanDirectly()">
+                <i class="bi bi-calendar-check text-success me-1"></i> Study Planner
+            </button>
+        </div>
+    </div>
+
+    <!-- Controls Bar: Course Selector + Learning Mode Pills -->
+    <div class="card card-custom p-3 mb-4 shadow-sm" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(39, 184, 214, 0.25); border-radius: 16px;">
+        <div class="row g-3 align-items-center">
+            <!-- Course Scope Selector -->
+            <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-white mb-1"><i class="bi bi-journal-bookmark-fill text-cyan me-1"></i> Grounding Scope (Course)</label>
+                <select id="studio-course-select" class="form-select form-select-sm" style="background: rgba(4, 24, 34, 0.85); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" onchange="onCourseScopeChanged()">
+                    <option value="">All Authorized Curricula</option>
+                    @foreach (var c in Model.EnrolledCourses)
+                    {
+                        <option value="@c.CourseId" @(Model.ActiveCourseId == c.CourseId ? "selected" : "")>
+                            @c.Title (@c.CategoryName)
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <!-- Learning Mode Selector (5 Agentic Personas) -->
+            <div class="col-12 col-md-8">
+                <label class="form-label small fw-bold text-white mb-1"><i class="bi bi-sliders text-orange me-1"></i> Learning Mode &amp; Agentic Persona</label>
+                <div class="d-flex flex-wrap gap-2" id="persona-pills">
+                    <button type="button" class="btn btn-sm rounded-pill px-3 persona-pill active" data-mode="CourseAssistant" onclick="setLearningMode('CourseAssistant', this)">
+                        <i class="bi bi-compass me-1"></i> Course Assistant
+                    </button>
+                    <button type="button" class="btn btn-sm rounded-pill px-3 persona-pill" data-mode="SocraticTutor" onclick="setLearningMode('SocraticTutor', this)">
+                        <i class="bi bi-lightbulb me-1"></i> Socratic Tutor
+                    </button>
+                    <button type="button" class="btn btn-sm rounded-pill px-3 persona-pill" data-mode="ExamPrep" onclick="setLearningMode('ExamPrep', this)">
+                        <i class="bi bi-award me-1"></i> Exam Prep &amp; Rubrics
+                    </button>
+                    <button type="button" class="btn btn-sm rounded-pill px-3 persona-pill" data-mode="CodeDebugger" onclick="setLearningMode('CodeDebugger', this)">
+                        <i class="bi bi-terminal me-1"></i> Code Sandbox Tutor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Studio Layout -->
+    <div class="row g-4">
+        <!-- Main Chat Stream -->
+        <div class="col-lg-8">
+            <div class="card card-custom shadow-lg d-flex flex-column" style="height: 650px; background: rgba(6, 35, 48, 0.95); border: 1px solid rgba(39, 184, 214, 0.25); border-radius: 20px; overflow: hidden;">
+                <!-- Chat Window Header -->
+                <div class="d-flex align-items-center justify-content-between p-3 border-bottom border-secondary border-opacity-25" style="background: rgba(4, 24, 34, 0.85);">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 38px; height: 38px; background: linear-gradient(135deg, #FF7A18, #27B8D6);">
+                            <i class="bi bi-robot fs-5"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-white small" id="studio-session-title">Active RAG Consultation</div>
+                            <div class="small" style="color: #94A3B8; font-size: 11px;">
+                                <span class="d-inline-block rounded-circle bg-success me-1" style="width: 6px; height: 6px;"></span>
+                                <span id="studio-mode-label">Course Assistant Mode</span> &bull; Hybrid Qdrant + BM25 Fusion
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm rounded-pill text-white px-3" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); font-size: 12px;" onclick="startNewSession()">
+                            <i class="bi bi-plus-circle me-1 text-cyan"></i> New Session
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Stream Area -->
+                <div id="studio-messages" class="flex-grow-1 p-4 overflow-auto d-flex flex-column gap-3">
+                    <!-- Welcome AI Prompt -->
+                    <div class="studio-msg assistant">
+                        <div class="studio-bubble">
+                            <p class="mb-2 fw-semibold text-white">
+                                👋 Welcome to the <strong>EduPlatform AI Learning Studio</strong>!
+                            </p>
+                            <p class="mb-2 small" style="color: #E2E8F0;">
+                                I am your personal cognitive tutor, powered by an enterprise <strong>Retrieval-Augmented Generation (RAG)</strong> pipeline. I answer questions directly using the authorized syllabus modules, uploaded textbooks, and practice materials in your courses.
+                            </p>
+                            <div class="p-2 rounded-3 small mt-2" style="background: rgba(4, 24, 34, 0.6); border: 1px solid rgba(39, 184, 214, 0.2);">
+                                <span class="text-cyan fw-bold">💡 Try asking:</span>
+                                <ul class="mb-0 mt-1 ps-3 text-white-50">
+                                    <li>"Explain the core concept of this course in simple terms."</li>
+                                    <li>"What are the main differences between supervised and unsupervised learning?"</li>
+                                    <li>"Can you guide me step-by-step through solving a recursion problem in Python?"</li>
+                                    <li>"Generate 5 multiple choice questions to test my memory on this topic."</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <span class="studio-time text-muted">Just now</span>
+                    </div>
+
+                    <!-- Typing Indicator -->
+                    <div id="studio-typing" class="studio-msg assistant" style="display: none;">
+                        <div class="studio-bubble d-flex align-items-center gap-2 py-2 px-3">
+                            <div class="spinner-grow spinner-grow-sm text-cyan" role="status"></div>
+                            <span class="small text-cyan font-monospace">Retrieving vectors &amp; synthesizing answer...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Form -->
+                <div class="p-3 border-top border-secondary border-opacity-25" style="background: rgba(4, 24, 34, 0.9);">
+                    <form id="studio-chat-form" onsubmit="handleStudioSubmit(event)" class="d-flex align-items-end gap-2">
+                        <input type="hidden" id="studio-session-guid" value="@Model.SessionGuid" />
+                        <textarea id="studio-input" class="form-control studio-textarea" rows="2" placeholder="Ask anything about your courses, lessons, code, or exams..." onkeydown="handleStudioKeyDown(event)"></textarea>
+                        <button type="submit" class="btn studio-send-btn shadow-sm" title="Send (Enter)">
+                            <i class="bi bi-send-fill fs-5"></i>
+                        </button>
+                    </form>
+                    <div class="d-flex justify-content-between align-items-center mt-2 px-1">
+                        <span class="small text-muted font-monospace" style="font-size: 11px;">Press Enter to send, Shift+Enter for new line</span>
+                        <span class="small text-muted font-monospace" style="font-size: 11px;"><i class="bi bi-shield-lock text-success me-1"></i>No hallucinations: answers grounded in syllabus sources</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side Panel: Fast Tools, Telemetry & Active Grounding -->
+        <div class="col-lg-4">
+            <!-- Active Grounding Status Card -->
+            <div class="card card-custom p-4 mb-4 shadow-sm" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(39, 184, 214, 0.25); border-radius: 20px;">
+                <h6 class="fw-bold text-white small text-uppercase tracking-wider mb-3">
+                    <i class="bi bi-diagram-3-fill text-cyan me-1"></i> RAG Pipeline Architecture
+                </h6>
+                <div class="d-flex flex-column gap-2 mb-3">
+                    <div class="p-2 rounded-3 d-flex align-items-center gap-2 small" style="background: rgba(4, 24, 34, 0.6); border: 1px solid rgba(255, 255, 255, 0.08);">
+                        <i class="bi bi-database-fill text-cyan"></i>
+                        <span class="text-white">Qdrant Vector Database</span>
+                        <span class="ms-auto text-success font-monospace">Dense (3072-dim)</span>
+                    </div>
+                    <div class="p-2 rounded-3 d-flex align-items-center gap-2 small" style="background: rgba(4, 24, 34, 0.6); border: 1px solid rgba(255, 255, 255, 0.08);">
+                        <i class="bi bi-search text-warning"></i>
+                        <span class="text-white">Lexical BM25 Search</span>
+                        <span class="ms-auto text-warning font-monospace">Sparse Exact</span>
+                    </div>
+                    <div class="p-2 rounded-3 d-flex align-items-center gap-2 small" style="background: rgba(4, 24, 34, 0.6); border: 1px solid rgba(255, 255, 255, 0.08);">
+                        <i class="bi bi-funnel-fill text-info"></i>
+                        <span class="text-white">Reciprocal Rank Fusion</span>
+                        <span class="ms-auto text-cyan font-monospace">RRF k=60</span>
+                    </div>
+                    <div class="p-2 rounded-3 d-flex align-items-center gap-2 small" style="background: rgba(4, 24, 34, 0.6); border: 1px solid rgba(255, 255, 255, 0.08);">
+                        <i class="bi bi-cpu-fill text-orange"></i>
+                        <span class="text-white">Primary Model</span>
+                        <span class="ms-auto text-orange font-monospace">Gemini 3.1 Flash Lite</span>
+                    </div>
+                    <div class="p-2 rounded-3 d-flex align-items-center gap-2 small" style="background: rgba(4, 24, 34, 0.6); border: 1px solid rgba(255, 255, 255, 0.08);">
+                        <i class="bi bi-arrow-repeat text-success"></i>
+                        <span class="text-white">Cascading Failover</span>
+                        <span class="ms-auto text-success font-monospace">Groq GPT-OSS-120B</span>
+                    </div>
+                </div>
+
+                <!-- Last Answer Telemetry -->
+                <div id="latest-telemetry-box" class="p-3 rounded-3" style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(39, 184, 214, 0.2); display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small fw-bold text-white"><i class="bi bi-speedometer2 text-cyan me-1"></i> Latency &amp; Cost Profiler</span>
+                        <span id="telemetry-cache-tag" class="badge bg-secondary font-monospace" style="font-size: 10px;">Live Inference</span>
+                    </div>
+                    <div class="row g-2 small text-muted font-monospace" style="font-size: 11px;">
+                        <div class="col-6">Latency: <span id="telemetry-latency" class="text-white fw-bold">--</span></div>
+                        <div class="col-6">Tokens: <span id="telemetry-tokens" class="text-white fw-bold">--</span></div>
+                        <div class="col-6">Provider: <span id="telemetry-provider" class="text-white fw-bold">--</span></div>
+                        <div class="col-6">Est. Cost: <span id="telemetry-cost" class="text-white fw-bold">--</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Practice Actions Card -->
+            <div class="card card-custom p-4 shadow-sm" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(39, 184, 214, 0.25); border-radius: 20px;">
+                <h6 class="fw-bold text-white small text-uppercase tracking-wider mb-3">
+                    <i class="bi bi-stars text-orange me-1"></i> Quick AI Accelerators
+                </h6>
+                <div class="d-flex flex-column gap-2">
+                    <button type="button" class="btn text-start p-2 rounded-3 text-white quick-action-btn" onclick="sendQuickStudioPrompt('Summarize key takeaways and formulas from this module.')">
+                        <i class="bi bi-file-earmark-ruled text-cyan me-2"></i> Extract Key Formulas &amp; Summary
+                    </button>
+                    <button type="button" class="btn text-start p-2 rounded-3 text-white quick-action-btn" onclick="sendQuickStudioPrompt('Explain the top 3 common pitfalls and exam mistakes in this topic.')">
+                        <i class="bi bi-exclamation-octagon text-warning me-2"></i> Top 3 Exam Pitfalls &amp; Traps
+                    </button>
+                    <button type="button" class="btn text-start p-2 rounded-3 text-white quick-action-btn" onclick="sendQuickStudioPrompt('Write a clean, documented reference code implementation demonstrating this concept.')">
+                        <i class="bi bi-code-slash text-success me-2"></i> Generate Reference Code
+                    </button>
+                    <button type="button" class="btn text-start p-2 rounded-3 text-white quick-action-btn" onclick="sendQuickStudioPrompt('What prerequisite lessons should I review before attempting the capstone?')">
+                        <i class="bi bi-mortarboard text-orange me-2"></i> Check Prerequisite Alignment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Direct In-Studio AI Features: Quizzes, Summaries & Study Plans render directly in #studio-messages -->
+<style>
+/* AI Studio Custom Styling */
+.persona-pill {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #E2E8F0;
+    transition: all 0.2s ease;
+}
+.persona-pill:hover {
+    background: rgba(39, 184, 214, 0.2);
+    border-color: #27B8D6;
+    color: #FFFFFF;
+}
+.persona-pill.active {
+    background: #FF7A18 !important;
+    border-color: #FF7A18 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 12px rgba(255, 122, 24, 0.4);
+}
+
+.studio-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+}
+.studio-msg.user {
+    align-self: flex-end;
+}
+.studio-msg.assistant {
+    align-self: flex-start;
+}
+.studio-bubble {
+    padding: 14px 18px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.6;
+    word-break: break-word;
+}
+.studio-msg.user .studio-bubble {
+    background: linear-gradient(135deg, #FF7A18, #E06000);
+    color: #FFFFFF;
+    border-bottom-right-radius: 4px;
+}
+.studio-msg.assistant .studio-bubble {
+    background: rgba(11, 52, 69, 0.8);
+    border: 1px solid rgba(39, 184, 214, 0.25);
+    color: #F1F5F9;
+    border-bottom-left-radius: 4px;
+}
+.studio-time {
+    font-size: 11px;
+    margin-top: 4px;
+    padding: 0 4px;
+}
+.studio-msg.user .studio-time {
+    align-self: flex-end;
+}
+
+.studio-textarea {
+    background: rgba(6, 35, 48, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+    border-radius: 14px !important;
+    resize: none;
+    font-size: 14px;
+    padding: 10px 16px;
+}
+.studio-textarea:focus {
+    border-color: #27B8D6 !important;
+    box-shadow: 0 0 0 3px rgba(39, 184, 214, 0.25) !important;
+}
+.studio-send-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #FF7A18;
+    color: #FFFFFF;
+    border: none;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+.studio-send-btn:hover {
+    background: #E06000;
+    transform: scale(1.05);
+}
+
+.quick-action-btn {
+    background: rgba(4, 24, 34, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+.quick-action-btn:hover {
+    background: rgba(39, 184, 214, 0.15);
+    border-color: #27B8D6;
+    color: #FFFFFF;
+    transform: translateX(3px);
+}
+/* Interactive One-by-One Quiz Styling */
+.quiz-opt-card {
+    background: rgba(4, 24, 34, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+.quiz-opt-card:hover:not(.quiz-opt-locked) {
+    background: rgba(39, 184, 214, 0.15);
+    border-color: #27B8D6;
+    transform: translateX(4px);
+}
+.quiz-opt-card.quiz-opt-correct {
+    border: 2px solid #10B981 !important;
+    background: rgba(16, 185, 129, 0.25) !important;
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+}
+.quiz-opt-card.quiz-opt-incorrect {
+    border: 2px solid #EF4444 !important;
+    background: rgba(239, 68, 68, 0.25) !important;
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
+}
+.quiz-opt-card.quiz-opt-locked {
+    cursor: default !important;
+}
+.quiz-letter-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+</style>
+
+<script>
+    let activeLearningMode = '@Model.ActiveLearningMode';
+
+    function setLearningMode(mode, btn) {
+        activeLearningMode = mode;
+        document.querySelectorAll('.persona-pill').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+
+        const modeLabels = {
+            'CourseAssistant': 'Course Assistant Mode',
+            'SocraticTutor': 'Socratic Tutor Mode',
+            'ExamPrep': 'Exam Prep & Rubrics Mode',
+            'CodeDebugger': 'Code Sandbox Tutor Mode'
+        };
+        const label = document.getElementById('studio-mode-label');
+        if (label) label.innerText = modeLabels[mode] || mode;
+    }
+
+    function onCourseScopeChanged() {
+        const select = document.getElementById('studio-course-select');
+        const courseId = select.value;
+        const url = new URL(window.location.href);
+        if (courseId) {
+            url.searchParams.set('courseId', courseId);
+        } else {
+            url.searchParams.delete('courseId');
+        }
+        window.location.href = url.toString();
+    }
+
+    function startNewSession() {
+        if (!confirm('Start a fresh AI Learning Consultation?')) return;
+        const select = document.getElementById('studio-course-select');
+        const courseId = select ? select.value : '';
+        const url = new URL(window.location.href);
+        url.searchParams.delete('sessionId');
+        if (courseId) url.searchParams.set('courseId', courseId);
+        window.location.href = url.toString();
+    }
+
+    function handleStudioKeyDown(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleStudioSubmit(e);
+        }
+    }
+
+    function sendQuickStudioPrompt(text) {
+        const input = document.getElementById('studio-input');
+        if (input) {
+            input.value = text;
+            handleStudioSubmit(new Event('submit'));
+        }
+    }
+
+    function handleStudioSubmit(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        const input = document.getElementById('studio-input');
+        const sessionGuid = document.getElementById('studio-session-guid').value;
+        const courseSelect = document.getElementById('studio-course-select');
+        const courseId = courseSelect && courseSelect.value ? parseInt(courseSelect.value) : null;
+        const msgs = document.getElementById('studio-messages');
+        const typing = document.getElementById('studio-typing');
+
+        if (!input || !input.value.trim()) return;
+        const userText = input.value.trim();
+        input.value = '';
+
+        // Add user message to UI
+        const userHtml = `
+            <div class="studio-msg user">
+                <div class="studio-bubble">${escapeHtml(userText)}</div>
+                <span class="studio-time text-muted">Just now</span>
+            </div>
+        `;
+        msgs.insertAdjacentHTML('beforeend', userHtml);
+        msgs.scrollTop = msgs.scrollHeight;
+
+        // Show typing indicator
+        if (typing) {
+            typing.style.display = 'flex';
+            msgs.appendChild(typing);
+            msgs.scrollTop = msgs.scrollHeight;
+        }
+
+        // Call backend /ChatBot/SendMessage
+        fetch('/ChatBot/SendMessage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                Message: userText,
+                SessionGuid: sessionGuid,
+                CourseId: courseId,
+                LearningMode: activeLearningMode
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (typing) typing.style.display = 'none';
+
+            if (!data.Success) {
+                const errHtml = `
+                    <div class="studio-msg assistant">
+                        <div class="studio-bubble text-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> ${escapeHtml(data.ErrorMessage || 'Error generating AI response.')}
+                        </div>
+                    </div>
+                `;
+                msgs.insertAdjacentHTML('beforeend', errHtml);
+                msgs.scrollTop = msgs.scrollHeight;
+                return;
+            }
+
+            // Citations rendering
+            let citationsHtml = '';
+            if (data.Citations && data.Citations.length > 0) {
+                citationsHtml += `
+                    <div class="mt-3 pt-2 border-top border-secondary border-opacity-25">
+                        <div class="d-flex align-items-center gap-1 small text-info fw-semibold mb-2">
+                            <i class="bi bi-shield-check text-cyan"></i> Grounded in ${data.Citations.length} Syllabus Source${data.Citations.length > 1 ? 's' : ''}:
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                `;
+                data.Citations.forEach(cite => {
+                    const pageText = cite.page_number ? ` (Page ${cite.page_number})` : '';
+                    const scoreText = cite.relevance_score ? ` [Score: ${cite.relevance_score.toFixed(2)}]` : '';
+                    citationsHtml += `
+                        <div class="p-2 rounded-2 small text-white-50 border border-secondary border-opacity-25" style="background: rgba(4, 24, 34, 0.7); font-size: 11px;" title="${escapeHtml(cite.excerpt || '')}">
+                            <div class="fw-bold text-warning"><i class="bi bi-file-earmark-text me-1"></i>${escapeHtml(cite.document_name || 'Curriculum')}${pageText} <span class="text-cyan">${scoreText}</span></div>
+                            <div class="text-truncate mt-1" style="max-width: 280px; font-style: italic;">"${escapeHtml(cite.excerpt || '')}"</div>
+                        </div>
+                    `;
+                });
+                citationsHtml += `</div></div>`;
+            }
+
+            // Update Telemetry Panel
+            if (data.Telemetry) {
+                const tBox = document.getElementById('latest-telemetry-box');
+                if (tBox) {
+                    tBox.style.display = 'block';
+                    document.getElementById('telemetry-latency').innerText = data.Telemetry.latency_ms + 'ms';
+                    document.getElementById('telemetry-tokens').innerText = data.Telemetry.total_tokens + ' tok';
+                    document.getElementById('telemetry-provider').innerText = data.Telemetry.provider + ' (' + data.Telemetry.model + ')';
+                    document.getElementById('telemetry-cost').innerText = '$' + (data.Telemetry.estimated_cost_usd || '0.000000');
+                    const cacheTag = document.getElementById('telemetry-cache-tag');
+                    if (data.Telemetry.was_cache_hit) {
+                        cacheTag.className = 'badge bg-success font-monospace';
+                        cacheTag.innerHTML = '<i class="bi bi-lightning-charge-fill"></i> Cache Hit';
+                    } else {
+                        cacheTag.className = 'badge bg-secondary font-monospace';
+                        cacheTag.innerText = 'Live Inference';
+                    }
+                }
+            }
+
+            const formattedReply = renderMarkdownSimple(data.Reply);
+            const assistantHtml = `
+                <div class="studio-msg assistant">
+                    <div class="studio-bubble">
+                        ${formattedReply}
+                        ${citationsHtml}
+                    </div>
+                    <div class="studio-time d-flex align-items-center justify-content-between text-muted">
+                        <span>Just now</span>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-icon text-muted hover-text-white p-0" title="Helpful" onclick="submitFeedback(this, true)"><i class="bi bi-hand-thumbs-up"></i></button>
+                            <button type="button" class="btn btn-sm btn-icon text-muted hover-text-white p-0" title="Not Helpful" onclick="submitFeedback(this, false)"><i class="bi bi-hand-thumbs-down"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            msgs.insertAdjacentHTML('beforeend', assistantHtml);
+            msgs.scrollTop = msgs.scrollHeight;
+        })
+        .catch(err => {
+            if (typing) typing.style.display = 'none';
+            const netErrHtml = `
+                <div class="studio-msg assistant">
+                    <div class="studio-bubble text-danger">
+                        <i class="bi bi-wifi-off me-1"></i> Failed to communicate with AI Service.
+                    </div>
+                </div>
+            `;
+            msgs.insertAdjacentHTML('beforeend', netErrHtml);
+            msgs.scrollTop = msgs.scrollHeight;
+        });
+    }
+
+    function submitFeedback(btn, isHelpful) {
+        btn.classList.remove('text-muted');
+        btn.classList.add(isHelpful ? 'text-success' : 'text-danger');
+    }
+
+    // Enrolled courses catalog for client-side course switching
+    window.studioEnrolledCourses = [
+        @foreach (var c in Model.EnrolledCourses)
+        {
+            @:{ id: @c.CourseId, title: "@Html.Raw(HttpUtility.JavaScriptStringEncode(c.Title))", category: "@Html.Raw(HttpUtility.JavaScriptStringEncode(c.CategoryName))" },
+        }
+    ];
+
+    window.activeStudioQuiz = null;
+
+    function openFeatureModal(feature) {
+        if (feature === 'quiz') {
+            launchStudioQuizDirectly();
+        } else if (feature === 'summarize') {
+            launchStudioSummaryDirectly();
+        } else if (feature === 'studyPlan') {
+            launchStudioStudyPlanDirectly();
+        }
+    }
+
+    // =========================================================================
+    // 1. One-by-One Interactive Practice Quiz Runner in Main Box
+    // =========================================================================
+    function launchStudioQuizDirectly(targetCourseId) {
+        const select = document.getElementById('studio-course-select');
+        let courseId = targetCourseId;
+        if (!courseId && select && select.value) {
+            courseId = parseInt(select.value);
+        }
+        if (!courseId && window.studioEnrolledCourses && window.studioEnrolledCourses.length > 0) {
+            courseId = window.studioEnrolledCourses[0].id;
+        }
+        if (!courseId) courseId = 1;
+
+        let courseTitle = 'Machine Learning Fundamentals';
+        if (window.studioEnrolledCourses && window.studioEnrolledCourses.length > 0) {
+            const found = window.studioEnrolledCourses.find(c => c.id === courseId);
+            if (found) courseTitle = found.title;
+        } else if (select && select.selectedOptions && select.selectedOptions[0]) {
+            courseTitle = select.selectedOptions[0].text;
+        }
+
+        const msgs = document.getElementById('studio-messages');
+        if (!msgs) return;
+
+        // User Message in consultation stream
+        const userPromptHtml = `
+            <div class="studio-msg user">
+                <div class="studio-bubble">
+                    <i class="bi bi-patch-question-fill me-1"></i> Start Interactive Practice Quiz for <strong>${escapeHtml(courseTitle)}</strong>
+                </div>
+                <span class="studio-time">Just now</span>
+            </div>
+        `;
+        msgs.insertAdjacentHTML('beforeend', userPromptHtml);
+
+        // Assistant Loading Indicator
+        const loadingId = 'quiz-loading-' + Date.now();
+        const loadingHtml = `
+            <div class="studio-msg assistant" id="${loadingId}">
+                <div class="studio-bubble" style="border: 1px solid rgba(255, 122, 24, 0.35);">
+                    <div class="d-flex align-items-center gap-2 text-warning mb-1">
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        <strong class="small">Synthesizing One-by-One Practice Quiz...</strong>
+                    </div>
+                    <div class="small text-white-50">Retrieving syllabus chunks, verified objectives, and formulating distractor options for ${escapeHtml(courseTitle)}.</div>
+                </div>
+            </div>
+        `;
+        msgs.insertAdjacentHTML('beforeend', loadingHtml);
+        msgs.scrollTop = msgs.scrollHeight;
+
+        fetch('/ChatBot/GeneratePracticeQuiz', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                course_id: courseId,
+                difficulty: 'Medium',
+                num_questions: 5,
+                topic: ''
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
+
+            if (!data.success || !data.quiz || !data.quiz.questions || data.quiz.questions.length === 0) {
+                const errHtml = `
+                    <div class="studio-msg assistant">
+                        <div class="studio-bubble text-danger border border-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> ${escapeHtml(data.message || 'Unable to synthesize quiz for this course.')}
+                        </div>
+                    </div>
+                `;
+                msgs.insertAdjacentHTML('beforeend', errHtml);
+                msgs.scrollTop = msgs.scrollHeight;
+                return;
+            }
+
+            // Initialize Quiz State
+            window.activeStudioQuiz = {
+                id: 'quiz-box-' + Date.now(),
+                courseId: courseId,
+                courseTitle: data.quiz.course_title || courseTitle,
+                questions: data.quiz.questions,
+                currentIndex: 0,
+                score: 0,
+                answers: new Array(data.quiz.questions.length).fill(null)
+            };
+
+            const containerHtml = `
+                <div class="studio-msg assistant w-100" style="max-width: 95%;">
+                    <div class="studio-bubble p-4" id="${window.activeStudioQuiz.id}" style="background: rgba(6, 35, 48, 0.95); border: 1px solid rgba(255, 122, 24, 0.35); border-radius: 18px;">
+                    </div>
+                    <span class="studio-time">Just now &bull; Interactive AI Quiz</span>
+                </div>
+            `;
+            msgs.insertAdjacentHTML('beforeend', containerHtml);
+            renderCurrentStudioQuizQuestion();
+        })
+        .catch(err => {
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
+            const errHtml = `
+                <div class="studio-msg assistant">
+                    <div class="studio-bubble text-danger">
+                        <i class="bi bi-wifi-off me-1"></i> Failed to communicate with quiz synthesis service.
+                    </div>
+                </div>
+            `;
+            msgs.insertAdjacentHTML('beforeend', errHtml);
+            msgs.scrollTop = msgs.scrollHeight;
+        });
+    }
+
+    function renderCurrentStudioQuizQuestion() {
+        if (!window.activeStudioQuiz) return;
+        const qState = window.activeStudioQuiz;
+        const box = document.getElementById(qState.id);
+        if (!box) return;
+
+        const q = qState.questions[qState.currentIndex];
+        const totalQ = qState.questions.length;
+        const currentNum = qState.currentIndex + 1;
+        const isAnswered = (qState.answers[qState.currentIndex] !== null);
+        const selectedOptIdx = qState.answers[qState.currentIndex];
+
+        // Build 4 Option Cards
+        let optionsHtml = '';
+        const letters = ['A', 'B', 'C', 'D'];
+        q.options.forEach((opt, oIdx) => {
+            let cardClass = 'quiz-opt-card mb-2';
+            let iconHtml = '';
+            if (isAnswered) {
+                cardClass += ' quiz-opt-locked';
+                const isThisCorrect = (opt.trim().toLowerCase() === q.correct_answer.trim().toLowerCase());
+                const isThisSelected = (selectedOptIdx === oIdx);
+
+                if (isThisSelected && isThisCorrect) {
+                    cardClass += ' quiz-opt-correct';
+                    iconHtml = '<i class="bi bi-check-circle-fill text-success fs-5 ms-auto"></i>';
+                } else if (isThisSelected && !isThisCorrect) {
+                    cardClass += ' quiz-opt-incorrect';
+                    iconHtml = '<i class="bi bi-x-circle-fill text-danger fs-5 ms-auto"></i>';
+                } else if (!isThisSelected && isThisCorrect) {
+                    cardClass += ' quiz-opt-correct';
+                    iconHtml = '<i class="bi bi-check-circle text-success fs-5 ms-auto"></i>';
+                }
+            }
+
+            optionsHtml += `
+                <div class="${cardClass}" onclick="handleStudioQuizOptionClick(${oIdx})">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="quiz-letter-badge">${letters[oIdx] || (oIdx + 1)}</div>
+                        <div class="text-white small fw-semibold flex-grow-1">${escapeHtml(opt)}</div>
+                        ${iconHtml}
+                    </div>
+                </div>
+            `;
+        });
+
+        // Feedback & Action Bar
+        let feedbackHtml = '';
+        if (isAnswered) {
+            const userSelectedOpt = q.options[selectedOptIdx];
+            const isCorrect = (userSelectedOpt.trim().toLowerCase() === q.correct_answer.trim().toLowerCase());
+            const isLastQuestion = (qState.currentIndex === totalQ - 1);
+
+            if (isCorrect) {
+                feedbackHtml += `
+                    <div class="p-3 rounded-3 mt-3 border border-success" style="background: rgba(16, 185, 129, 0.15); color: #A7F3D0;">
+                        <div class="fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Correct! Excellent comprehension.</div>
+                        <div class="small mt-1 text-white">${escapeHtml(q.explanation || 'Option is verified correct by official course curriculum.')}</div>
+                    </div>
+                `;
+            } else {
+                feedbackHtml += `
+                    <div class="p-3 rounded-3 mt-3 border border-danger" style="background: rgba(239, 68, 68, 0.15); color: #FECACA;">
+                        <div class="fw-bold"><i class="bi bi-x-circle-fill text-danger me-1"></i> Incorrect.</div>
+                        <div class="small mt-1 text-white">Correct answer is: <strong class="text-success">${escapeHtml(q.correct_answer)}</strong>. ${escapeHtml(q.explanation || '')}</div>
+                    </div>
+                `;
+            }
+
+            // Buttons: Next Question or Final Results
+            if (!isLastQuestion) {
+                feedbackHtml += `
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 pt-2 border-top border-secondary border-opacity-25">
+                        <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-3" onclick="toggleQuizCoursePicker()">
+                            <i class="bi bi-arrow-left-right me-1"></i> Change Course
+                        </button>
+                        <button type="button" class="btn btn-warning rounded-pill px-4 fw-bold shadow-sm" onclick="advanceStudioQuizNext()">
+                            Next Question (${currentNum + 1} of ${totalQ}) <i class="bi bi-arrow-right ms-1"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                feedbackHtml += `
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 pt-2 border-top border-secondary border-opacity-25">
+                        <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-3" onclick="toggleQuizCoursePicker()">
+                            <i class="bi bi-arrow-left-right me-1"></i> Change Course
+                        </button>
+                        <button type="button" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" onclick="showStudioQuizMasteryResults()">
+                            <i class="bi bi-award-fill me-1"></i> View Final Results &amp; Mastery Score <i class="bi bi-arrow-right ms-1"></i>
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Render Question Card
+        box.innerHTML = `
+            <!-- Quiz Header Bar with Marks and Change Course -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pb-3 mb-3 border-bottom border-secondary border-opacity-25">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge rounded-pill px-3 py-1 bg-warning text-dark fw-bold" style="font-size: 12px;">
+                        <i class="bi bi-patch-question-fill me-1"></i> Question ${currentNum} of ${totalQ}
+                    </span>
+                    <span class="small text-white-50 d-none d-sm-inline">
+                        <i class="bi bi-journal-bookmark me-1 text-cyan"></i>${escapeHtml(qState.courseTitle)}
+                    </span>
+                    <button type="button" class="btn btn-xs btn-outline-warning rounded-pill py-0 px-2" style="font-size: 11px;" onclick="toggleQuizCoursePicker()">
+                        <i class="bi bi-arrow-left-right me-1"></i> Change Course
+                    </button>
+                </div>
+                <div>
+                    <span class="badge rounded-pill px-3 py-1 fw-bold fs-6" style="background: rgba(39, 184, 214, 0.25); color: #27B8D6; border: 1px solid rgba(39, 184, 214, 0.4);" id="studio-quiz-marks">
+                        <i class="bi bi-trophy-fill text-warning me-1"></i> Marks: ${qState.score} / ${totalQ}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Inline Course Switch Panel (Collapsible) -->
+            <div id="quiz-inline-course-picker" class="p-3 mb-3 rounded-3" style="display: none; background: rgba(4, 24, 34, 0.95); border: 1px solid rgba(255, 122, 24, 0.35);">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <label class="form-label small fw-bold text-white mb-0">
+                        <i class="bi bi-arrow-left-right text-warning me-1"></i> Switch Course / Grounding Scope Anytime:
+                    </label>
+                    <button type="button" class="btn-close btn-close-white btn-sm" onclick="toggleQuizCoursePicker()"></button>
+                </div>
+                <div class="d-flex flex-column flex-sm-row gap-2">
+                    <select id="quiz-switch-select" class="form-select form-select-sm" style="background: #041822; color: #FFFFFF; border: 1px solid rgba(255,255,255,0.2);">
+                        ${(window.studioEnrolledCourses || []).map(c => `<option value="${c.id}" ${c.id === qState.courseId ? 'selected' : ''}>${escapeHtml(c.title)} (${escapeHtml(c.category)})</option>`).join('')}
+                    </select>
+                    <button type="button" class="btn btn-sm btn-warning fw-bold text-nowrap rounded-pill px-3" onclick="applyQuizCourseSwitch()">
+                        Switch &amp; Start Quiz
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question Body -->
+            <h5 class="fw-bold text-white mb-3" style="line-height: 1.5;">${escapeHtml(q.question)}</h5>
+
+            <!-- Options List -->
+            <div class="d-flex flex-column gap-1">
+                ${optionsHtml}
+            </div>
+
+            <!-- Feedback & Next Action -->
+            <div id="quiz-feedback-container">
+                ${feedbackHtml}
+            </div>
+        `;
+
+        const msgs = document.getElementById('studio-messages');
+        if (msgs) msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function handleStudioQuizOptionClick(optIdx) {
+        if (!window.activeStudioQuiz) return;
+        const qState = window.activeStudioQuiz;
+        if (qState.answers[qState.currentIndex] !== null) return; // locked
+
+        qState.answers[qState.currentIndex] = optIdx;
+        const q = qState.questions[qState.currentIndex];
+        const isCorrect = (q.options[optIdx].trim().toLowerCase() === q.correct_answer.trim().toLowerCase());
+
+        if (isCorrect) {
+            qState.score++;
+        }
+
+        renderCurrentStudioQuizQuestion();
+    }
+
+    function advanceStudioQuizNext() {
+        if (!window.activeStudioQuiz) return;
+        const qState = window.activeStudioQuiz;
+        if (qState.currentIndex < qState.questions.length - 1) {
+            qState.currentIndex++;
+            renderCurrentStudioQuizQuestion();
+        }
+    }
+
+    function toggleQuizCoursePicker() {
+        const picker = document.getElementById('quiz-inline-course-picker');
+        if (picker) {
+            picker.style.display = (picker.style.display === 'none' || !picker.style.display) ? 'block' : 'none';
+        }
+    }
+
+    function applyQuizCourseSwitch() {
+        const sel = document.getElementById('quiz-switch-select');
+        if (!sel || !sel.value) return;
+        const newCourseId = parseInt(sel.value);
+        const mainSel = document.getElementById('studio-course-select');
+        if (mainSel) mainSel.value = newCourseId;
+        launchStudioQuizDirectly(newCourseId);
+    }
+
+    function showStudioQuizMasteryResults() {
+        if (!window.activeStudioQuiz) return;
+        const qState = window.activeStudioQuiz;
+        const box = document.getElementById(qState.id);
+        if (!box) return;
+
+        const totalQ = qState.questions.length;
+        const score = qState.score;
+        const pct = Math.round((score / totalQ) * 100);
+
+        let badgeTitle = 'Distinction Mastery';
+        let badgeColor = '#10B981';
+        let badgeIcon = 'bi-trophy-fill';
+        let badgeDesc = 'Outstanding performance! You have demonstrated deep command of these core principles.';
+
+        if (pct < 60) {
+            badgeTitle = 'Revision Recommended';
+            badgeColor = '#FF7A18';
+            badgeIcon = 'bi-book-half';
+            badgeDesc = 'Good attempt! We recommend reviewing the lesson modules and summarizing key takeaways before retaking.';
+        } else if (pct < 80) {
+            badgeTitle = 'Proficient Comprehension';
+            badgeColor = '#27B8D6';
+            badgeIcon = 'bi-award-fill';
+            badgeDesc = 'Great job! Solid comprehension across syllabus objectives with minor room for perfection.';
+        }
+
+        box.innerHTML = `
+            <div class="text-center py-4">
+                <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: rgba(255, 122, 24, 0.15); border: 2px solid ${badgeColor};">
+                    <i class="bi ${badgeIcon} fs-1" style="color: ${badgeColor};"></i>
+                </div>
+                <h4 class="fw-extrabold text-white mb-1">${badgeTitle}</h4>
+                <div class="display-6 fw-bold mb-2" style="color: ${badgeColor};">${score} / ${totalQ} (${pct}%)</div>
+                <p class="small text-white-50 mx-auto mb-4" style="max-width: 480px;">${badgeDesc}</p>
+
+                <div class="row g-2 justify-content-center mb-4">
+                    <div class="col-4">
+                        <div class="p-2 rounded-3" style="background: rgba(4, 24, 34, 0.7); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="small text-muted">Correct</div>
+                            <div class="fw-bold text-success fs-5">${score}</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-2 rounded-3" style="background: rgba(4, 24, 34, 0.7); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="small text-muted">Incorrect</div>
+                            <div class="fw-bold text-danger fs-5">${totalQ - score}</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-2 rounded-3" style="background: rgba(4, 24, 34, 0.7); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="small text-muted">Accuracy</div>
+                            <div class="fw-bold text-cyan fs-5">${pct}%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <button type="button" class="btn btn-warning rounded-pill px-4 fw-bold shadow-sm" onclick="restartStudioQuiz()">
+                        <i class="bi bi-arrow-repeat me-1"></i> Retake This Quiz
+                    </button>
+                    <button type="button" class="btn btn-outline-warning rounded-pill px-3" onclick="toggleQuizCoursePicker()">
+                        <i class="bi bi-arrow-left-right me-1"></i> Change Course
+                    </button>
+                    <button type="button" class="btn text-white rounded-pill px-3" style="background: #27B8D6;" onclick="launchStudioSummaryDirectly(${qState.courseId})">
+                        <i class="bi bi-file-earmark-text me-1"></i> Summarize Topics
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const msgs = document.getElementById('studio-messages');
+        if (msgs) msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function restartStudioQuiz() {
+        if (!window.activeStudioQuiz) return;
+        launchStudioQuizDirectly(window.activeStudioQuiz.courseId);
+    }
+
+    // =========================================================================
+    // 2. Direct In-Studio Content Summarizer
+    // =========================================================================
+    function launchStudioSummaryDirectly(overrideCourseId) {
+        const select = document.getElementById('studio-course-select');
+        let courseId = overrideCourseId;
+        if (!courseId && select && select.value) {
+            courseId = parseInt(select.value);
+        }
+        if (!courseId && window.studioEnrolledCourses && window.studioEnrolledCourses.length > 0) {
+            courseId = window.studioEnrolledCourses[0].id;
+        }
+        if (!courseId) courseId = 1;
+
+        let courseTitle = 'Machine Learning Fundamentals';
+        if (window.studioEnrolledCourses && window.studioEnrolledCourses.length > 0) {
+            const found = window.studioEnrolledCourses.find(c => c.id === courseId);
+            if (found) courseTitle = found.title;
+        } else if (select && select.selectedOptions && select.selectedOptions[0]) {
+            courseTitle = select.selectedOptions[0].text;
+        }
+
+        const msgs = document.getElementById('studio-messages');
+        if (!msgs) return;
+
+        const userPromptHtml = `
+            <div class="studio-msg user">
+                <div class="studio-bubble">
+                    <i class="bi bi-file-earmark-text me-1"></i> Generate Executive Syllabus Summary for <strong>${escapeHtml(courseTitle)}</strong>
+                </div>
+                <span class="studio-time">Just now</span>
+            </div>
+        `;
+        msgs.insertAdjacentHTML('beforeend', userPromptHtml);
+
+        const loadingId = 'sum-loading-' + Date.now();
+        const loadingHtml = `
+            <div class="studio-msg assistant" id="${loadingId}">
+                <div class="studio-bubble" style="border: 1px solid rgba(39, 184, 214, 0.35);">
+                    <div class="d-flex align-items-center gap-2 text-cyan mb-1">
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        <strong class="small">Synthesizing Executive Summary from Knowledge Chunks...</strong>
+                    </div>
+                    <div class="small text-white-50">Condensing core lecture concepts, algorithmic takeaways, and examination formulas for ${escapeHtml(courseTitle)}.</div>
+                </div>
+            </div>
+        `;
+        msgs.insertAdjacentHTML('beforeend', loadingHtml);
+        msgs.scrollTop = msgs.scrollHeight;
+
+        fetch('/ChatBot/SummarizeContent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                course_id: courseId,
+                format: 'executive_summary'
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
+
+            if (!data.success || !data.summary) {
+                const errHtml = `
+                    <div class="studio-msg assistant">
+                        <div class="studio-bubble text-danger border border-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> ${escapeHtml(data.message || 'Failed to synthesize summary.')}
+                        </div>
+                    </div>
+                `;
+                msgs.insertAdjacentHTML('beforeend', errHtml);
+                msgs.scrollTop = msgs.scrollHeight;
+                return;
+            }
+
+            const formattedMarkdown = renderMarkdownSimple(data.summary.summary);
+            const cardHtml = `
+                <div class="studio-msg assistant w-100" style="max-width: 95%;">
+                    <div class="studio-bubble p-4" style="background: rgba(6, 35, 48, 0.95); border: 1px solid rgba(39, 184, 214, 0.35); border-radius: 18px;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center pb-3 mb-3 border-bottom border-secondary border-opacity-25 gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge rounded-pill px-3 py-1 bg-cyan text-dark fw-bold" style="font-size: 12px;">
+                                    <i class="bi bi-file-earmark-text me-1"></i> Executive Syllabus Summary
+                                </span>
+                                <span class="small text-white-50">
+                                    <i class="bi bi-journal-bookmark me-1 text-cyan"></i>${escapeHtml(courseTitle)}
+                                </span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-xs btn-outline-warning rounded-pill py-0 px-2" style="font-size: 11px;" onclick="promptChangeCourseForFeature('summary')">
+                                    <i class="bi bi-arrow-left-right me-1"></i> Change Course
+                                </button>
+                                <button type="button" class="btn btn-xs btn-warning rounded-pill py-0 px-2 fw-bold" style="font-size: 11px;" onclick="launchStudioQuizDirectly(${courseId})">
+                                    <i class="bi bi-patch-question-fill me-1"></i> Take Quiz on this
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-white studio-summary-content">
+                            ${formattedMarkdown}
+                        </div>
+                    </div>
+                    <span class="studio-time">Just now &bull; Knowledge Synthesis</span>
+                </div>
+            `;
+            msgs.insertAdjacentHTML('beforeend', cardHtml);
+            msgs.scrollTop = msgs.scrollHeight;
+        })
+        .catch(err => {
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
+            const errHtml = `
+                <div class="studio-msg assistant">
+                    <div class="studio-bubble text-danger">
+                        <i class="bi bi-wifi-off me-1"></i> Error generating course summary.
+                    </div>
+                </div>
+            `;
+            msgs.insertAdjacentHTML('beforeend', errHtml);
+            msgs.scrollTop = msgs.scrollHeight;
+        });
+    }
+
+    // =========================================================================
+    // 3. Direct In-Studio Study Planner
+    // =========================================================================
+    function launchStudioStudyPlanDirectly(overrideCourseId) {
+        const select = document.getElementById('studio-course-select');
+        let courseId = overrideCourseId;
+        if (!courseId && select && select.value) {
+            courseId = parseInt(select.value);
+        }
+        if (!courseId && window.studioEnrolledCourses && window.studioEnrolledCourses.length > 0) {
+            courseId = window.studioEnrolledCourses[0].id;
+        }
+        if (!courseId) courseId = 1;
+
+        let courseTitle = 'Machine Learning Fundamentals';
+        if (window.studioEnrolledCourses && window.studioEnrolledCourses.length > 0) {
+            const found = window.studioEnrolledCourses.find(c => c.id === courseId);
+            if (found) courseTitle = found.title;
+        } else if (select && select.selectedOptions && select.selectedOptions[0]) {
+            courseTitle = select.selectedOptions[0].text;
+        }
+
+        const msgs = document.getElementById('studio-messages');
+        if (!msgs) return;
+
+        const userPromptHtml = `
+            <div class="studio-msg user">
+                <div class="studio-bubble">
+                    <i class="bi bi-calendar-check me-1"></i> Formulate 14-Day Structured Study Plan for <strong>${escapeHtml(courseTitle)}</strong>
+                </div>
+                <span class="studio-time">Just now</span>
+            </div>
+        `;
+        msgs.insertAdjacentHTML('beforeend', userPromptHtml);
+
+        const loadingId = 'plan-loading-' + Date.now();
+        const loadingHtml = `
+            <div class="studio-msg assistant" id="${loadingId}">
+                <div class="studio-bubble" style="border: 1px solid rgba(53, 201, 138, 0.35);">
+                    <div class="d-flex align-items-center gap-2 text-success mb-1">
+                        <span class="spinner-border spinner-border-sm text-success" role="status"></span>
+                        <strong class="small">Formulating 14-Day Milestone Roadmap...</strong>
+                    </div>
+                    <div class="small text-white-50">Structuring progressive daily milestones, practice exercises, and exam checkpoints for ${escapeHtml(courseTitle)}.</div>
+                </div>
+            </div>
+        `;
+        msgs.insertAdjacentHTML('beforeend', loadingHtml);
+        msgs.scrollTop = msgs.scrollHeight;
+
+        fetch('/ChatBot/GenerateStudyPlan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                course_id: courseId,
+                target_days: 14
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
+
+            if (!data.success || !data.plan) {
+                const errHtml = `
+                    <div class="studio-msg assistant">
+                        <div class="studio-bubble text-danger border border-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> ${escapeHtml(data.message || 'Failed to formulate study plan.')}
+                        </div>
+                    </div>
+                `;
+                msgs.insertAdjacentHTML('beforeend', errHtml);
+                msgs.scrollTop = msgs.scrollHeight;
+                return;
+            }
+
+            const formattedMarkdown = renderMarkdownSimple(data.plan.study_plan);
+            const cardHtml = `
+                <div class="studio-msg assistant w-100" style="max-width: 95%;">
+                    <div class="studio-bubble p-4" style="background: rgba(6, 35, 48, 0.95); border: 1px solid rgba(53, 201, 138, 0.35); border-radius: 18px;">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center pb-3 mb-3 border-bottom border-secondary border-opacity-25 gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge rounded-pill px-3 py-1 bg-success text-white fw-bold" style="font-size: 12px;">
+                                    <i class="bi bi-calendar2-range me-1"></i> 14-Day Revision Roadmap
+                                </span>
+                                <span class="small text-white-50">
+                                    <i class="bi bi-journal-bookmark me-1 text-cyan"></i>${escapeHtml(courseTitle)}
+                                </span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-xs btn-outline-warning rounded-pill py-0 px-2" style="font-size: 11px;" onclick="promptChangeCourseForFeature('plan')">
+                                    <i class="bi bi-arrow-left-right me-1"></i> Change Course
+                                </button>
+                                <button type="button" class="btn btn-xs btn-warning rounded-pill py-0 px-2 fw-bold" style="font-size: 11px;" onclick="launchStudioQuizDirectly(${courseId})">
+                                    <i class="bi bi-patch-question-fill me-1"></i> Take Quiz on this
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-white studio-plan-content">
+                            ${formattedMarkdown}
+                        </div>
+                    </div>
+                    <span class="studio-time">Just now &bull; Agentic Study Planner</span>
+                </div>
+            `;
+            msgs.insertAdjacentHTML('beforeend', cardHtml);
+            msgs.scrollTop = msgs.scrollHeight;
+        })
+        .catch(err => {
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
+            const errHtml = `
+                <div class="studio-msg assistant">
+                    <div class="studio-bubble text-danger">
+                        <i class="bi bi-wifi-off me-1"></i> Error generating study roadmap.
+                    </div>
+                </div>
+            `;
+            msgs.insertAdjacentHTML('beforeend', errHtml);
+            msgs.scrollTop = msgs.scrollHeight;
+        });
+    }
+
+    function promptChangeCourseForFeature(feature) {
+        const sel = document.getElementById('studio-course-select');
+        if (!sel) return;
+        sel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        sel.focus();
+    }
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function renderMarkdownSimple(text) {
+        if (!text) return '';
+        var t = escapeHtml(text);
+        // Code blocks ```code```
+        t = t.replace(/```([a-z]*)\n([\s\S]*?)```/g, function(match, lang, code) {
+            return '<pre class="p-3 my-2 rounded-3 text-light overflow-auto" style="background: rgba(4, 24, 34, 0.95); border: 1px solid rgba(39, 184, 214, 0.3); font-size: 13px;"><code>' + code + '</code></pre>';
+        });
+        // Inline code `code`
+        t = t.replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded text-cyan" style="background: rgba(39, 184, 214, 0.15); font-size: 90%;">$1</code>');
+        // Bold **text**
+        t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        // Links [text](url)
+        t = t.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_self" class="text-cyan text-decoration-underline fw-bold">$1</a>');
+        // Bullet points
+        t = t.replace(/^\s*[\*\-]\s+(.+)$/gm, '<li class="ms-3 mb-1">$1</li>');
+        // Numbers
+        t = t.replace(/^\s*(\d+)\.\s+(.+)$/gm, '<div class="ms-2 mb-1"><strong>$1.</strong> $2</div>');
+        // Newlines
+        t = t.replace(/\n\n+/g, '<br/><br/>');
+        t = t.replace(/\n/g, '<br/>');
+        return t;
+    }
+</script>

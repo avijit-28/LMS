@@ -1,0 +1,273 @@
+@model LMS.ViewModels.AdminPaymentsViewModel
+@{
+    ViewBag.Title = "Payments & Transactions Ledger";
+}
+
+<div class="py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin")" class="text-decoration-none">Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Payments &amp; Financials</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <span class="badge badge-primary-subtle px-3 py-1 rounded-pill mb-2 fw-semibold">
+                <i class="bi bi-shield-check text-primary me-1"></i> Central Audit Ledger
+            </span>
+            <h2 class="fw-extrabold mb-1 tracking-tight">Platform Payment Transactions</h2>
+            <p class="text-muted small mb-0">Comprehensive record of all course sales, purchases made by students and educators across the platform</p>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <a href="@Url.Action("ExportTransactionsPdf", "Admin", new { filter = Model.CurrentFilter, courseId = Model.SelectedCourseId, search = Model.SearchQuery })" class="btn btn-outline-danger rounded-pill px-3 fw-semibold shadow-xs">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF
+            </a>
+            <a href="@Url.Action("ExportTransactionsCsv", "Admin", new { filter = Model.CurrentFilter, courseId = Model.SelectedCourseId, search = Model.SearchQuery })" class="btn btn-outline-success rounded-pill px-3 fw-semibold shadow-xs">
+                <i class="bi bi-file-earmark-spreadsheet-fill me-1"></i> Export CSV
+            </a>
+            <button class="btn btn-outline-secondary rounded-pill px-3 fw-semibold shadow-xs" onclick="window.print();">
+                <i class="bi bi-printer me-1"></i> Print
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card p-3 p-md-4 border-0 shadow-sm h-100" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(255, 255, 255, 0.12) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-white-50 small fw-semibold text-uppercase tracking-wider">Gross Platform Sales</span>
+                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: rgba(39, 184, 214, 0.15); color: #27B8D6;">
+                        <i class="bi bi-cash-stack fs-5"></i>
+                    </div>
+                </div>
+                <h3 class="fw-extrabold mb-1 text-white tracking-tight">
+                    <span class="rupee-symbol">&#8377;</span>@Model.TotalRevenue.ToString("N2")
+                </h3>
+                <small class="text-white-50">@Model.TotalTransactionsCount total enrollments</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 p-md-4 border-0 shadow-sm h-100" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(255, 255, 255, 0.12) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-white-50 small fw-semibold text-uppercase tracking-wider">Admin Commission (5%)</span>
+                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: rgba(53, 201, 138, 0.15); color: #35C98A;">
+                        <i class="bi bi-pie-chart-fill fs-5"></i>
+                    </div>
+                </div>
+                <h3 class="fw-extrabold mb-1 text-success tracking-tight">
+                    <span class="rupee-symbol">&#8377;</span>@Model.TotalAdminCommission.ToString("N2")
+                </h3>
+                <small class="text-white-50">Net 5% platform earnings</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 p-md-4 border-0 shadow-sm h-100" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(255, 255, 255, 0.12) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-white-50 small fw-semibold text-uppercase tracking-wider">Instructor Share (95%)</span>
+                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: rgba(39, 184, 214, 0.15); color: #27B8D6;">
+                        <i class="bi bi-wallet2 fs-5"></i>
+                    </div>
+                </div>
+                <h3 class="fw-extrabold mb-1 text-cyan tracking-tight">
+                    <span class="rupee-symbol">&#8377;</span>@Model.TotalInstructorPayouts.ToString("N2")
+                </h3>
+                <small class="text-white-50">Disbursed to course creators</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 p-md-4 border-0 shadow-sm h-100" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(255, 255, 255, 0.12) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-white-50 small fw-semibold text-uppercase tracking-wider">Buyer Breakdown</span>
+                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: rgba(255, 122, 24, 0.15); color: #FF7A18;">
+                        <i class="bi bi-people-fill fs-5"></i>
+                    </div>
+                </div>
+                <h3 class="fw-extrabold mb-1 text-white tracking-tight">
+                    @Model.StudentPurchasesCount <span class="fs-6 text-white-50 fw-normal">stu /</span> @Model.InstructorPurchasesCount <span class="fs-6 text-white-50 fw-normal">inst</span>
+                </h3>
+                <small class="text-white-50">Students vs Educators</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Form Bar (Role, Course-wise, and Search) -->
+    <div class="card p-3 border-0 shadow-sm mb-4" style="background: rgba(11, 52, 69, 0.7); border: 1px solid rgba(255, 255, 255, 0.12) !important; backdrop-filter: blur(8px);">
+        @using (Html.BeginForm("Payments", "Admin", FormMethod.Get, new { @class = "row g-2 align-items-center" }))
+        {
+            <div class="col-lg-3 col-md-4">
+                <label class="form-label small fw-bold text-white-50 mb-1">Purchaser Role Filter</label>
+                <div class="btn-group w-100 p-1 rounded-pill" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.15);" role="group">
+                    <a href="@Url.Action("Payments", "Admin", new { filter = "All", courseId = Model.SelectedCourseId, search = Model.SearchQuery })"
+                       class="btn btn-xs rounded-pill px-2 fw-semibold @(Model.CurrentFilter == "All" || string.IsNullOrEmpty(Model.CurrentFilter) ? "text-white" : "text-white-50")" style="font-size: 11px; @(Model.CurrentFilter == "All" || string.IsNullOrEmpty(Model.CurrentFilter) ? "background: #FF7A18;" : "")">
+                        All (@Model.TotalTransactionsCount)
+                    </a>
+                    <a href="@Url.Action("Payments", "Admin", new { filter = "Student", courseId = Model.SelectedCourseId, search = Model.SearchQuery })"
+                       class="btn btn-xs rounded-pill px-2 fw-semibold @(Model.CurrentFilter == "Student" ? "text-white" : "text-white-50")" style="font-size: 11px; @(Model.CurrentFilter == "Student" ? "background: #FF7A18;" : "")">
+                        Students (@Model.StudentPurchasesCount)
+                    </a>
+                    <a href="@Url.Action("Payments", "Admin", new { filter = "Instructor", courseId = Model.SelectedCourseId, search = Model.SearchQuery })"
+                       class="btn btn-xs rounded-pill px-2 fw-semibold @(Model.CurrentFilter == "Instructor" ? "text-white" : "text-white-50")" style="font-size: 11px; @(Model.CurrentFilter == "Instructor" ? "background: #FF7A18;" : "")">
+                        Teachers (@Model.InstructorPurchasesCount)
+                    </a>
+                </div>
+                <input type="hidden" name="filter" value="@Model.CurrentFilter" />
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+                <label class="form-label small fw-bold text-white-50 mb-1">Filter by Course</label>
+                @Html.DropDownList("courseId", Model.CourseList, new { @class = "form-select form-select-sm text-white", style = "background: rgba(6, 35, 48, 0.85); border-color: rgba(255, 255, 255, 0.15);" })
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <label class="form-label small fw-bold text-white-50 mb-1">Search Keywords</label>
+                <input type="text" name="search" value="@Model.SearchQuery" class="form-control form-control-sm text-white" placeholder="Txn ID, Buyer Name, Email..." style="background: rgba(6, 35, 48, 0.85); border-color: rgba(255, 255, 255, 0.15);" />
+            </div>
+
+            <div class="col-lg-2 col-md-12 d-flex gap-2 align-items-end mt-auto">
+                <button type="submit" class="btn btn-sm rounded-pill px-3 w-100 fw-bold text-white" style="background: #FF7A18; border: none;">
+                    <i class="bi bi-funnel-fill me-1"></i> Filter
+                </button>
+                <a href="@Url.Action("Payments", "Admin")" class="btn btn-sm btn-outline-light rounded-pill px-2" title="Reset all filters">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            </div>
+        }
+    </div>
+
+    <!-- Master Transaction Table -->
+    <div class="card border-0 shadow-sm overflow-hidden" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(255, 255, 255, 0.12) !important;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-white" style="border-color: rgba(255, 255, 255, 0.08);">
+                <thead style="background: rgba(4, 24, 34, 0.8); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                    <tr>
+                        <th class="ps-4 text-white-50">Course Title</th>
+                        <th class="text-white-50">Course Instructor</th>
+                        <th class="text-white-50">Buyer Name &amp; Email</th>
+                        <th class="text-white-50">Buyer Role</th>
+                        <th class="text-white-50">Gross Price</th>
+                        <th class="text-white-50">Admin 5%</th>
+                        <th>Teacher 95%</th>
+                        <th>Transaction ID</th>
+                        <th>Date &amp; Time</th>
+                        <th class="text-end pe-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Transactions.Any())
+                    {
+                        <tr>
+                            <td colspan="10" class="text-center py-5 text-muted">
+                                <div class="py-4">
+                                    <i class="bi bi-credit-card fs-1 d-block mb-2 text-secondary"></i>
+                                    <h6 class="fw-bold mb-1">No transactions recorded</h6>
+                                    <p class="small text-muted mb-0">
+                                        No purchases found matching the selected filter criteria.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var txn in Model.Transactions)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle text-cyan p-2 me-2 d-flex align-items-center justify-content-center shadow-xs" style="width: 36px; height: 36px; background: rgba(39, 184, 214, 0.15);">
+                                            <i class="bi bi-journal-text fs-6"></i>
+                                        </div>
+                                        <div>
+                                            <a href="@Url.Action("Details", "Courses", new { id = txn.CourseId })" class="fw-bold text-dark text-decoration-none" target="_blank">
+                                                @txn.CourseTitle
+                                            </a>
+                                            <div class="text-muted small" style="font-size: 11px;">Course ID: #@txn.CourseId</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark">
+                                        <i class="bi bi-person-workspace text-secondary me-1"></i>@txn.InstructorName
+                                    </div>
+                                    <small class="text-muted">@txn.InstructorEmail</small>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark">@txn.BuyerName</div>
+                                    <small class="text-muted">@txn.BuyerEmail</small>
+                                </td>
+                                <td>
+                                    @if (txn.BuyerRole == "Instructor")
+                                    {
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-1 small">
+                                            <i class="bi bi-person-badge me-1"></i> Educator
+                                        </span>
+                                    }
+                                    else if (txn.BuyerRole == "Admin")
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-1 small">
+                                            <i class="bi bi-shield-lock me-1"></i> Admin
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1 small">
+                                            <i class="bi bi-mortarboard me-1"></i> Student
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-dark">
+                                        <span class="rupee-symbol">&#8377;</span>@txn.Amount.ToString("N2")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="small fw-semibold text-success">
+                                        +<span class="rupee-symbol">&#8377;</span>@txn.AdminCommission.ToString("N2")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="small fw-semibold text-primary">
+                                        <span class="rupee-symbol">&#8377;</span>@txn.InstructorEarnings.ToString("N2")
+                                    </span>
+                                </td>
+                                <td>
+                                    <code class="small font-monospace px-2 py-1 rounded" style="background: rgba(39, 184, 214, 0.12); border: 1px solid rgba(39, 184, 214, 0.35); color: #27B8D6 !important;">@txn.TransactionId</code>
+                                </td>
+                                <td>
+                                    <small class="text-muted">@txn.PaymentDate.ToString("MMM dd, yyyy HH:mm")</small>
+                                </td>
+                                <td class="text-end pe-4">
+                                    @if (txn.PaymentStatus == "Completed")
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Completed
+                                        </span>
+                                    }
+                                    else if (txn.PaymentStatus == "Failed")
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1">
+                                            <i class="bi bi-x-circle-fill me-1"></i> Failed
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-1">
+                                            <i class="bi bi-clock-history me-1"></i> @txn.PaymentStatus
+                                        </span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

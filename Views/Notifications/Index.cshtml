@@ -1,0 +1,99 @@
+@model IEnumerable<LMS.Models.Notification>
+@{
+    ViewBag.Title = "Notifications Center";
+    var unreadCount = Model.Count(n => !n.IsRead);
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <span class="badge rounded-pill mb-2 fw-semibold px-3 py-1" style="background: rgba(255, 122, 24, 0.15); color: #FF7A18; border: 1px solid rgba(255, 122, 24, 0.3);">
+                <i class="bi bi-bell-fill me-1"></i> Activity Feed
+            </span>
+            <h2 class="fw-extrabold mb-1 tracking-tight text-white">Notifications Center</h2>
+            <p class="small mb-0" style="color: rgba(255, 255, 255, 0.7);">Stay updated on curriculum announcements, quiz assessments, and project grades</p>
+        </div>
+        @if (unreadCount > 0)
+        {
+            using (Html.BeginForm("MarkAllAsRead", "Notifications", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-4 fw-semibold shadow-xs" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.25);">
+                    <i class="bi bi-check2-all me-1 text-cyan"></i> Mark All as Read (@unreadCount)
+                </button>
+            }
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card card-custom border-0 shadow-sm text-center py-5 rounded-4" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+            <div class="card-body">
+                <div class="rounded-circle p-4 d-inline-flex mx-auto mb-3" style="background: rgba(255, 122, 24, 0.12); color: #FF7A18;">
+                    <i class="bi bi-bell-slash fs-1"></i>
+                </div>
+                <h4 class="fw-bold text-white mb-2">All caught up!</h4>
+                <p class="small mb-3" style="color: rgba(255, 255, 255, 0.65);">You do not have any notifications right now.</p>
+                <a href="@Url.Action("Index", "Courses")" class="btn btn-primary rounded-pill px-4 fw-bold text-white shadow-sm mt-2">
+                    Browse Courses
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card card-custom border-0 shadow-sm overflow-hidden rounded-4" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+            <div class="list-group list-group-flush">
+                @foreach (var n in Model)
+                {
+                    <div class="list-group-item p-3" style="background: @(n.IsRead ? "transparent" : "rgba(11, 52, 69, 0.45)"); border-bottom: 1px solid rgba(255, 255, 255, 0.08); border-left: @(n.IsRead ? "none" : "4px solid #FF7A18") !important;">
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+                            <div class="d-flex gap-3">
+                                <div class="mt-1">
+                                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center shadow-xs" style="width: 42px; height: 42px; @(n.IsRead ? "background: rgba(39, 184, 214, 0.15); color: #27B8D6; border: 1px solid rgba(39, 184, 214, 0.3);" : "background: rgba(255, 122, 24, 0.2); color: #FF7A18; border: 1px solid rgba(255, 122, 24, 0.4);")">
+                                        <i class="bi @(n.IsRead ? "bi-bell" : "bi-bell-fill") fs-5"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1 text-white">
+                                        @n.Title
+                                        @if (!n.IsRead)
+                                        {
+                                            <span class="badge rounded-pill ms-2 px-2 py-1" style="font-size: 10px; background: #FF7A18; color: #FFFFFF;">New</span>
+                                        }
+                                    </h6>
+                                    <p class="mb-1 small" style="color: rgba(255, 255, 255, 0.82); line-height: 1.6;">@n.Message</p>
+                                    <div class="d-flex align-items-center gap-2 mt-2">
+                                        <small style="color: rgba(255, 255, 255, 0.5); font-size: 11px;"><i class="bi bi-clock me-1 text-orange"></i>@n.CreatedDate.ToString("MMM dd, yyyy HH:mm")</small>
+                                        @if (User.IsInRole("Admin") && n.NotificationType == "InstructorApproval")
+                                        {
+                                            <a href="@Url.Action("InstructorApplications", "Admin")" class="btn btn-sm btn-outline-warning text-white rounded-pill py-0 px-2 fw-semibold" style="font-size: 11px; border-color: rgba(255, 122, 24, 0.5);">
+                                                <i class="bi bi-mortarboard me-1 text-orange"></i> Review Candidates
+                                            </a>
+                                        }
+                                        else if (User.IsInRole("Admin") && n.NotificationType == "AccountApproval")
+                                        {
+                                            <a href="@Url.Action("PendingApprovals", "Admin")" class="btn btn-sm btn-outline-warning text-white rounded-pill py-0 px-2 fw-semibold" style="font-size: 11px; border-color: rgba(255, 122, 24, 0.5);">
+                                                <i class="bi bi-shield-check me-1 text-orange"></i> Review Approvals
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            @if (!n.IsRead)
+                            {
+                                using (Html.BeginForm("MarkAsRead", "Notifications", new { id = n.NotificationId }, FormMethod.Post, new { @class = "ms-3" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-light rounded-circle p-2" title="Mark as read" style="width: 32px; height: 32px; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2);">
+                                        <i class="bi bi-check-lg text-success"></i>
+                                    </button>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

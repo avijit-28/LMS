@@ -1,0 +1,207 @@
+@model LMS.ViewModels.CertificateViewModel
+@{
+    ViewBag.Title = "Official Certificate of Completion - " + Model.CertificateNumber;
+    string instructorName = !string.IsNullOrWhiteSpace(Model.InstructorName) ? Model.InstructorName : "Marcus Holloway";
+}
+
+<div class="py-4 py-lg-5">
+    <!-- Top Action Toolbar (Hidden during Print) -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2 d-print-none max-w-1000 mx-auto">
+        <a href="@Url.Action("Certificates", "Student")" class="btn btn-outline-light rounded-pill px-4 fw-semibold" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2);">
+            <i class="bi bi-arrow-left me-1"></i> Back to Certificates
+        </a>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-outline-light rounded-pill px-3 fw-semibold shadow-xs" id="btnCopyCertUrl" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2);">
+                <i class="bi bi-link-45deg me-1 text-orange"></i> Copy Verification Link
+            </button>
+            <button type="button" class="btn btn-outline-light rounded-pill px-3 fw-semibold shadow-xs text-white" id="btnShareLinkedIn" style="background: rgba(10, 102, 194, 0.2); border-color: rgba(10, 102, 194, 0.4);">
+                <i class="bi bi-linkedin me-1 text-cyan"></i> Share on LinkedIn
+            </button>
+            <a href="@Url.Action("DownloadPdf", "Certificate", new { id = Model.CertificateId })" class="btn btn-primary rounded-pill px-4 fw-bold text-white shadow-sm">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download Official PDF
+            </a>
+            <button type="button" class="btn btn-outline-light rounded-pill px-3 fw-semibold shadow-xs" onclick="window.print()" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2);">
+                <i class="bi bi-printer-fill me-1"></i> Print
+            </button>
+        </div>
+    </div>
+
+    <!-- Official Museum-Grade Certificate Document -->
+    <div class="certificate-wrapper shadow-2xl position-relative mx-auto rounded-3 overflow-hidden" style="max-width: 1040px; background: #FAF9F5; border: 12px solid #062330;">
+        <!-- Concentric Gold Filigree Border -->
+        <div class="position-relative p-4 p-md-5" style="border: 3px solid #D4AF37; margin: 8px; background: radial-gradient(circle at 50% 50%, rgba(254, 249, 231, 0.8) 0%, rgba(250, 247, 240, 0.95) 75%, #F5F1E6 100%);">
+            
+            <!-- Ornate Corner Filigrees (SVG) -->
+            <div class="cert-corner cert-corner-tl position-absolute top-0 start-0 m-2 pointer-events-none">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M4 44V8C4 5.79086 5.79086 4 8 4H44" stroke="#D4AF37" stroke-width="2.5"/><path d="M12 44V16C12 13.7909 13.7909 12 16 12H44" stroke="#062330" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="#D4AF37"/></svg>
+            </div>
+            <div class="cert-corner cert-corner-tr position-absolute top-0 end-0 m-2 pointer-events-none">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M44 44V8C44 5.79086 42.2091 4 40 4H4" stroke="#D4AF37" stroke-width="2.5"/><path d="M36 44V16C36 13.7909 34.2091 12 32 12H4" stroke="#062330" stroke-width="1.5"/><circle cx="36" cy="12" r="3" fill="#D4AF37"/></svg>
+            </div>
+            <div class="cert-corner cert-corner-bl position-absolute bottom-0 start-0 m-2 pointer-events-none">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M4 4V40C4 42.2091 5.79086 44 8 44H44" stroke="#D4AF37" stroke-width="2.5"/><path d="M12 4V32C12 34.2091 13.7909 36 16 36H44" stroke="#062330" stroke-width="1.5"/><circle cx="12" cy="36" r="3" fill="#D4AF37"/></svg>
+            </div>
+            <div class="cert-corner cert-corner-br position-absolute bottom-0 end-0 m-2 pointer-events-none">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M44 4V40C44 42.2091 42.2091 44 40 44H4" stroke="#D4AF37" stroke-width="2.5"/><path d="M36 4V32C36 34.2091 34.2091 36 32 36H4" stroke="#062330" stroke-width="1.5"/><circle cx="36" cy="36" r="3" fill="#D4AF37"/></svg>
+            </div>
+
+            <!-- Top Header & Accreditation Crest -->
+            <div class="text-center mb-3">
+                <div class="d-inline-flex align-items-center gap-2 px-4 py-1 rounded-pill mb-2 shadow-xs" style="background: #062330; border: 1px solid #D4AF37;">
+                    <i class="bi bi-mortarboard-fill" style="color: #FF7A18;"></i>
+                    <span class="fw-bold tracking-wider text-uppercase" style="font-size: 11px; letter-spacing: 2px; color: #FFFFFF;">EduPlatform Learning Management System</span>
+                </div>
+                <div class="text-uppercase tracking-widest fw-semibold" style="font-size: 10px; color: #78716C; letter-spacing: 3px;">
+                    Board of Academic Standards &amp; Technical Accreditation
+                </div>
+            </div>
+
+            <!-- Certificate Heading -->
+            <div class="text-center my-3">
+                <h1 class="display-5 fw-extrabold tracking-tight mb-1" style="font-family: 'Times New Roman', Georgia, serif; color: #041822; letter-spacing: 4px; font-weight: 800;">
+                    CERTIFICATE OF COMPLETION
+                </h1>
+                <div class="d-flex align-items-center justify-content-center gap-3 my-2">
+                    <span style="height: 1px; width: 60px; background: #D4AF37;"></span>
+                    <span class="text-uppercase small tracking-widest" style="font-size: 11px; color: #64748B; letter-spacing: 2px;">This is officially conferred upon</span>
+                    <span style="height: 1px; width: 60px; background: #D4AF37;"></span>
+                </div>
+            </div>
+
+            <!-- Student Recipient Name -->
+            <div class="text-center my-3">
+                <h2 class="display-6 fw-bold mb-1 text-uppercase" style="font-family: 'Times New Roman', Georgia, serif; letter-spacing: 2px; color: #0A364A; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.06);">
+                    @Model.StudentName
+                </h2>
+                <div class="mx-auto" style="width: 220px; height: 3px; background: linear-gradient(90deg, transparent, #D4AF37, #FF7A18, #D4AF37, transparent);"></div>
+            </div>
+
+            <!-- Fulfillment Statement -->
+            <p class="text-center mx-auto mb-3" style="max-width: 680px; font-size: 1.05rem; line-height: 1.6; color: #475569; font-family: 'Times New Roman', Georgia, serif; font-style: italic;">
+                for successfully fulfilling all curriculum coursework, laboratory modules, practical projects, and comprehensive final examination requirements for the professional curriculum:
+            </p>
+
+            <!-- Course Title -->
+            <div class="text-center mb-4">
+                <h3 class="fw-extrabold mb-1 px-3 d-inline-block" style="font-size: 1.65rem; color: #041822; letter-spacing: -0.01em; border-bottom: 2px solid rgba(6, 35, 48, 0.15); padding-bottom: 4px;">
+                    @Model.CourseTitle
+                </h3>
+            </div>
+
+            <!-- Credentials Metadata Bar -->
+            <div class="row justify-content-center g-3 my-3 p-3 rounded-3 mx-auto" style="max-width: 760px; background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                <div class="col-sm-4 text-center border-end" style="border-color: #E2E8F0 !important;">
+                    <small class="text-uppercase d-block fw-bold" style="font-size: 10px; color: #64748B; letter-spacing: 1px;">Final Assessment Score</small>
+                    <span class="fs-4 fw-extrabold" style="color: #059669;">
+                        @(Model.FinalScore.HasValue ? Model.FinalScore.Value.ToString("0.0") + "%" : "100.0%")
+                    </span>
+                </div>
+                <div class="col-sm-4 text-center border-end" style="border-color: #E2E8F0 !important;">
+                    <small class="text-uppercase d-block fw-bold" style="font-size: 10px; color: #64748B; letter-spacing: 1px;">Date of Issue</small>
+                    <span class="fs-5 fw-bold" style="color: #041822;">
+                        @Model.IssueDate.ToString("MMMM dd, yyyy")
+                    </span>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <small class="text-uppercase d-block fw-bold" style="font-size: 10px; color: #64748B; letter-spacing: 1px;">Cryptographic ID</small>
+                    <span class="fs-6 fw-bold font-monospace" style="color: #0B3445;">
+                        @Model.CertificateNumber
+                    </span>
+                </div>
+            </div>
+
+            <!-- Signatures and Official Embossed Seal -->
+            <div class="row align-items-end mt-4 pt-3">
+                <!-- Left: Director of Academics -->
+                <div class="col-4 text-center">
+                    <div class="mb-1" style="height: 52px; display: flex; align-items: flex-end; justify-content: center;">
+                        <!-- Official Signature of Dr. Evelyn Vance -->
+                        <img src="@Url.Content("~/Content/images/signatures/dr-evelyn-vance-signature.png")" alt="Dr. Evelyn Vance Signature" style="max-height: 50px; max-width: 190px; object-fit: contain;" />
+                    </div>
+                    <div class="border-top pt-2 mx-auto" style="border-color: #062330 !important; max-width: 220px;">
+                        <strong class="d-block text-dark fw-bold" style="font-size: 14px;">Dr. Evelyn Vance</strong>
+                        <small class="d-block" style="font-size: 11px; color: #64748B;">Director of Academic Standards</small>
+                        <span class="badge rounded-pill mt-1" style="font-size: 9px; background: rgba(6, 35, 48, 0.08); color: #062330;">Accreditation Board</span>
+                    </div>
+                </div>
+
+                <!-- Center: Official 3D Gold Embossed Medallion Seal -->
+                <div class="col-4 text-center">
+                    <div class="position-relative d-inline-block">
+                        <!-- Gold Ribbon Tails -->
+                        <div class="position-absolute" style="top: 45px; left: 50%; transform: translateX(-50%); width: 70px; height: 35px; z-index: 1;">
+                            <svg width="70" height="35" viewBox="0 0 70 35" fill="none">
+                                <path d="M12 0L0 35L22 26L35 35L35 0Z" fill="#B45309" opacity="0.9"/>
+                                <path d="M58 0L70 35L48 26L35 35L35 0Z" fill="#B45309" opacity="0.9"/>
+                            </svg>
+                        </div>
+                        <!-- Medallion Disc -->
+                        <div class="rounded-circle d-flex flex-column align-items-center justify-content-center shadow" 
+                             style="width: 82px; height: 82px; background: radial-gradient(circle, #FDE68A 0%, #F59E0B 60%, #B45309 100%); border: 3px double #FFFFFF; position: relative; z-index: 2; color: #78350F;">
+                            <i class="bi bi-patch-check-fill fs-3 mb-0" style="color: #78350F;"></i>
+                            <span class="fw-extrabold" style="font-size: 8px; letter-spacing: 1px;">VERIFIED</span>
+                            <span style="font-size: 7px; letter-spacing: 0.5px;">OFFICIAL SEAL</span>
+                        </div>
+                    </div>
+                    <small class="d-block mt-2 font-monospace" style="font-size: 10px; color: #78716C; letter-spacing: 1px;">AUTHENTIC SECURE ID</small>
+                </div>
+
+                <!-- Right: Course Creator & Faculty Lead Instructor -->
+                <div class="col-4 text-center">
+                    <div class="mb-1" style="height: 52px; display: flex; align-items: flex-end; justify-content: center;">
+                        @if (!string.IsNullOrWhiteSpace(Model.InstructorSignaturePath))
+                        {
+                            var sigSrc = Model.InstructorSignaturePath.StartsWith("~") ? Model.InstructorSignaturePath : (Model.InstructorSignaturePath.StartsWith("/") ? Model.InstructorSignaturePath : "~/" + Model.InstructorSignaturePath);
+                            <img src="@Url.Content(sigSrc)" alt="@instructorName Signature" style="max-height: 50px; max-width: 190px; object-fit: contain;" />
+                        }
+                        else
+                        {
+                            <!-- Calligraphic Script Signature SVG for Course Author -->
+                            <svg width="190" height="48" viewBox="0 0 190 48" fill="none">
+                                <path d="M14 18C28 12 38 34 52 28C66 22 72 14 86 24C98 32 110 16 126 22C140 28 152 14 168 20C176 23 182 18 186 24" stroke="#062330" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M34 26C48 38 68 32 82 20M115 22L135 36" stroke="#062330" stroke-width="1.6" stroke-linecap="round"/>
+                            </svg>
+                        }
+                    </div>
+                    <div class="border-top pt-2 mx-auto" style="border-color: #062330 !important; max-width: 220px;">
+                        <strong class="d-block text-dark fw-bold" style="font-size: 14px;">@instructorName</strong>
+                        <small class="d-block" style="font-size: 11px; color: #64748B;">Faculty Lead Instructor</small>
+                        <span class="badge rounded-pill mt-1" style="font-size: 9px; background: rgba(255, 122, 24, 0.12); color: #C2410C;">Course Author</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        header, footer, .d-print-none, .navbar, #lmsToastContainer {
+            display: none !important;
+        }
+        body {
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .certificate-wrapper {
+            border: 6px solid #062330 !important;
+            box-shadow: none !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-height: auto !important;
+            page-break-inside: avoid;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(function () {
+            LMS.initCertificate();
+            LMS.confetti({ particleCount: 80 });
+        });
+    </script>
+}

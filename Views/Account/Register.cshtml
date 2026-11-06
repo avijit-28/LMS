@@ -1,0 +1,269 @@
+@model LMS.ViewModels.RegisterViewModel
+@{
+    ViewBag.Title = "Create an Account - EduPlatform LMS";
+}
+
+<div class="row justify-content-center py-4 py-lg-5">
+    <div class="col-xl-11 col-lg-12">
+        <div class="login-split-card row g-0 shadow-lg rounded-4 overflow-hidden" style="border: 1px solid rgba(255, 255, 255, 0.1);">
+            <!-- Left Hero Composition (Deep Navy + Glows + Brand Identity matching Login) -->
+            <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-between login-hero-side p-5 position-relative overflow-hidden" style="background: linear-gradient(145deg, #041822 0%, #062330 50%, #0B3445 100%);">
+                <div class="position-absolute top-0 start-0 w-100 h-100 pointer-events-none overflow-hidden">
+                    <div class="lms-orb lms-orb-orange" style="width: 260px; height: 260px; top: -50px; right: -50px;"></div>
+                    <div class="lms-orb lms-orb-cyan" style="width: 240px; height: 240px; bottom: -40px; left: -40px;"></div>
+                </div>
+
+                <div class="position-relative z-1">
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <div class="bg-orange text-white rounded-3 p-2 d-inline-flex shadow-sm">
+                            <i class="bi bi-mortarboard-fill fs-4"></i>
+                        </div>
+                        <div>
+                            <span class="fs-4 fw-extrabold tracking-tight text-white">LMS</span>
+                            <div class="text-white-50 small" style="font-size: 11px;">Learning Management System</div>
+                        </div>
+                    </div>
+
+                    <div class="badge bg-white bg-opacity-10 text-orange border border-white border-opacity-10 rounded-pill px-3 py-1 mb-4 small fw-semibold">
+                        <i class="bi bi-stars me-1"></i> Start Your Journey
+                    </div>
+
+                    <h1 class="display-6 fw-extrabold text-white mb-3" style="line-height: 1.2;">
+                        Join Our<br />
+                        <span class="text-orange">Learning</span><br />
+                        Community.
+                    </h1>
+
+                    <p class="text-light text-opacity-75 small mb-4" style="line-height: 1.7;">
+                        Whether you are an aspiring software engineer leveling up your technical skills or an educator looking to teach thousands globally, EduPlatform provides the modern tools you need to succeed.
+                    </p>
+
+                    <div class="d-flex flex-column gap-3 pt-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-white bg-opacity-10 p-2 text-orange d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                <i class="bi bi-check2"></i>
+                            </div>
+                            <span class="text-white small">Instant access to certified learning curriculums</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-white bg-opacity-10 p-2 text-cyan d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                <i class="bi bi-check2"></i>
+                            </div>
+                            <span class="text-white small">Verifiable blockchain-ready credentials</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-white bg-opacity-10 p-2 text-success d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                <i class="bi bi-check2"></i>
+                            </div>
+                            <span class="text-white small">95% revenue share for verified instructors</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="position-relative z-1 pt-4 border-top border-white border-opacity-10 mt-5">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-white bg-opacity-10 p-2 text-cyan">
+                            <i class="bi bi-shield-check fs-4"></i>
+                        </div>
+                        <div class="small">
+                            <div class="text-white fw-bold">Enterprise Security Guaranteed</div>
+                            <div class="text-white-50" style="font-size: 11px;">ASP.NET Identity 2.2 + Role Authorization</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Registration Form Composition -->
+            <div class="col-lg-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-white">
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 d-lg-none mb-3">
+                        <i class="bi bi-mortarboard-fill text-orange fs-3"></i>
+                        <span class="fw-extrabold text-dark fs-4">LMS</span>
+                    </div>
+                    <span class="badge bg-orange-subtle text-orange px-3 py-1 rounded-pill mb-2 fw-semibold">
+                        <i class="bi bi-person-plus-fill me-1"></i> New Learner &amp; Educator Registration
+                    </span>
+                    <h2 class="fw-extrabold tracking-tight mb-1 text-dark">Get Started Today</h2>
+                    <p class="text-muted small">Create your account to start learning or apply as a faculty member.</p>
+                </div>
+
+                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { role = "form", id = "registerForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger py-2 small border-0 border-start border-4 border-danger" })
+
+                    <!-- Clear Visual Role Selection -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-dark d-flex justify-content-between align-items-center">
+                            <span>Select Your Account Role:</span>
+                            <span class="badge bg-light text-secondary border small" id="currentSelectedRoleText">Student Selected</span>
+                        </label>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <input type="radio" class="btn-check" name="Role" id="roleStudent" value="Student" @(Model == null || Model.Role != "Instructor" ? "checked" : "") />
+                                <label class="role-selector-card w-100 p-3 rounded-3 d-flex flex-column align-items-center text-center cursor-pointer position-relative is-selected" for="roleStudent" id="labelRoleStudent">
+                                    <span class="role-selected-badge position-absolute top-0 end-0 m-2">
+                                        <i class="bi bi-check-circle-fill text-orange fs-5"></i>
+                                    </span>
+                                    <div class="role-icon-circle rounded-circle p-2 mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                        <i class="bi bi-mortarboard-fill fs-4"></i>
+                                    </div>
+                                    <strong class="d-block text-dark role-title mb-1">Student Learner</strong>
+                                    <span class="text-muted small role-desc" style="font-size: 11px;">Instant Account Activation</span>
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                <input type="radio" class="btn-check" name="Role" id="roleInstructor" value="Instructor" @(Model != null && Model.Role == "Instructor" ? "checked" : "") />
+                                <label class="role-selector-card w-100 p-3 rounded-3 d-flex flex-column align-items-center text-center cursor-pointer position-relative" for="roleInstructor" id="labelRoleInstructor">
+                                    <span class="role-selected-badge position-absolute top-0 end-0 m-2" style="display: none;">
+                                        <i class="bi bi-check-circle-fill text-orange fs-5"></i>
+                                    </span>
+                                    <div class="role-icon-circle rounded-circle p-2 mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                        <i class="bi bi-person-workspace fs-4"></i>
+                                    </div>
+                                    <strong class="d-block text-dark role-title mb-1">Educator / Teacher</strong>
+                                    <span class="text-muted small role-desc" style="font-size: 11px;">Subject to Admin Review</span>
+                                </label>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Role, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.FullName, new { @class = "form-label fw-bold small text-dark" })
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                            @Html.TextBoxFor(m => m.FullName, new { @class = "form-control border-start-0", placeholder = "e.g. John Doe", required = "required" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Email, new { @class = "form-label fw-bold small text-dark" })
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control border-start-0", placeholder = "name@example.com", required = "required", type = "email" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.Password, new { @class = "form-label fw-bold small text-dark" })
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-key text-muted"></i></span>
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-control border-start-0 border-end-0", placeholder = "Create password", required = "required", id = "regPassword" })
+                                <button type="button" class="btn btn-outline-secondary border-start-0 toggle-password-btn" type="button">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.ConfirmPassword, new { @class = "form-label fw-bold small text-dark" })
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-shield-check text-muted"></i></span>
+                                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control border-start-0 border-end-0", placeholder = "Confirm password", required = "required" })
+                                <button type="button" class="btn btn-outline-secondary border-start-0 toggle-password-btn" type="button">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger small" })
+                        </div>
+                    </div>
+
+                    <!-- Password Requirements Helper -->
+                    <div class="p-2 mb-3 bg-light rounded-3 border">
+                        <div class="text-muted fw-semibold mb-1" style="font-size: 11px;">
+                            <i class="bi bi-shield-lock me-1 text-orange"></i> Password Rules (Must contain all 4):
+                        </div>
+                        <div class="d-flex flex-wrap gap-1" style="font-size: 11px;">
+                            <span class="badge bg-white text-secondary border"><i class="bi bi-check2 text-success me-1"></i>Min 8 characters</span>
+                            <span class="badge bg-white text-secondary border"><i class="bi bi-check2 text-success me-1"></i>Uppercase (A-Z)</span>
+                            <span class="badge bg-white text-secondary border"><i class="bi bi-check2 text-success me-1"></i>Lowercase (a-z)</span>
+                            <span class="badge bg-white text-secondary border"><i class="bi bi-check2 text-success me-1"></i>Digit (0-9)</span>
+                            <span class="badge bg-white text-secondary border"><i class="bi bi-check2 text-success me-1"></i>Symbol (!@@#$%...)</span>
+                        </div>
+                    </div>
+
+                    <!-- Bio / Qualifications Field (Shown especially for Instructors) -->
+                    <div class="mb-3" id="bioSection" style="@(Model != null && Model.Role == "Instructor" ? "" : "display:none;")">
+                        @Html.LabelFor(m => m.Bio, new { @class = "form-label fw-bold small text-dark" })
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-card-text text-muted"></i></span>
+                            @Html.TextAreaFor(m => m.Bio, new { @class = "form-control border-start-0", rows = "3", placeholder = "Share your educational background, subject expertise, degrees, or certifications (helps administrators verify your profile faster)..." })
+                        </div>
+                        <div class="form-text small text-muted" id="bioHelpText">
+                            Recommended for instructor applicants to facilitate swift administrator approval.
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Bio, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <!-- Admin Approval Notice Banner -->
+                    <div class="alert alert-info py-2 px-3 small border-0 border-start border-3 border-info mb-4" id="approvalNotice" style="background: rgba(39, 184, 214, 0.1); border-color: #27B8D6 !important;">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-shield-check text-cyan fs-5 me-2" id="noticeIcon"></i>
+                            <div id="noticeText" class="text-dark small">
+                                <strong>Instant Access:</strong> As a student, your account is approved immediately upon registration. You can start browsing and enrolling in courses right away.
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm mb-3">
+                        <i class="bi bi-check2-circle me-1"></i> Complete Registration
+                    </button>
+                }
+
+                <div class="text-center mt-2 small text-muted">
+                    Already registered? <a href="@Url.Action("Login", "Account")" class="text-orange fw-bold text-decoration-none">Sign In to Account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            // Password toggle functionality
+            $('.toggle-password-btn').on('click', function () {
+                var $input = $(this).closest('.input-group').find('input');
+                var $icon = $(this).find('i');
+                if ($input.attr('type') === 'password') {
+                    $input.attr('type', 'text');
+                    $icon.removeClass('bi-eye').addClass('bi-eye-slash');
+                } else {
+                    $input.attr('type', 'password');
+                    $icon.removeClass('bi-eye-slash').addClass('bi-eye');
+                }
+            });
+
+            function updateRoleUi() {
+                var isInstructor = $('#roleInstructor').is(':checked');
+                if (isInstructor) {
+                    $('#labelRoleInstructor').addClass('is-selected').find('.role-selected-badge').show();
+                    $('#labelRoleStudent').removeClass('is-selected').find('.role-selected-badge').hide();
+                    $('#currentSelectedRoleText').text('Educator Selected').removeClass('text-secondary').addClass('text-orange fw-bold');
+                    $('#bioSection').slideDown();
+                    $('#noticeIcon').removeClass('text-cyan').addClass('text-orange');
+                    $('#approvalNotice').css({'background': 'rgba(255, 122, 24, 0.1)', 'border-color': '#FF7A18'});
+                    $('#noticeText').html('<strong>Instructor Review Required:</strong> When you register as an Educator, your account will be placed in review until approved by an administrator. You will be redirected to a verification status screen upon submitting.');
+                    $('#bioHelpText').html('<span class="text-orange fw-bold"><i class="bi bi-info-circle me-1"></i>Important:</span> Providing details about your qualifications and teaching experience will help administrators approve your application promptly.');
+                } else {
+                    $('#labelRoleStudent').addClass('is-selected').find('.role-selected-badge').show();
+                    $('#labelRoleInstructor').removeClass('is-selected').find('.role-selected-badge').hide();
+                    $('#currentSelectedRoleText').text('Student Selected').removeClass('text-orange fw-bold').addClass('text-secondary');
+                    $('#bioSection').slideUp();
+                    $('#noticeIcon').removeClass('text-orange').addClass('text-cyan');
+                    $('#approvalNotice').css({'background': 'rgba(39, 184, 214, 0.1)', 'border-color': '#27B8D6'});
+                    $('#noticeText').html('<strong>Instant Access:</strong> As a student, your account is approved immediately upon registration. You can start browsing and enrolling in courses right away.');
+                    $('#bioHelpText').html('Optional: Share a brief intro for your student profile.');
+                }
+            }
+
+            $('input[name="Role"]').on('change', updateRoleUi);
+            updateRoleUi();
+        });
+    </script>
+}

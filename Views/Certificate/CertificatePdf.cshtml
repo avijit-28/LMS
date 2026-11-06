@@ -1,0 +1,269 @@
+@model LMS.ViewModels.CertificateViewModel
+@{
+    Layout = null;
+    string instructorName = !string.IsNullOrWhiteSpace(Model.InstructorName) ? Model.InstructorName : "Marcus Holloway";
+    string instructorSigLocal = null;
+    if (!string.IsNullOrWhiteSpace(Model.InstructorSignaturePath))
+    {
+        try
+        {
+            if (Model.InstructorSignaturePath.StartsWith("~") || Model.InstructorSignaturePath.StartsWith("/"))
+            {
+                var vPath = Model.InstructorSignaturePath.StartsWith("~") ? Model.InstructorSignaturePath : "~" + Model.InstructorSignaturePath;
+                var pPath = Server.MapPath(vPath);
+                if (System.IO.File.Exists(pPath))
+                {
+                    instructorSigLocal = pPath;
+                }
+            }
+            else if (System.IO.File.Exists(Model.InstructorSignaturePath))
+            {
+                instructorSigLocal = Model.InstructorSignaturePath;
+            }
+        }
+        catch { }
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Certificate - @Model.CertificateNumber</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Times New Roman', Georgia, serif;
+            background-color: #ffffff;
+            color: #062330;
+            padding: 16px;
+        }
+        .cert-container {
+            width: 1040px;
+            height: 720px;
+            margin: 0 auto;
+            border: 12px solid #062330;
+            padding: 8px;
+            position: relative;
+            background: #FAF9F5;
+        }
+        .cert-inner-border {
+            border: 3px solid #D4AF37;
+            height: 100%;
+            padding: 24px 36px;
+            text-align: center;
+            position: relative;
+            background: radial-gradient(circle at 50% 50%, rgba(254, 249, 231, 0.8) 0%, rgba(250, 247, 240, 0.95) 75%, #F5F1E6 100%);
+        }
+        .emblem-pill {
+            display: inline-block;
+            background: #062330;
+            color: #ffffff;
+            padding: 6px 24px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            border: 1px solid #D4AF37;
+        }
+        .cert-heading {
+            font-size: 38px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: #041822;
+            margin-top: 14px;
+            text-transform: uppercase;
+        }
+        .sub-heading {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #64748b;
+            margin: 8px 0 14px 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+        .student-name {
+            font-size: 32px;
+            font-weight: 900;
+            color: #0A364A;
+            letter-spacing: 2px;
+            border-bottom: 2px solid #D4AF37;
+            display: inline-block;
+            padding: 0 30px 4px 30px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .cert-statement {
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 8px;
+            line-height: 1.5;
+            font-style: italic;
+        }
+        .course-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #041822;
+            margin-bottom: 16px;
+        }
+        .metrics-table {
+            width: 75%;
+            margin: 0 auto 16px auto;
+            border-collapse: collapse;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+        .metrics-table td {
+            padding: 8px 12px;
+            text-align: center;
+            border-right: 1px solid #e2e8f0;
+        }
+        .metrics-table td:last-child {
+            border-right: none;
+        }
+        .metrics-label {
+            font-size: 9px;
+            font-weight: bold;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+        }
+        .metrics-val {
+            font-size: 15px;
+            font-weight: bold;
+            color: #041822;
+            margin-top: 2px;
+            display: block;
+        }
+        .signatures {
+            width: 90%;
+            margin: 12px auto 0 auto;
+            display: table;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+        .sig-col {
+            display: table-cell;
+            width: 33.33%;
+            vertical-align: bottom;
+            text-align: center;
+        }
+        .sig-line {
+            width: 190px;
+            border-top: 2px solid #062330;
+            margin: 0 auto;
+            padding-top: 4px;
+            font-weight: bold;
+            font-size: 13px;
+            color: #041822;
+        }
+        .sig-role {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+        .seal {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 3px double #ffffff;
+            background: radial-gradient(circle, #FDE68A 0%, #F59E0B 60%, #B45309 100%);
+            color: #78350F;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .sig-svg {
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="cert-container">
+        <div class="cert-inner-border">
+            <div>
+                <span class="emblem-pill">EduPlatform Learning Management System</span>
+                <div style="font-size: 9px; color: #78716c; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; font-family: sans-serif;">Board of Academic Standards &amp; Technical Accreditation</div>
+            </div>
+
+            <h1 class="cert-heading">Certificate of Completion</h1>
+            <p class="sub-heading">This is officially conferred upon</p>
+
+            <div class="student-name">@Model.StudentName</div>
+
+            <p class="cert-statement">for successfully fulfilling all curriculum coursework, laboratory modules, practical projects, and comprehensive final examination requirements for the professional curriculum:</p>
+            <div class="course-title">@Model.CourseTitle</div>
+
+            <table class="metrics-table">
+                <tr>
+                    <td>
+                        <span class="metrics-label">Final Assessment Score</span>
+                        <span class="metrics-val" style="color: #059669;">@(Model.FinalScore.HasValue ? Model.FinalScore.Value.ToString("0.0") + "%" : "100.0%")</span>
+                    </td>
+                    <td>
+                        <span class="metrics-label">Date of Issue</span>
+                        <span class="metrics-val">@Model.IssueDate.ToString("MMMM dd, yyyy")</span>
+                    </td>
+                    <td>
+                        <span class="metrics-label">Cryptographic ID</span>
+                        <span class="metrics-val" style="font-family: monospace; color: #0B3445;">@Model.CertificateNumber</span>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="signatures">
+                <div class="sig-col">
+                    <div class="sig-svg">
+                        <img src="@Server.MapPath("~/Content/images/signatures/dr-evelyn-vance-signature.png")" alt="Dr. Evelyn Vance" style="max-height: 44px; max-width: 170px; object-fit: contain;" />
+                    </div>
+                    <div class="sig-line">Dr. Evelyn Vance</div>
+                    <div class="sig-role">Director of Academic Standards</div>
+                </div>
+
+                <div class="sig-col">
+                    <div class="seal">
+                        VERIFIED<br />CREDENTIAL
+                    </div>
+                    <div style="font-size: 8px; color: #64748b; margin-top: 4px; font-family: monospace;">AUTHENTIC SECURE ID</div>
+                </div>
+
+                <div class="sig-col">
+                    <div class="sig-svg">
+                        @if (!string.IsNullOrWhiteSpace(instructorSigLocal))
+                        {
+                            <img src="@instructorSigLocal" alt="@instructorName" style="max-height: 44px; max-width: 170px; object-fit: contain;" />
+                        }
+                        else if (!string.IsNullOrWhiteSpace(Model.InstructorSignaturePath))
+                        {
+                            <img src="@Model.InstructorSignaturePath" alt="@instructorName" style="max-height: 44px; max-width: 170px; object-fit: contain;" />
+                        }
+                        else
+                        {
+                            <svg width="170" height="42" viewBox="0 0 190 48" fill="none">
+                                <path d="M14 18C28 12 38 34 52 28C66 22 72 14 86 24C98 32 110 16 126 22C140 28 152 14 168 20C176 23 182 18 186 24" stroke="#062330" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M34 26C48 38 68 32 82 20M115 22L135 36" stroke="#062330" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        }
+                    </div>
+                    <div class="sig-line">@instructorName</div>
+                    <div class="sig-role">Course Author &amp; Faculty Lead</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

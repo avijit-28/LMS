@@ -1,0 +1,75 @@
+@{
+    ViewBag.Title = "Contact & Support";
+}
+
+<div class="py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <span class="badge badge-primary-subtle px-3 py-1 rounded-pill mb-2 fw-semibold">
+                    <span class="pulse-dot pulse-primary"></span> Get in Touch
+                </span>
+                <h2 class="fw-extrabold tracking-tight">Contact Our Advisory & Support Team</h2>
+                <p class="text-secondary small">Have questions regarding curriculums, enterprise enrollments, or instructor onboarding?</p>
+            </div>
+
+            <div class="card card-custom p-4 p-md-5 shadow-lg border-0" style="background: rgba(6, 35, 48, 0.95); border: 1px solid rgba(39, 184, 214, 0.25) !important; border-radius: 20px; backdrop-filter: blur(16px); color: #FFFFFF;">
+                <form onsubmit="event.preventDefault(); LMS.toast('Thank you for reaching out! Our team will respond to your inquiry shortly.', 'success'); this.reset();">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-white">Your Name</label>
+                            <input type="text" class="form-control" placeholder="John Doe" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-white">Email Address</label>
+                            <input type="email" class="form-control" placeholder="name@example.com" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold small text-white">Subject</label>
+                            <input type="text" class="form-control" placeholder="Inquiry about courses, grading, or certificates" required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold small text-white">Message</label>
+                            <textarea class="form-control" rows="5" placeholder="Write your inquiry or question here..." required style="background: rgba(4, 24, 34, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #FFFFFF;"></textarea>
+                        </div>
+                        <div class="col-12 text-end pt-2">
+                            <button type="submit" class="btn btn-primary px-5 py-2 rounded-pill fw-bold shadow-sm" style="background-color: #FF7A18 !important; border-color: #FF7A18 !important;">
+                                <i class="bi bi-send-fill me-1"></i> Send Inquiry
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="row g-4 mt-4 text-center">
+                <div class="col-md-4">
+                    <div class="p-4 rounded-4 shadow-sm card-hover h-100" style="background: linear-gradient(135deg, rgba(6, 35, 48, 0.95) 0%, rgba(11, 52, 69, 0.85) 100%); border: 1px solid rgba(39, 184, 214, 0.25);">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-2" style="background: rgba(39, 184, 214, 0.15); color: #27B8D6;">
+                            <i class="bi bi-geo-alt-fill fs-3"></i>
+                        </div>
+                        <h6 class="fw-bold mb-1 text-white">Campus Hub</h6>
+                        <small style="color: #94A3B8;">Kolkata, West Bengal, India</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 rounded-4 shadow-sm card-hover h-100" style="background: linear-gradient(135deg, rgba(6, 35, 48, 0.95) 0%, rgba(11, 52, 69, 0.85) 100%); border: 1px solid rgba(39, 184, 214, 0.25);">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-2" style="background: rgba(255, 122, 24, 0.15); color: #FF7A18;">
+                            <i class="bi bi-envelope-fill fs-3"></i>
+                        </div>
+                        <h6 class="fw-bold mb-1 text-white">Email Advisory</h6>
+                        <small style="color: #94A3B8;">support@lms.edu</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 rounded-4 shadow-sm card-hover h-100" style="background: linear-gradient(135deg, rgba(6, 35, 48, 0.95) 0%, rgba(11, 52, 69, 0.85) 100%); border: 1px solid rgba(39, 184, 214, 0.25);">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-2" style="background: rgba(53, 201, 138, 0.15); color: #35C98A;">
+                            <i class="bi bi-telephone-fill fs-3"></i>
+                        </div>
+                        <h6 class="fw-bold mb-1 text-white">Direct Line</h6>
+                        <small style="color: #94A3B8;">+91 (033) 2200-LMS-EDU</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

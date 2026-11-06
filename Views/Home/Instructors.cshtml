@@ -1,0 +1,157 @@
+@model List<LMS.ViewModels.InstructorShowcaseViewModel>
+@{
+    ViewBag.Title = "Our Instructors - Learn from Industry Leaders";
+}
+
+<div class="py-4 py-lg-5">
+    <!-- Hero Banner -->
+    <div class="text-center max-w-700 mx-auto mb-5">
+        <span class="badge bg-orange-subtle text-orange border border-orange-subtle px-3 py-1 rounded-pill mb-3 fw-semibold">
+            <i class="bi bi-mortarboard-fill me-1"></i> World-Class Faculty
+        </span>
+        <h1 class="display-5 fw-extrabold text-white mb-3 tracking-tight">
+            Learn from <span class="text-orange">Industry Leaders</span> & Architects
+        </h1>
+        <p class="lead text-white-50" style="line-height: 1.6; max-width: 650px; margin: 0 auto;">
+            Our instructors are seasoned software engineers, data scientists, and engineering managers who bring real-world enterprise experience into every lecture.
+        </p>
+
+        <!-- Summary Stats Ribbon -->
+        <div class="d-flex flex-wrap justify-content-center gap-4 mt-4 pt-2">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-patch-check-fill text-cyan fs-4"></i>
+                <div class="text-start">
+                    <strong class="d-block text-white fs-5 fw-bold mb-0">@(Model != null ? Model.Count : 0)</strong>
+                    <span class="text-white-50 small" style="font-size: 11px;">Verified Instructors</span>
+                </div>
+            </div>
+            <div class="vr bg-white bg-opacity-10 d-none d-sm-block"></div>
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-journal-code text-orange fs-4"></i>
+                <div class="text-start">
+                    <strong class="d-block text-white fs-5 fw-bold mb-0">@(Model != null ? Model.Sum(m => m.CourseCount) : 0)</strong>
+                    <span class="text-white-50 small" style="font-size: 11px;">Active Curriculums</span>
+                </div>
+            </div>
+            <div class="vr bg-white bg-opacity-10 d-none d-sm-block"></div>
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-people-fill text-success fs-4"></i>
+                <div class="text-start">
+                    <strong class="d-block text-white fs-5 fw-bold mb-0">@(Model != null ? Model.Sum(m => m.TotalStudents) : 0)+</strong>
+                    <span class="text-white-50 small" style="font-size: 11px;">Learners Mentored</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructor Directory Cards Grid -->
+    <div class="row g-4 mb-5">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <div class="p-4 rounded-4" style="background: rgba(11, 52, 69, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <i class="bi bi-person-workspace display-4 text-white-50 mb-3 d-block"></i>
+                    <h4 class="text-white fw-bold">Faculty Members Loading</h4>
+                    <p class="text-white-50 small">New verified instructors are currently joining the curriculum committee.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                var ins = item.Instructor;
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom h-100 p-4 d-flex flex-column" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px);">
+                        <!-- Instructor Header -->
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="position-relative flex-shrink-0">
+                                @if (!string.IsNullOrWhiteSpace(ins.ProfilePicture))
+                                {
+                                    <img src="@ins.ProfilePicture" alt="@ins.FullName" class="rounded-circle shadow" style="width: 64px; height: 64px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                }
+                                <div class="rounded-circle bg-orange text-white d-flex align-items-center justify-content-center fw-bold fs-4 shadow" style="width: 64px; height: 64px; display: @(string.IsNullOrWhiteSpace(ins.ProfilePicture) ? "flex" : "none");">
+                                    @(string.IsNullOrWhiteSpace(ins.FullName) ? "I" : ins.FullName.Substring(0, 1).ToUpper())
+                                </div>
+                                <span class="position-absolute bottom-0 end-0 bg-success text-white rounded-circle p-1 d-flex align-items-center justify-content-center shadow-xs" style="width: 20px; height: 20px; font-size: 10px;" title="Verified Faculty">
+                                    <i class="bi bi-check-lg"></i>
+                                </span>
+                            </div>
+                            <div class="overflow-hidden">
+                                <h5 class="fw-bold text-white mb-0 text-truncate">@ins.FullName</h5>
+                                <span class="badge bg-white bg-opacity-10 text-cyan small fw-normal mt-1">
+                                    <i class="bi bi-shield-check me-1"></i> Verified Instructor
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Bio / Description -->
+                        <p class="text-white-50 small flex-grow-1 mb-3" style="line-height: 1.6; min-height: 48px;">
+                            @(string.IsNullOrWhiteSpace(ins.Bio) ? "Senior Technical Instructor specializing in full-stack architecture, software craftsmanship, and real-world system design." : ins.Bio)
+                        </p>
+
+                        <!-- Key Instructor Metrics -->
+                        <div class="p-3 rounded-3 mb-3 d-flex justify-content-between align-items-center" style="background: rgba(11, 52, 69, 0.6); border: 1px solid rgba(255, 255, 255, 0.08);">
+                            <div class="text-center flex-fill border-end border-white border-opacity-10">
+                                <div class="text-white-50" style="font-size: 11px;">Courses</div>
+                                <strong class="text-white fw-bold">@item.CourseCount</strong>
+                            </div>
+                            <div class="text-center flex-fill border-end border-white border-opacity-10">
+                                <div class="text-white-50" style="font-size: 11px;">Students</div>
+                                <strong class="text-white fw-bold">@item.TotalStudents</strong>
+                            </div>
+                            <div class="text-center flex-fill">
+                                <div class="text-white-50" style="font-size: 11px;">Rating</div>
+                                <strong class="text-orange fw-bold">
+                                    <i class="bi bi-star-fill text-orange me-1" style="font-size: 11px;"></i>@item.AverageRating.ToString("F1")
+                                </strong>
+                            </div>
+                        </div>
+
+                        <!-- Published Tracks by this Instructor -->
+                        @if (item.Courses != null && item.Courses.Any())
+                        {
+                            <div class="mb-3">
+                                <div class="text-white-50 small mb-2 fw-semibold" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Teaches:</div>
+                                <div class="d-flex flex-column gap-1">
+                                    @foreach (var c in item.Courses)
+                                    {
+                                        <a href="@Url.Action("Details", "Courses", new { id = c.CourseId })" class="text-decoration-none d-flex align-items-center justify-content-between p-2 rounded-2 text-white-50 small hover-text-white" style="background: rgba(255, 255, 255, 0.04); transition: background 0.2s;">
+                                            <span class="text-truncate me-2 text-white"><i class="bi bi-play-circle me-1 text-orange"></i> @c.Title</span>
+                                            <i class="bi bi-chevron-right text-white-50" style="font-size: 10px;"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Action Button -->
+                        <a href="@Url.Action("Index", "Courses", new { search = ins.FullName })" class="btn btn-outline-light rounded-pill w-100 fw-semibold btn-sm py-2 mt-auto" style="border-color: rgba(255, 255, 255, 0.2);">
+                            View Author Tracks <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Become an Instructor CTA Box -->
+    <div class="p-4 p-md-5 rounded-4 position-relative overflow-hidden shadow-lg mt-5" style="background: linear-gradient(135deg, #0B3445 0%, #062330 60%, #041822 100%); border: 1px solid rgba(255, 122, 24, 0.3);">
+        <div class="row align-items-center g-4 position-relative z-1">
+            <div class="col-lg-8">
+                <span class="badge bg-orange text-white px-3 py-1 rounded-pill mb-3 small fw-bold">
+                    <i class="bi bi-rocket-takeoff-fill me-1"></i> Join The Teaching Community
+                </span>
+                <h2 class="display-6 fw-extrabold text-white mb-2">Teach What You Love. Inspire Engineers.</h2>
+                <p class="text-light text-opacity-75 mb-0" style="line-height: 1.7; max-width: 600px;">
+                    Publish your engineering courses, mentor thousands of learners globally, build your technical brand, and earn <strong>95% net revenue</strong> on every course enrollment.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="@Url.Action("Register", "Account")" class="btn btn-primary rounded-pill px-4 py-3 fw-bold fs-6 shadow-lg">
+                    Apply as an Instructor <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

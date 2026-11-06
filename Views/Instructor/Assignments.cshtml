@@ -1,0 +1,258 @@
+@model IEnumerable<LMS.Models.Assignment>
+@{
+    var course = (LMS.Models.Course)ViewBag.Course;
+    ViewBag.Title = "Course Assignments - " + (course?.Title ?? "Course");
+    var totalAssignments = Model != null ? Model.Count() : 0;
+    var totalSubmissions = Model != null ? Model.Sum(a => a.Submissions != null ? a.Submissions.Count : 0) : 0;
+    var totalGraded = Model != null ? Model.Sum(a => a.Submissions != null ? a.Submissions.Count(s => s.Status == "Graded") : 0) : 0;
+    var pendingReview = totalSubmissions - totalGraded;
+}
+
+<div class="py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Instructor")" class="text-decoration-none">Studio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Courses", "Instructor")" class="text-decoration-none">My Courses</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Assignments: @(course?.Title ?? "Course")</li>
+        </ol>
+    </nav>
+
+    <!-- Header Section -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge badge-info-subtle px-3 py-1 rounded-pill fw-semibold">
+                    <i class="bi bi-file-earmark-code-fill text-info me-1"></i> Practical Assignments & Tasks
+                </span>
+                <span class="badge bg-light text-muted border rounded-pill px-2 py-1 small">
+                    @(course?.Title ?? "Course")
+                </span>
+            </div>
+            <h2 class="fw-extrabold mb-1 tracking-tight">Course Assignments Studio</h2>
+            <p class="text-muted small mb-0">Design real-world coding projects, link tasks to curriculum modules, and evaluate student work</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Courses", "Instructor")" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Back to Courses
+            </a>
+            <a href="@Url.Action("CreateAssignment", "Instructor", new { courseId = course.CourseId })" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> Add Assignment
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm border-0 border-start border-4 border-success mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2 text-success"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- KPI Summary Metrics -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card card-custom p-3 bg-white border-0 shadow-sm h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-semibold text-uppercase tracking-wider">Assignments</div>
+                        <div class="fs-3 fw-extrabold text-dark mt-1">@totalAssignments</div>
+                    </div>
+                    <div class="rounded-circle bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-journal-code fs-5"></i>
+                    </div>
+                </div>
+                <div class="text-muted small mt-2">Active tasks configured</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card card-custom p-3 bg-white border-0 shadow-sm h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-semibold text-uppercase tracking-wider">Submissions</div>
+                        <div class="fs-3 fw-extrabold text-dark mt-1">@totalSubmissions</div>
+                    </div>
+                    <div class="rounded-circle bg-info-subtle text-info p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-inbox-fill fs-5"></i>
+                    </div>
+                </div>
+                <div class="text-muted small mt-2">Total learner uploads</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card card-custom p-3 bg-white border-0 shadow-sm h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-semibold text-uppercase tracking-wider">Evaluated</div>
+                        <div class="fs-3 fw-extrabold text-success mt-1">@totalGraded</div>
+                    </div>
+                    <div class="rounded-circle bg-success-subtle text-success p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-check-circle-fill fs-5"></i>
+                    </div>
+                </div>
+                <div class="text-muted small mt-2">Graded with feedback</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card card-custom p-3 bg-white border-0 shadow-sm h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-semibold text-uppercase tracking-wider">Pending Review</div>
+                        <div class="fs-3 fw-extrabold @(pendingReview > 0 ? "text-warning" : "text-muted") mt-1">@pendingReview</div>
+                    </div>
+                    <div class="rounded-circle @(pendingReview > 0 ? "bg-warning-subtle text-warning" : "bg-light text-muted") p-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-hourglass-split fs-5"></i>
+                    </div>
+                </div>
+                <div class="text-muted small mt-2">Awaiting faculty scoring</div>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card card-custom p-5 text-center shadow-sm bg-white border-0">
+            <div class="rounded-circle bg-light p-4 d-inline-flex mx-auto mb-3">
+                <i class="bi bi-journal-code text-muted display-4"></i>
+            </div>
+            <h4 class="fw-bold">No assignments posted yet</h4>
+            <p class="text-muted small mb-3">Create practical projects with submission deadlines and grading rubrics for your students.</p>
+            <div>
+                <a href="@Url.Action("CreateAssignment", "Instructor", new { courseId = course.CourseId })" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Create First Assignment
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Modern Redesigned Assignment Cards List -->
+        <div class="d-flex flex-column gap-3">
+            @foreach (var item in Model)
+            {
+                var subsCount = item.Submissions != null ? item.Submissions.Count : 0;
+                var gradedCount = item.Submissions != null ? item.Submissions.Count(s => s.Status == "Graded") : 0;
+                var pendingCount = subsCount - gradedCount;
+                var percentGraded = subsCount > 0 ? (int)Math.Round((double)gradedCount * 100.0 / subsCount) : 0;
+
+                <div class="card card-custom p-4 bg-white border-0 shadow-sm card-hover">
+                    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                        <!-- Main Info & Metadata -->
+                        <div class="d-flex align-items-start gap-3 flex-grow-1">
+                            <div class="rounded-3 bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 52px; height: 52px;">
+                                <i class="bi bi-file-earmark-code-fill fs-4"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                    @if (item.Module != null)
+                                    {
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1 small fw-semibold">
+                                            <i class="bi bi-collection-play-fill me-1"></i> Module @item.Module.ModuleOrder: @item.Module.ModuleName
+                                        </span>
+                                    }
+                                    else if (item.Lesson != null)
+                                    {
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2 py-1 small fw-semibold">
+                                            <i class="bi bi-play-circle me-1"></i> @item.Lesson.Title
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-secondary border rounded-pill px-2 py-1 small">
+                                            <i class="bi bi-mortarboard me-1"></i> Course-Wide Capstone
+                                        </span>
+                                    }
+
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 small font-monospace fw-bold">
+                                        <i class="bi bi-award me-1"></i> @item.MaxMarks pts
+                                    </span>
+
+                                    @if (item.DueDate.HasValue)
+                                    {
+                                        var isOverdue = item.DueDate.Value < DateTime.UtcNow;
+                                        <span class="badge @(isOverdue ? "bg-secondary-subtle text-secondary" : "bg-warning-subtle text-warning border border-warning-subtle") rounded-pill px-2 py-1 small fw-semibold">
+                                            <i class="bi bi-clock me-1"></i> Due: @item.DueDate.Value.ToString("MMM dd, yyyy")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-muted border rounded-pill px-2 py-1 small">
+                                            <i class="bi bi-infinity me-1"></i> No Deadline
+                                        </span>
+                                    }
+                                </div>
+
+                                <h5 class="fw-bold text-dark mb-1">@item.Title</h5>
+
+                                @if (!string.IsNullOrEmpty(item.Description))
+                                {
+                                    <p class="text-muted small mb-2 text-truncate" style="max-width: 650px;">
+                                        @item.Description
+                                    </p>
+                                }
+
+                                <div class="d-flex align-items-center gap-3 text-muted small">
+                                    <span><i class="bi bi-calendar3 me-1"></i> Created @item.CreatedDate.ToString("MMM dd, yyyy")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress & Submissions Status Center -->
+                        <div class="px-lg-3 py-2 py-lg-0 border-start-lg border-end-lg flex-shrink-0" style="min-width: 220px;">
+                            <div class="d-flex justify-content-between align-items-center mb-1 small">
+                                <span class="fw-bold text-dark">
+                                    <i class="bi bi-people-fill text-muted me-1"></i> @subsCount Submissions
+                                </span>
+                                @if (subsCount > 0)
+                                {
+                                    <span class="text-muted small fw-semibold">@percentGraded% graded</span>
+                                }
+                            </div>
+
+                            @if (subsCount > 0)
+                            {
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: @percentGraded%;" aria-valuenow="@percentGraded" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-1 small">
+                                    <span class="text-success small"><i class="bi bi-check-circle-fill me-1"></i> @gradedCount Graded</span>
+                                    @if (pendingCount > 0)
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2 py-0 small fw-bold">
+                                            @pendingCount Pending
+                                        </span>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-muted small fst-italic">No student submissions yet</div>
+                            }
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                            <a href="@Url.Action("Submissions", "Instructor", new { assignmentId = item.AssignmentId })" class="btn btn-primary rounded-pill px-3 py-2 fw-semibold shadow-xs">
+                                <i class="bi bi-eye me-1"></i> Review Submissions (@subsCount)
+                            </a>
+                            <a href="@Url.Action("EditAssignment", "Instructor", new { id = item.AssignmentId })" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-semibold" title="Edit Task Details">
+                                <i class="bi bi-pencil me-1"></i> Edit Task
+                            </a>
+                            @using (Html.BeginForm("DeleteAssignment", "Instructor", new { id = item.AssignmentId }, FormMethod.Post, new { @class = "d-inline" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-danger rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" title="Delete Task" onclick="return confirm('Are you sure you want to delete assignment \'@Html.Raw(HttpUtility.JavaScriptStringEncode(item.Title))\'?');">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

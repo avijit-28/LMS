@@ -1,0 +1,605 @@
+﻿@{
+    string activeSessionGuid = Session["EduBot_SessionGuid"] as string;
+    if (string.IsNullOrEmpty(activeSessionGuid))
+    {
+        activeSessionGuid = Guid.NewGuid().ToString("N");
+        Session["EduBot_SessionGuid"] = activeSessionGuid;
+    }
+}
+
+<!-- Floating EduBot Launcher Button -->
+<div id="edubot-launcher" class="edubot-launcher" onclick="toggleEduBot()" title="Chat with EduBot AI Academic Advisor">
+    <div class="edubot-launcher-pulse"></div>
+    <div class="edubot-launcher-icon">
+        <i class="bi bi-robot fs-4 text-white"></i>
+    </div>
+    <span class="edubot-badge">AI</span>
+</div>
+
+<!-- Floating EduBot Window -->
+<div id="edubot-window" class="edubot-window shadow-2xl" style="display: none;">
+    <!-- Header -->
+    <div class="edubot-header d-flex align-items-center justify-content-between p-3">
+        <div class="d-flex align-items-center gap-2">
+            <div class="edubot-avatar d-flex align-items-center justify-content-center">
+                <i class="bi bi-robot text-white fs-5"></i>
+            </div>
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold text-white fs-6">EduBot Advisor</span>
+                    <span class="badge rounded-pill" style="background: rgba(39, 184, 214, 0.2); color: #27B8D6; border: 1px solid rgba(39, 184, 214, 0.4); font-size: 10px;">
+                        <i class="bi bi-cpu-fill me-1"></i> Gemini RAG
+                    </span>
+                </div>
+                <div class="small" style="color: #94A3B8; font-size: 11px;">
+                    <span class="online-dot"></span> 24/7 Curriculum & Learning Guide
+                </div>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-1">
+            <a href="@Url.Action("Index", "ChatBot")" class="btn btn-sm btn-icon text-white-50 hover-text-white" title="Open Full-Screen Assistant">
+                <i class="bi bi-arrows-angle-expand"></i>
+            </a>
+            <button type="button" class="btn btn-sm btn-icon text-white-50 hover-text-white" onclick="clearEduBotHistory()" title="Clear Chat History">
+                <i class="bi bi-trash3"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-icon text-white-50 hover-text-white" onclick="toggleEduBot()" title="Minimize Chat">
+                <i class="bi bi-dash-lg fs-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Action Starter Chips (All Options Visible with Clean Wrap) -->
+    <div class="edubot-chips-bar px-3 py-2 border-bottom border-secondary border-opacity-10 d-flex flex-wrap gap-1">
+        <button type="button" class="edubot-chip" onclick="sendEduBotQuickPrompt('What courses are available for beginners?')">
+            <i class="bi bi-stars text-orange me-1"></i> Beginner Tracks
+        </button>
+        <button type="button" class="edubot-chip" onclick="sendEduBotQuickPrompt('How do I earn and verify my certificate?')">
+            <i class="bi bi-patch-check text-cyan me-1"></i> Certification
+        </button>
+        <button type="button" class="edubot-chip" onclick="sendEduBotQuickPrompt('What is my current course progress?')">
+            <i class="bi bi-clock-history text-success me-1"></i> My Progress
+        </button>
+        <button type="button" class="edubot-chip" onclick="sendEduBotQuickPrompt('How do receipts and billing work?')">
+            <i class="bi bi-receipt text-warning me-1"></i> Receipts &amp; Billing
+        </button>
+        <button type="button" class="edubot-chip" onclick="sendEduBotQuickPrompt('Which module are still left to complete?')">
+            <i class="bi bi-journal-bookmark text-info me-1"></i> Pending Modules
+        </button>
+        <button type="button" class="edubot-chip" onclick="sendEduBotQuickPrompt('What is the next lesson of the course?')">
+            <i class="bi bi-compass text-danger me-1"></i> Next Lesson
+        </button>
+    </div>
+
+    <!-- Messages Feed -->
+    <div id="edubot-messages" class="edubot-messages p-3">
+        <!-- Initial Welcome Message -->
+        <div class="edubot-msg assistant">
+            <div class="edubot-bubble">
+                <p class="mb-1">Hello! I am <strong>EduBot</strong>, your AI Academic Advisor for EduPlatform.</p>
+                <p class="mb-0 small text-white-50">I can guide you through our syllabus modules, recommend courses, check your study progress, or explain platform certifications. How can I help you today?</p>
+            </div>
+            <span class="edubot-time">Just now</span>
+        </div>
+    </div>
+
+    <!-- Typing Indicator -->
+    <div id="edubot-typing" class="px-3 py-2 small text-white-50 align-items-center gap-2" style="display: none;">
+        <span class="spinner-grow spinner-grow-sm text-cyan" role="status"></span>
+        <span class="spinner-grow spinner-grow-sm text-orange" role="status"></span>
+        <span class="spinner-grow spinner-grow-sm text-cyan" role="status"></span>
+        <span class="font-monospace" style="font-size: 11px;">EduBot is retrieving curriculum context...</span>
+    </div>
+
+    <!-- Input Footer -->
+    <div class="edubot-footer p-3 border-top border-secondary border-opacity-10">
+        <form id="edubot-form" onsubmit="handleEduBotSubmit(event)" class="d-flex align-items-end gap-2">
+            <input type="hidden" id="edubot-session-guid" value="@activeSessionGuid" />
+            <textarea id="edubot-input" class="form-control edubot-textarea" rows="1" placeholder="Ask anything about courses, modules, exams..." onkeydown="handleEduBotKeyDown(event)"></textarea>
+            <button type="submit" id="edubot-send-btn" class="btn edubot-send-btn d-flex align-items-center justify-content-center" title="Send Message">
+                <i class="bi bi-arrow-up-short fs-4"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+/* EduBot Floating Launcher */
+.edubot-launcher {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF7A18 0%, #FF9E40 100%);
+    box-shadow: 0 10px 25px rgba(255, 122, 24, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1050;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.edubot-launcher:hover {
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 14px 30px rgba(255, 122, 24, 0.55);
+}
+.edubot-launcher-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: inherit;
+    opacity: 0.6;
+    animation: edubotPulse 2.4s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    z-index: -1;
+}
+@@keyframes edubotPulse {
+    0% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.35); opacity: 0; }
+    100% { transform: scale(1); opacity: 0; }
+}
+.edubot-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #27B8D6;
+    color: #041822;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 2px solid #062330;
+}
+
+/* EduBot Window */
+.edubot-window {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    width: 420px;
+    max-width: calc(100vw - 32px);
+    height: 600px;
+    max-height: calc(100vh - 120px);
+    border-radius: 20px;
+    background: rgba(6, 35, 48, 0.96);
+    border: 1px solid rgba(39, 184, 214, 0.3);
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    z-index: 1050;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(39, 184, 214, 0.15);
+    animation: edubotSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@@keyframes edubotSlideUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.edubot-header {
+    background: rgba(4, 24, 34, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.edubot-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #FF7A18, #27B8D6);
+}
+.online-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #35C98A;
+    box-shadow: 0 0 6px #35C98A;
+    margin-right: 4px;
+}
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+}
+.btn-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.edubot-chips-bar {
+    background: rgba(4, 24, 34, 0.7);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 12px;
+}
+.edubot-chip {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(39, 184, 214, 0.25);
+    color: #E2E8F0;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+.edubot-chip:hover {
+    background: rgba(39, 184, 214, 0.25);
+    border-color: #27B8D6;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(39, 184, 214, 0.2);
+}
+.edubot-chip:active {
+    transform: translateY(0);
+}
+
+.edubot-messages {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.edubot-messages::-webkit-scrollbar {
+    width: 5px;
+}
+.edubot-messages::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.edubot-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 86%;
+}
+.edubot-msg.user {
+    align-self: flex-end;
+}
+.edubot-msg.assistant {
+    align-self: flex-start;
+}
+.edubot-bubble {
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    word-break: break-word;
+}
+.edubot-msg.user .edubot-bubble {
+    background: linear-gradient(135deg, #FF7A18, #E06000);
+    color: #FFFFFF;
+    border-bottom-right-radius: 4px;
+}
+.edubot-msg.assistant .edubot-bubble {
+    background: rgba(11, 52, 69, 0.75);
+    border: 1px solid rgba(39, 184, 214, 0.2);
+    color: #F1F5F9;
+    border-bottom-left-radius: 4px;
+}
+.edubot-msg.assistant .edubot-bubble a {
+    color: #27B8D6;
+    text-decoration: underline;
+    font-weight: 600;
+}
+.edubot-time {
+    font-size: 10px;
+    color: #64748B;
+    margin-top: 3px;
+    padding: 0 4px;
+}
+.edubot-msg.user .edubot-time {
+    align-self: flex-end;
+}
+
+/* Course Card Inside Chat */
+.edubot-course-card {
+    background: rgba(4, 24, 34, 0.85);
+    border: 1px solid rgba(39, 184, 214, 0.25);
+    border-radius: 12px;
+    padding: 10px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.edubot-course-card .course-title {
+    font-weight: 700;
+    font-size: 12px;
+    color: #FFFFFF;
+}
+.edubot-course-card .course-meta {
+    font-size: 11px;
+    color: #94A3B8;
+}
+
+/* Footer Input Area */
+.edubot-footer {
+    background: rgba(4, 24, 34, 0.9);
+}
+.edubot-textarea {
+    background: rgba(6, 35, 48, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+    border-radius: 18px !important;
+    resize: none;
+    font-size: 13px;
+    padding: 8px 14px;
+    max-height: 90px;
+}
+.edubot-textarea:focus {
+    border-color: #27B8D6 !important;
+    box-shadow: 0 0 0 2px rgba(39, 184, 214, 0.25) !important;
+}
+.edubot-send-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #FF7A18;
+    color: #FFFFFF;
+    border: none;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+.edubot-send-btn:hover {
+    background: #E06000;
+    transform: scale(1.05);
+}
+</style>
+
+<script>
+    var isEduBotOpen = false;
+
+    function toggleEduBot() {
+        var win = document.getElementById('edubot-window');
+        var launcher = document.getElementById('edubot-launcher');
+        if (!win) return;
+
+        isEduBotOpen = !isEduBotOpen;
+        if (isEduBotOpen) {
+            win.style.display = 'flex';
+            setTimeout(function() {
+                var input = document.getElementById('edubot-input');
+                if (input) input.focus();
+                scrollEduBotToBottom();
+            }, 100);
+        } else {
+            win.style.display = 'none';
+        }
+    }
+
+    function scrollEduBotToBottom() {
+        var msgs = document.getElementById('edubot-messages');
+        if (msgs) {
+            msgs.scrollTop = msgs.scrollHeight;
+            setTimeout(function() {
+                if (msgs) msgs.scrollTop = msgs.scrollHeight;
+            }, 60);
+            setTimeout(function() {
+                if (msgs) msgs.scrollTop = msgs.scrollHeight;
+            }, 200);
+        }
+    }
+
+    function handleEduBotKeyDown(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleEduBotSubmit(e);
+        }
+    }
+
+    function sendEduBotQuickPrompt(text) {
+        var input = document.getElementById('edubot-input');
+        if (input) {
+            input.value = text;
+            handleEduBotSubmit(new Event('submit'));
+        }
+    }
+
+    function handleEduBotSubmit(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        var input = document.getElementById('edubot-input');
+        var sessionGuidInput = document.getElementById('edubot-session-guid');
+        var msgsContainer = document.getElementById('edubot-messages');
+        var typing = document.getElementById('edubot-typing');
+
+        if (!input || !input.value.trim()) return;
+
+        var userText = input.value.trim();
+        input.value = '';
+        input.style.height = 'auto';
+
+        // Append User Message to UI immediately
+        var userHtml = `
+            <div class="edubot-msg user">
+                <div class="edubot-bubble">${escapeHtml(userText)}</div>
+                <span class="edubot-time">Just now</span>
+            </div>
+        `;
+        msgsContainer.insertAdjacentHTML('beforeend', userHtml);
+        scrollEduBotToBottom();
+
+        // Show typing indicator
+        if (typing) typing.style.display = 'flex';
+        scrollEduBotToBottom();
+
+        // Send to backend RAG API
+        fetch('/ChatBot/SendMessage', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                Message: userText,
+                SessionGuid: sessionGuidInput ? sessionGuidInput.value : ''
+            })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (typing) typing.style.display = 'none';
+
+            if (!data.Success) {
+                var errHtml = `
+                    <div class="edubot-msg assistant">
+                        <div class="edubot-bubble text-danger">
+                            <i class="bi bi-exclamation-triangle me-1"></i> ${escapeHtml(data.ErrorMessage || 'Error generating response.')}
+                        </div>
+                    </div>
+                `;
+                msgsContainer.insertAdjacentHTML('beforeend', errHtml);
+                scrollEduBotToBottom();
+                return;
+            }
+
+            // Render Markdown formatted reply
+            var formattedReply = renderMarkdownSimple(data.Reply);
+
+            // Render Course Cards if any
+            var coursesHtml = '';
+            if (data.RecommendedCourses && data.RecommendedCourses.length > 0) {
+                coursesHtml += '<div class="d-flex flex-column gap-2 mt-2">';
+                data.RecommendedCourses.forEach(function(course) {
+                    var actionBtn = course.IsEnrolled
+                        ? `<a href="${course.LearnUrl}" class="btn btn-sm btn-outline-cyan rounded-pill py-1 px-3 fw-bold" style="font-size: 11px;"><i class="bi bi-play-circle me-1"></i> Resume (${course.ProgressPercent}%)</a>`
+                        : `<a href="${course.DetailUrl}" class="btn btn-sm text-white rounded-pill py-1 px-3 fw-bold" style="background: #FF7A18; font-size: 11px;"><i class="bi bi-book me-1"></i> View Course</a>`;
+
+                    coursesHtml += `
+                        <div class="edubot-course-card">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="course-title">${escapeHtml(course.Title)}</div>
+                                <span class="badge rounded-pill" style="background: rgba(39, 184, 214, 0.2); color: #27B8D6; font-size: 10px;">${escapeHtml(course.Level)}</span>
+                            </div>
+                            <div class="course-meta d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-tag me-1"></i>${escapeHtml(course.CategoryName)}</span>
+                                <span class="fw-bold text-white">${course.Price === 0 ? 'Free' : '₹' + course.Price.toFixed(2)}</span>
+                            </div>
+                            <div class="mt-1">${actionBtn}</div>
+                        </div>
+                    `;
+                });
+                coursesHtml += '</div>';
+            }
+
+            // Citations and Grounding Badges
+            var citationsHtml = '';
+            if (data.Citations && data.Citations.length > 0) {
+                citationsHtml += `
+                    <div class="mt-2 pt-2 border-top border-secondary border-opacity-25">
+                        <div class="d-flex align-items-center gap-1 small text-info fw-semibold mb-1" style="font-size: 11px;">
+                            <i class="bi bi-shield-check text-cyan"></i> Grounded in ${data.Citations.length} Source${data.Citations.length > 1 ? 's' : ''}:
+                        </div>
+                        <div class="d-flex flex-wrap gap-1">
+                `;
+                data.Citations.forEach(function(cite) {
+                    var pageText = cite.page_number ? ` (p. ${cite.page_number})` : '';
+                    citationsHtml += `
+                        <span class="badge text-white-50 border border-secondary border-opacity-25" style="background: rgba(4, 24, 34, 0.7); font-size: 10px;" title="${escapeHtml(cite.excerpt || '')}">
+                            <i class="bi bi-file-earmark-text text-warning me-1"></i>${escapeHtml(cite.document_name || 'Curriculum')}${pageText}
+                        </span>
+                    `;
+                });
+                citationsHtml += `</div></div>`;
+            }
+
+            // Telemetry Tag
+            var telemetryHtml = '';
+            if (data.Telemetry) {
+                var hitBadge = data.Telemetry.was_cache_hit ? '<span class="text-success"><i class="bi bi-lightning-charge-fill"></i> Cache</span> • ' : '';
+                telemetryHtml = `
+                    <div class="edubot-time d-flex align-items-center justify-content-between mt-1 px-1">
+                        <span>Just now</span>
+                        <span class="font-monospace text-muted" style="font-size: 9px;">${hitBadge}${escapeHtml(data.Telemetry.model || 'gemini')} • ${data.Telemetry.latency_ms}ms</span>
+                    </div>
+                `;
+            } else {
+                telemetryHtml = '<span class="edubot-time">Just now</span>';
+            }
+
+            var assistantHtml = `
+                <div class="edubot-msg assistant">
+                    <div class="edubot-bubble">
+                        ${formattedReply}
+                        ${citationsHtml}
+                        ${coursesHtml}
+                    </div>
+                    ${telemetryHtml}
+                </div>
+            `;
+            msgsContainer.insertAdjacentHTML('beforeend', assistantHtml);
+            scrollEduBotToBottom();
+        })
+        .catch(function(err) {
+            if (typing) typing.style.display = 'none';
+            var netErrHtml = `
+                <div class="edubot-msg assistant">
+                    <div class="edubot-bubble text-danger">
+                        <i class="bi bi-wifi-off me-1"></i> Unable to reach AI Advisor. Please try again.
+                    </div>
+                </div>
+            `;
+            msgsContainer.insertAdjacentHTML('beforeend', netErrHtml);
+            scrollEduBotToBottom();
+        });
+    }
+
+    function clearEduBotHistory() {
+        var sessionGuidInput = document.getElementById('edubot-session-guid');
+        if (!confirm('Clear your conversation with EduBot?')) return;
+
+        fetch('/ChatBot/ClearHistory', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionGuid: sessionGuidInput ? sessionGuidInput.value : '' })
+        }).then(function() {
+            var msgs = document.getElementById('edubot-messages');
+            if (msgs) {
+                msgs.innerHTML = `
+                    <div class="edubot-msg assistant">
+                        <div class="edubot-bubble">
+                            <p class="mb-0">Chat history cleared! Ask me anything about courses, modules, or certifications.</p>
+                        </div>
+                        <span class="edubot-time">Just now</span>
+                    </div>
+                `;
+            }
+        });
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        var map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+
+    function renderMarkdownSimple(md) {
+        if (!md) return '';
+        var html = escapeHtml(md);
+
+        // Bold **text**
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // Italics *text*
+        html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        // Links [text](url)
+        html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_self" class="text-cyan text-decoration-underline fw-bold">$1</a>');
+        html = html.replace(/(?:^|\n)(\d+)\.\s+(.*?)(?=(?:\n|$))/g, '<div class="d-flex align-items-start gap-2 my-1"><span class="badge rounded-circle bg-cyan text-dark px-1 py-0" style="font-size: 10px; min-width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700;">$1</span><span>$2</span></div>');
+        // Bullets - item
+        html = html.replace(/(?:^|\n)- (.*?)(?=(?:\n|$))/g, '<div class="d-flex align-items-start gap-2 my-1"><i class="bi bi-check2 text-cyan mt-1" style="font-size: 11px;"></i><span>$1</span></div>');
+        // Paragraphs / line breaks
+        html = html.replace(/\n\n/g, '<br/><br/>');
+        html = html.replace(/\n/g, '<br/>');
+
+        return html;
+    }
+</script>

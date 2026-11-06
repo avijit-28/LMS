@@ -1,0 +1,153 @@
+@model LMS.ViewModels.AssignmentSubmissionViewModel
+@{
+    ViewBag.Title = "Project Workspace: " + Model.Assignment.Title;
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-lg-9">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Student")" class="text-white-50 text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Assignments", "Student")" class="text-white-50 text-decoration-none">Assignments</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">@Model.Assignment.Title</li>
+            </ol>
+        </nav>
+
+        <!-- Assignment Header Card -->
+        <div class="card card-custom p-4 p-md-5 shadow-sm mb-4 border-0 rounded-4" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                <div>
+                    <span class="badge rounded-pill mb-2 fw-semibold px-3 py-1" style="background: rgba(39, 184, 214, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.25);">
+                        <i class="bi bi-file-earmark-code-fill me-1"></i> Practical Project Assignment
+                    </span>
+                    <h2 class="fw-extrabold mb-1 tracking-tight text-white">@Model.Assignment.Title</h2>
+                    <p class="small mb-0" style="color: rgba(255, 255, 255, 0.7);">Max Evaluation Score: <strong class="text-white">@Model.Assignment.MaxMarks Marks</strong></p>
+                </div>
+                <div class="text-end">
+                    @if (Model.Assignment.DueDate.HasValue)
+                    {
+                        <span class="badge rounded-pill px-3 py-2 shadow-xs" style="background: rgba(255, 255, 255, 0.1); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.15);">
+                            <i class="bi bi-calendar-event-fill me-1 text-danger"></i> Due: @Model.Assignment.DueDate.Value.ToString("MMM dd, yyyy")
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <div class="p-4 rounded-3 mb-3" style="background: rgba(11, 52, 69, 0.65); border: 1px solid rgba(255, 255, 255, 0.12); border-left: 3px solid #27B8D6 !important;">
+                <h6 class="fw-bold text-white mb-2"><i class="bi bi-file-text me-1 text-cyan"></i> Specification & Grading Criteria</h6>
+                <div class="small mb-0" style="color: rgba(255, 255, 255, 0.82); line-height: 1.7;">
+                    @(string.IsNullOrEmpty(Model.Assignment.Description) ? "Please implement the specified practical project task and submit your documented solution along with source code repository link." : Model.Assignment.Description)
+                </div>
+            </div>
+
+            <!-- Existing Submission Status -->
+            @if (Model.ExistingSubmission != null)
+            {
+                <div class="p-4 border rounded-3 mb-2 @(Model.ExistingSubmission.Status == "Graded" ? "bg-success-subtle border-success-subtle" : "bg-warning-subtle border-warning-subtle")">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge @(Model.ExistingSubmission.Status == "Graded" ? "bg-success" : "bg-warning text-dark") px-3 py-1 rounded-pill fw-semibold">
+                            Status: @Model.ExistingSubmission.Status
+                        </span>
+                        <small class="text-muted"><i class="bi bi-clock-history me-1"></i> Submitted @Model.ExistingSubmission.SubmittedDate.ToString("MMM dd, yyyy HH:mm")</small>
+                    </div>
+
+                    @if (Model.ExistingSubmission.Status == "Graded")
+                    {
+                        <div class="d-flex align-items-baseline gap-2 mb-2">
+                            <h3 class="fw-extrabold text-success mb-0">Awarded Score: @Model.ExistingSubmission.Marks / @Model.Assignment.MaxMarks</h3>
+                        </div>
+                        if (!string.IsNullOrEmpty(Model.ExistingSubmission.Feedback))
+                        {
+                            <div class="small text-dark p-3 bg-white rounded-3 border mt-2">
+                                <strong class="text-primary"><i class="bi bi-chat-quote-fill me-1"></i> Instructor Evaluation:</strong>
+                                <p class="mb-0 mt-1">@Model.ExistingSubmission.Feedback</p>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="small text-muted mb-0">Your project has been received and is currently in the instructor grading queue.</p>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (Model.ExistingSubmission != null && Model.ExistingSubmission.Status == "Graded")
+        {
+            <!-- Graded State - No Resubmission Required -->
+            <div class="card card-custom p-4 p-md-5 shadow-sm bg-white border-0">
+                <div class="d-flex align-items-center gap-3 text-success mb-3">
+                    <div class="rounded-circle bg-success-subtle p-3 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-patch-check-fill fs-2 text-success"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark">Task Reviewed &amp; Evaluation Completed</h4>
+                        <p class="text-muted small mb-0">Your project has been assessed and finalized by your faculty instructor. No further submissions are required.</p>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-light rounded-3 border mt-2">
+                    <h6 class="fw-bold text-dark mb-2 small text-uppercase tracking-wider">Your Final Submitted Workspace Notes:</h6>
+                    <p class="small text-secondary mb-3 font-monospace" style="white-space: pre-wrap;">@(string.IsNullOrWhiteSpace(Model.ExistingSubmission.SubmissionText) ? "No notes attached." : Model.ExistingSubmission.SubmissionText)</p>
+                    
+                    @if (!string.IsNullOrWhiteSpace(Model.ExistingSubmission.FileUrl))
+                    {
+                        <div class="pt-2 border-top">
+                            <span class="small text-muted me-2">Submitted Repository / File:</span>
+                            <a href="@Model.ExistingSubmission.FileUrl" target="_blank" class="fw-bold text-primary text-decoration-none small">
+                                <i class="bi bi-box-arrow-up-right me-1"></i> @Model.ExistingSubmission.FileUrl
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-4 border-top mt-4">
+                    <a href="@Url.Action("Assignments", "Student")" class="btn btn-outline-secondary rounded-pill px-4">
+                        &larr; Back to My Assignments
+                    </a>
+                    <a href="@Url.Action("Index", "Learning", new { courseId = Model.Assignment.CourseId })" class="btn btn-primary rounded-pill px-4 fw-bold">
+                        Continue Course Classroom &rarr;
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Submission Form -->
+            <div class="card card-custom p-4 p-md-5 shadow-sm border-0 rounded-4" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+                <h4 class="fw-bold mb-3 text-white"><i class="bi bi-cloud-arrow-up-fill me-2 text-cyan"></i> Project Submission Workspace</h4>
+                <p class="small mb-4" style="color: rgba(255, 255, 255, 0.7);">Provide your written solution notes, architectural overview, and link to your public code repository.</p>
+
+                @using (Html.BeginForm("Submit", "Assignment", FormMethod.Post, new { id = "assignmentForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="AssignmentId" value="@Model.Assignment.AssignmentId" />
+                    <input type="hidden" name="Assignment.AssignmentId" value="@Model.Assignment.AssignmentId" />
+
+                    <div class="mb-4">
+                        @Html.LabelFor(m => m.SubmissionText, "Implementation Notes & Summary", new { @class = "form-label fw-bold small text-white" })
+                        @Html.TextAreaFor(m => m.SubmissionText, new { @class = "form-control", rows = 6, placeholder = "Explain your solution architecture, technologies utilized, steps taken, and any instructions for the instructor...", style = "background: #041822; color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.18);" })
+                    </div>
+
+                    <div class="mb-4">
+                        @Html.LabelFor(m => m.FileUrl, "Project Repository / Drive Document Link", new { @class = "form-label fw-bold small text-white" })
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0" style="background: #062330; border: 1px solid rgba(255, 255, 255, 0.18); border-right: none; color: #27B8D6;"><i class="bi bi-github"></i></span>
+                            @Html.TextBoxFor(m => m.FileUrl, new { @class = "form-control border-start-0", placeholder = "https://github.com/username/project-repo", style = "background: #041822; color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.18); border-left: none;" })
+                        </div>
+                        <small class="d-block mt-1" style="color: rgba(255, 255, 255, 0.55);">Accepts GitHub, GitLab, Google Drive, or personal portfolio link.</small>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                        <a href="@Url.Action("Assignments", "Student")" class="btn btn-outline-light rounded-pill px-4" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2);">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm text-white">
+                            <i class="bi bi-send-fill me-1"></i> @(Model.ExistingSubmission == null ? "Submit Project" : "Resubmit Project")
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

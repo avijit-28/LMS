@@ -1,0 +1,66 @@
+@model IEnumerable<LMS.Models.Certificate>
+@{
+    ViewBag.Title = "My Earned Certificates";
+}
+
+<div class="py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill mb-2 fw-semibold">
+                <i class="bi bi-award-fill me-1"></i> Accredited Credentials
+            </span>
+            <h2 class="fw-extrabold mb-1 tracking-tight">Official Certificates of Completion</h2>
+            <p class="text-muted small mb-0">Credentials earned across verified, 100% completed course curriculums</p>
+        </div>
+        <a href="@Url.Action("VerifyCertificate", "Certificate")" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">
+            <i class="bi bi-shield-check me-1"></i> Verify a Credential
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card card-custom p-5 text-center shadow-sm bg-white">
+            <div class="rounded-circle bg-warning-subtle text-warning p-4 d-inline-flex mx-auto mb-3 shadow-xs">
+                <i class="bi bi-award fs-1"></i>
+            </div>
+            <h5 class="fw-bold">No certificates earned yet.</h5>
+            <p class="text-muted small mb-3">Complete 100% of the lessons and assessments in any enrolled course to automatically receive your verified certificate.</p>
+            <div>
+                <a href="@Url.Action("MyCourses", "Student")" class="btn btn-primary rounded-pill px-4 fw-semibold">Go to My Courses</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var cert in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom p-4 shadow-sm h-100 card-hover bg-white" style="border-top: 4px solid #f59e0b;">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill small fw-bold">
+                                <i class="bi bi-patch-check-fill me-1"></i> Verified Credential
+                            </span>
+                            <small class="text-muted font-monospace" style="font-size: 11px;">@cert.IssueDate.ToString("MMM dd, yyyy")</small>
+                        </div>
+
+                        <h5 class="fw-bold text-dark mb-2">@(cert.Course?.Title ?? "Course")</h5>
+                        <p class="small text-muted mb-3 font-monospace">Certificate ID: <strong>@cert.CertificateNumber</strong></p>
+
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3 mb-4 border">
+                            <span class="small text-muted fw-semibold">Final Score:</span>
+                            <span class="fs-5 fw-extrabold text-success">@(cert.FinalScore.HasValue ? cert.FinalScore.Value.ToString("0.0") + "%" : "100.0%")</span>
+                        </div>
+
+                        <div class="mt-auto">
+                            <a href="@Url.Action("ViewCertificate", "Certificate", new { id = cert.CertificateId })" class="btn btn-primary rounded-pill w-100 fw-bold shadow-sm">
+                                <i class="bi bi-eye-fill me-1"></i> View & Print Certificate
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

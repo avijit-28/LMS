@@ -1,0 +1,162 @@
+@model LMS.ViewModels.PendingApprovalViewModel
+@{
+    ViewBag.Title = "Registration Pending Verification";
+    bool isPending = string.Equals(Model.ApprovalStatus, "Pending", StringComparison.OrdinalIgnoreCase);
+    bool isDeclined = string.Equals(Model.ApprovalStatus, "Declined", StringComparison.OrdinalIgnoreCase);
+    bool isApproved = string.Equals(Model.ApprovalStatus, "Approved", StringComparison.OrdinalIgnoreCase);
+}
+
+<div class="row justify-content-center py-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card card-custom p-4 p-md-5 shadow-sm bg-white card-gradient-top text-center">
+            
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show rounded-3 small mb-3 border-0 border-start border-4 border-success text-start" role="alert">
+                    <i class="bi bi-check-circle-fill me-2 text-success"></i>@TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["InfoMessage"] != null)
+            {
+                <div class="alert alert-info alert-dismissible fade show rounded-3 small mb-3 border-0 border-start border-4 border-info text-start" role="alert">
+                    <i class="bi bi-info-circle-fill me-2 text-info"></i>@TempData["InfoMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show rounded-3 small mb-3 border-0 border-start border-4 border-danger text-start" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>@TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (isPending)
+            {
+                <div class="mb-4">
+                    <span class="rounded-circle bg-warning-subtle text-warning p-3 d-inline-flex mb-3 shadow-xs">
+                        <i class="bi bi-hourglass-split fs-1 text-warning"></i>
+                    </span>
+                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-semibold d-inline-block mb-3">
+                        <i class="bi bi-shield-lock me-1"></i> Pending Admin Verification
+                    </span>
+                    <h3 class="fw-extrabold tracking-tight mb-2">Registration Under Review</h3>
+                    <p class="text-muted small px-md-3">
+                        Thank you for registering with EduPlatform! Your account details have been securely recorded and submitted to our platform administrators for verification.
+                    </p>
+                </div>
+
+                <div class="alert alert-light border rounded-3 text-start p-3 mb-4">
+                    <h6 class="fw-bold text-dark small text-uppercase mb-3 d-flex align-items-center">
+                        <i class="bi bi-person-lines-fill text-primary me-2"></i> Application Summary
+                    </h6>
+                    <div class="row g-2 small">
+                        <div class="col-sm-5 text-muted">Full Name:</div>
+                        <div class="col-sm-7 fw-bold text-dark">@Model.FullName</div>
+
+                        <div class="col-sm-5 text-muted">Registered Email:</div>
+                        <div class="col-sm-7 fw-bold text-dark">@Model.Email</div>
+
+                        <div class="col-sm-5 text-muted">Requested Role:</div>
+                        <div class="col-sm-7">
+                            <span class="badge @(Model.RequestedRole == "Instructor" ? "bg-info-subtle text-info border border-info-subtle" : "bg-primary-subtle text-primary border border-primary-subtle") rounded-pill px-2">
+                                <i class="bi @(Model.RequestedRole == "Instructor" ? "bi-mortarboard" : "bi-backpack2") me-1"></i> @Model.RequestedRole
+                            </span>
+                        </div>
+
+                        <div class="col-sm-5 text-muted">Submission Time:</div>
+                        <div class="col-sm-7 text-dark">@Model.RegisteredDate.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</div>
+
+                        <div class="col-sm-5 text-muted">Current Status:</div>
+                        <div class="col-sm-7">
+                            <span class="badge bg-warning text-dark rounded-pill px-2">
+                                <span class="spinner-grow spinner-grow-sm me-1" role="status" aria-hidden="true" style="width: 8px; height: 8px;"></span> Awaiting Approval
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-light rounded-3 mb-4 text-start small border">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-info-circle-fill text-primary fs-5 mt-n1"></i>
+                        <div>
+                            <strong>What happens next? (Administrator Verification Process)</strong>
+                            <p class="text-muted mb-0 mt-1">
+                                Admin verification helps us prevent unauthorized access, maintain academic integrity, and verify teaching credentials. Once approved by the administrator, you will be able to log in with your credentials and access your instructor studio.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                    <a href="@Url.Action("PendingApproval", "Account", new { email = Model.Email })" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Refresh Status
+                    </a>
+                    <a href="@Url.Action("Login", "Account")" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Go to Sign In
+                    </a>
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-light border rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-house me-1"></i> Home
+                    </a>
+                </div>
+            }
+            else if (isDeclined)
+            {
+                <div class="mb-4">
+                    <span class="rounded-circle bg-danger-subtle text-danger p-3 d-inline-flex mb-3 shadow-xs">
+                        <i class="bi bi-x-circle-fill fs-1 text-danger"></i>
+                    </span>
+                    <span class="badge bg-danger text-white px-3 py-2 rounded-pill fw-semibold d-inline-block mb-3">
+                        <i class="bi bi-shield-x me-1"></i> Registration Declined
+                    </span>
+                    <h3 class="fw-extrabold tracking-tight mb-2 text-danger">Application Not Approved</h3>
+                    <p class="text-muted small px-md-3">
+                        Unfortunately, your account registration request was not approved by the administrator at this time.
+                    </p>
+                </div>
+
+                if (!string.IsNullOrWhiteSpace(Model.RejectionReason))
+                {
+                    <div class="alert alert-danger border-0 border-start border-4 border-danger rounded-3 text-start p-3 mb-4">
+                        <h6 class="fw-bold text-danger small text-uppercase mb-1">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Reason Provided by Admin:
+                        </h6>
+                        <p class="small text-dark mb-0">@Model.RejectionReason</p>
+                    </div>
+                }
+
+                <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                    <a href="@Url.Action("Contact", "Home")" class="btn btn-outline-dark rounded-pill px-4 fw-semibold">
+                        <i class="bi bi-envelope me-1"></i> Contact Support
+                    </a>
+                    <a href="@Url.Action("Register", "Account")" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                        <i class="bi bi-person-plus me-1"></i> Register Again
+                    </a>
+                </div>
+            }
+            else if (isApproved)
+            {
+                <div class="mb-4">
+                    <span class="rounded-circle bg-success-subtle text-success p-3 d-inline-flex mb-3 shadow-xs">
+                        <i class="bi bi-check-circle-fill fs-1 text-success"></i>
+                    </span>
+                    <span class="badge bg-success text-white px-3 py-2 rounded-pill fw-semibold d-inline-block mb-3">
+                        <i class="bi bi-patch-check me-1"></i> Account Approved!
+                    </span>
+                    <h3 class="fw-extrabold tracking-tight mb-2 text-success">Welcome to EduPlatform!</h3>
+                    <p class="text-muted small px-md-3">
+                        Your registration has been approved by the platform administrator. You can now sign in to access all courses and features.
+                    </p>
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <a href="@Url.Action("Login", "Account")" class="btn btn-success rounded-pill px-5 py-2 fw-semibold shadow-sm">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In Now
+                    </a>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>

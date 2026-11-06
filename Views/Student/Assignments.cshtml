@@ -1,0 +1,121 @@
+@model IEnumerable<LMS.Models.Submission>
+@{
+    ViewBag.Title = "My Assignment Submissions";
+}
+
+<div class="py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Student")" class="text-white-50 text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item active text-white" aria-current="page">Assignments</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <span class="badge rounded-pill mb-2 fw-semibold px-3 py-1" style="background: rgba(39, 184, 214, 0.15); color: #27B8D6; border: 1px solid rgba(39, 184, 214, 0.3);">
+                <span class="pulse-dot pulse-primary"></span> Project Portfolio
+            </span>
+            <h2 class="fw-extrabold mb-1 tracking-tight text-white">Project &amp; Assignment Submissions</h2>
+            <p class="small mb-0" style="color: rgba(255, 255, 255, 0.7);">Track evaluation progress, faculty feedback remarks, and score rubrics</p>
+        </div>
+        <div>
+            <a href="@Url.Action("MyCourses", "Student")" class="btn btn-primary rounded-pill px-4 fw-semibold text-white shadow-sm">
+                <i class="bi bi-play-circle me-1"></i> Continue Courses
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card card-custom p-5 text-center shadow-sm border-0" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+            <div class="rounded-circle p-4 d-inline-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; background: rgba(39, 184, 214, 0.15); color: #27B8D6;">
+                <i class="bi bi-file-earmark-check display-5"></i>
+            </div>
+            <h4 class="fw-bold text-white mb-2">No assignments submitted yet</h4>
+            <p class="small mb-4" style="color: rgba(255, 255, 255, 0.65); max-width: 480px; margin-left: auto; margin-right: auto;">
+                Practical project challenges and Capstone exercises can be accessed directly from within your course classroom player.
+            </p>
+            <div>
+                <a href="@Url.Action("MyCourses", "Student")" class="btn btn-primary rounded-pill px-4 py-2 fw-bold text-white shadow-sm">
+                    <i class="bi bi-collection-play me-1"></i> Go to My Courses
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card card-custom shadow-sm overflow-hidden border-0" style="background: rgba(6, 35, 48, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" style="color: #E2E8F0;">
+                    <thead style="background: #0B3445; color: #94A3B8; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">
+                        <tr>
+                            <th class="ps-4 py-3">Assignment Title</th>
+                            <th class="py-3">Curriculum Track</th>
+                            <th class="py-3">Submitted Date</th>
+                            <th class="py-3">Review Status</th>
+                            <th class="py-3">Awarded Score</th>
+                            <th class="py-3">Faculty Feedback</th>
+                            <th class="text-end pe-4 py-3">Workspace</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model)
+                        {
+                            <tr style="border-color: rgba(255, 255, 255, 0.08);">
+                                <td class="ps-4 py-3">
+                                    <div class="fw-bold text-white">@s.Assignment.Title</div>
+                                    <small class="font-monospace" style="font-size: 11px; color: rgba(255, 255, 255, 0.5);">Max: @s.Assignment.MaxMarks pts</small>
+                                </td>
+                                <td>
+                                    <span class="badge rounded-pill px-3 py-1" style="background: rgba(39, 184, 214, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.25);">
+                                        @(s.Assignment.Course?.Title ?? "Course")
+                                    </span>
+                                </td>
+                                <td><span class="small" style="color: rgba(255, 255, 255, 0.65);">@s.SubmittedDate.ToString("MMM dd, yyyy")</span></td>
+                                <td>
+                                    @if (s.Status == "Graded")
+                                    {
+                                        <span class="badge rounded-pill px-3 py-1" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(52, 211, 153, 0.3);">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Graded
+                                        </span>
+                                    }
+                                    else if (s.Status == "Late")
+                                    {
+                                        <span class="badge rounded-pill px-3 py-1" style="background: rgba(255, 122, 24, 0.15); color: #FF7A18; border: 1px solid rgba(255, 122, 24, 0.3);">
+                                            Late Submission
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill px-3 py-1" style="background: rgba(39, 184, 214, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.25);">
+                                            <span class="pulse-dot pulse-primary"></span> In Review
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (s.Marks.HasValue)
+                                    {
+                                        <strong class="text-success font-monospace">@s.Marks / @s.Assignment.MaxMarks pts</strong>
+                                    }
+                                    else
+                                    {
+                                        <span class="small" style="color: rgba(255, 255, 255, 0.5);">Pending Grading</span>
+                                    }
+                                </td>
+                                <td class="small" style="max-width: 250px; color: rgba(255, 255, 255, 0.75);">
+                                    @(string.IsNullOrEmpty(s.Feedback) ? "Awaiting faculty evaluation" : (s.Feedback.Length > 80 ? s.Feedback.Substring(0, 77) + "..." : s.Feedback))
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a href="@Url.Action("Details", "Assignment", new { id = s.AssignmentId })" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
+                                        View Details &rarr;
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,244 @@
+@model LMS.ViewModels.StudentAllReceiptsViewModel
+@{
+    ViewBag.Title = "Consolidated Enrollment Statement & All Course Receipts";
+}
+
+<style>
+    .statement-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    .statement-sheet {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        border-radius: 16px;
+        padding: 48px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        position: relative;
+    }
+    .statement-sheet h1, .statement-sheet h2, .statement-sheet h3, .statement-sheet h4, .statement-sheet h5, .statement-sheet h6, .statement-sheet p, .statement-sheet div, .statement-sheet td, .statement-sheet span.text-dark {
+        color: #0F172A !important;
+    }
+    .statement-sheet .text-muted, .statement-sheet small.text-muted {
+        color: #64748B !important;
+    }
+    .statement-sheet .text-secondary {
+        color: #475569 !important;
+    }
+    .statement-sheet .text-primary {
+        color: #0284C7 !important;
+    }
+    .statement-sheet .text-success {
+        color: #16A34A !important;
+    }
+    .statement-sheet th {
+        background-color: #F8FAFC !important;
+        color: #475569 !important;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 12px 14px;
+        border-bottom: 2px solid #E2E8F0;
+    }
+    .statement-sheet td {
+        padding: 14px;
+        border-bottom: 1px solid #F1F5F9;
+        color: #1E293B !important;
+        font-size: 13px;
+    }
+    .seal-badge {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 2px dashed #0D9488;
+        background: #F0FDFA;
+        color: #0D9488;
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-align: center;
+        padding: 6px;
+    }
+
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+        .statement-sheet, .statement-sheet * {
+            visibility: visible;
+        }
+        .statement-sheet {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100% !important;
+            padding: 20px !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>
+
+<div class="py-4 statement-container">
+    <!-- Action Bar (Hidden in print) -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 no-print">
+        <a href="@Url.Action("Payments", "Student")" class="btn rounded-pill px-4 fw-semibold text-white" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.25);">
+            <i class="bi bi-arrow-left me-1"></i> Back to Individual Receipts
+        </a>
+        <div class="d-flex gap-2">
+            <button type="button" onclick="window.print()" class="btn btn-primary rounded-pill px-4 fw-bold text-white shadow-sm" style="background-color: #FF7A18 !important; border-color: #FF7A18 !important;">
+                <i class="bi bi-printer-fill me-1"></i> Print / Download All Receipts (PDF)
+            </button>
+            <a href="@Url.Action("MyCourses", "Student")" class="btn rounded-pill px-4 fw-semibold text-white" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.25);">
+                <i class="bi bi-mortarboard me-1"></i> My Courses
+            </a>
+        </div>
+    </div>
+
+    <!-- Printable Consolidated Statement Sheet -->
+    <div class="statement-sheet">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div style="background: #FF7A18; color: #FFFFFF; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <div>
+                        <span class="fs-4 fw-extrabold text-dark" style="letter-spacing: -0.5px;">EDUPLATFORM ACADEMY</span>
+                        <div class="text-muted small" style="font-size: 11px;">OFFICE OF THE BURSAR &amp; FINANCIAL SERVICES</div>
+                    </div>
+                </div>
+                <div class="small text-secondary" style="font-size: 12px; line-height: 1.5;">
+                    Platform Campus Hub, Sector V, Salt Lake, Kolkata 700091, India<br />
+                    GSTIN: 19AAACE8291M1ZF &bull; support@lms.edu
+                </div>
+            </div>
+
+            <div class="text-end">
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-1 fw-bold mb-2">
+                    <i class="bi bi-collection-fill me-1"></i> CONSOLIDATED STATEMENT
+                </span>
+                <h4 class="fw-extrabold text-dark mb-0 font-monospace">STMT-@Model.GeneratedDate.Year-@Model.StudentId.Substring(0, Math.Min(6, Model.StudentId.Length)).ToUpper()</h4>
+                <div class="text-muted small mt-1">Generated: <strong>@Model.GeneratedDate.ToString("MMMM dd, yyyy")</strong></div>
+                <div class="text-muted small">Total Curriculums: <strong>@Model.TotalCoursesPurchased</strong></div>
+            </div>
+        </div>
+
+        <!-- Student Profile Summary -->
+        <div class="p-3 bg-light rounded-3 mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-uppercase small fw-bold text-muted d-block" style="font-size: 10px;">Enrolled Student Account:</span>
+                <h5 class="fw-bold text-dark mb-0">@Model.StudentName</h5>
+                <small class="text-secondary">@Model.StudentEmail &bull; Student ID: <span class="font-monospace">@Model.StudentId</span></small>
+            </div>
+            <div class="text-end">
+                <span class="text-uppercase small fw-bold text-muted d-block" style="font-size: 10px;">Total Cumulative Tuition Paid:</span>
+                <span class="fs-4 fw-extrabold text-dark font-monospace"><span class="rupee-symbol">&#8377;</span>@Model.TotalAmountPaid.ToString("N2")</span>
+            </div>
+        </div>
+
+        <!-- Full Itemized Table of All Course Receipts -->
+        <div class="table-responsive mb-4">
+            <table class="table statement-table align-middle mb-0 w-100">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Invoice Ref</th>
+                        <th>Course Curriculum Track</th>
+                        <th>Faculty Author</th>
+                        <th>Date</th>
+                        <th>Payment Mode</th>
+                        <th class="text-end">Amount Paid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Receipts == null || !Model.Receipts.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">No completed course enrollments found on account.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        int rowIdx = 1;
+                        foreach (var r in Model.Receipts)
+                        {
+                            <tr>
+                                <td class="text-muted font-monospace">@rowIdx</td>
+                                <td class="font-monospace fw-bold text-dark">@r.InvoiceNumber</td>
+                                <td>
+                                    <div class="fw-bold text-dark">@r.CourseTitle</div>
+                                    <small class="text-muted">Track: @r.CategoryName &bull; @r.DurationHours hrs</small>
+                                </td>
+                                <td>@r.InstructorName</td>
+                                <td>@r.PaymentDate.ToString("MMM dd, yyyy")</td>
+                                <td>@r.PaymentMethod</td>
+                                <td class="text-end fw-bold">
+                                    @if (r.Amount == 0)
+                                    {
+                                        <span class="text-success">FREE</span>
+                                    }
+                                    else
+                                    {
+                                        <span><span class="rupee-symbol">&#8377;</span>@r.Amount.ToString("N2")</span>
+                                    }
+                                </td>
+                            </tr>
+                            rowIdx++;
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr style="background: #F8FAFC; border-top: 2px solid #0F172A;">
+                        <td colspan="6" class="text-end fw-bold fs-6 text-dark py-3">Grand Total (All Enrolled Courses):</td>
+                        <td class="text-end fw-extrabold fs-5 text-dark font-monospace py-3"><span class="rupee-symbol">&#8377;</span>@Model.TotalAmountPaid.ToString("N2")</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Compliance & Accreditation Statement -->
+        <div class="p-3 bg-light rounded-3 mb-4">
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <i class="bi bi-shield-check text-success fs-5"></i>
+                <strong class="text-dark small">Official Academy Financial Certification</strong>
+            </div>
+            <p class="text-secondary small mb-0" style="font-size: 11px; line-height: 1.6;">
+                This consolidated billing statement itemizes all course registrations and fees cleared by the student. All curriculums are granted lifetime access, examination privileges, and verifiable digital completion credentials upon fulfilling coursework standards.
+            </p>
+        </div>
+
+        <!-- Footer Signatures & Official Stamp -->
+        <div class="row align-items-end pt-3 border-top">
+            <div class="col-4 text-center">
+                <div class="seal-badge mx-auto mb-2">
+                    <i class="bi bi-patch-check-fill fs-3 mb-1"></i>
+                    <span>CONSOLIDATED<br />OFFICIAL AUDIT</span>
+                </div>
+                <div class="small fw-bold text-muted" style="font-size: 10px;">REGISTRAR &amp; BURSAR</div>
+            </div>
+            <div class="col-4 text-center">
+                <div class="mb-2">
+                    <img src="@Url.Content("~/Content/images/signatures/dr-evelyn-vance-signature.png")" alt="Director Signature" style="max-height: 44px; max-width: 160px; object-fit: contain;" />
+                </div>
+                <div class="border-top pt-1 small fw-bold text-dark" style="font-size: 11px;">Dr. Evelyn Vance</div>
+                <div class="text-muted small" style="font-size: 10px;">Director of Academic Standards</div>
+            </div>
+            <div class="col-4 text-center">
+                <div class="mb-2" style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 26px; color: #062330; height: 44px; display: flex; align-items: center; justify-content: center;">
+                    EduPlatform Accounts
+                </div>
+                <div class="border-top pt-1 small fw-bold text-dark" style="font-size: 11px;">Accounts &amp; Treasury Office</div>
+                <div class="text-muted small" style="font-size: 10px;">System Certified Statement</div>
+            </div>
+        </div>
+    </div>
+</div>

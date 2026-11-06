@@ -1,0 +1,63 @@
+@model LMS.ViewModels.CategoryViewModel
+@{
+    ViewBag.Title = "Edit Category - " + Model.CategoryName;
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-lg-7">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin")" class="text-decoration-none">Admin</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Categories", "Admin")" class="text-decoration-none">Categories</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit: @Model.CategoryName</li>
+            </ol>
+        </nav>
+
+        <div class="card card-custom p-4 p-md-5 shadow-sm bg-white card-gradient-top border-0">
+            <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                <div class="rounded-circle bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center shadow-xs" style="width: 50px; height: 50px;">
+                    <i class="bi bi-pencil-square fs-4"></i>
+                </div>
+                <div>
+                    <h3 class="fw-extrabold mb-0 tracking-tight">Edit Category</h3>
+                    <p class="text-muted small mb-0">Modify taxonomy metadata, title, and public visibility</p>
+                </div>
+            </div>
+
+            @using (Html.BeginForm("EditCategory", "Admin", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.CategoryId)
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger rounded-3" })
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.CategoryName, "Category Name", new { @class = "form-label fw-bold small text-dark" })
+                    @Html.TextBoxFor(m => m.CategoryName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.CategoryName, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Description, "Domain Description", new { @class = "form-label fw-bold small text-dark" })
+                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 4 })
+                    @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="p-3 bg-light rounded-3 border mb-4">
+                    <div class="form-check form-switch mb-0">
+                        @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input" })
+                        @Html.LabelFor(m => m.IsActive, "Active & Visible (Appears in catalog filter)", new { @class = "form-check-label fw-semibold small text-dark" })
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <a href="@Url.Action("Categories", "Admin")" class="btn btn-outline-secondary rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                        <i class="bi bi-check-lg me-1"></i> Update Category
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

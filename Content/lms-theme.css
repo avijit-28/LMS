@@ -1,0 +1,3417 @@
+/* ==========================================================================
+   EduPlatform LMS - Premium EdTech Master Design System & Theme
+   Visual Direction: Deep Navy (#062330) + Vibrant EdTech Orange (#FF7A18)
+   Typography: Playfair Display / Plus Jakarta Sans / Inter
+   ========================================================================== */
+
+:root {
+    /* Brand Primary (Vibrant EdTech Orange) */
+    --lms-primary: #FF7A18;
+    --lms-primary-hover: #E6680D;
+    --lms-primary-light: #FFF2E8;
+    --lms-primary-subtle: rgba(255, 122, 24, 0.12);
+    --lms-primary-border: #FFD2B3;
+    --lms-orange: #FF7A18;
+    --lms-orange-light: #FF9A45;
+    --lms-orange-glow: rgba(255, 122, 24, 0.35);
+
+    /* Deep Petrol Navy (Signature Canvas & Atmospheric Dark) */
+    --lms-navy: #062330;
+    --lms-navy-dark: #041822;
+    --lms-navy-surface: #0a2d3c;
+    --lms-navy-card: #0d3547;
+    --lms-navy-border: rgba(255, 255, 255, 0.10);
+    --lms-dark: #062330;
+    --lms-dark-surface: #0a2d3c;
+    --lms-dark-card: #0d3547;
+    --lms-dark-border: rgba(255, 255, 255, 0.08);
+
+    /* EdTech Accent Palette */
+    --lms-purple: #5B3FE4;
+    --lms-purple-light: #EDE9FE;
+    --lms-green: #35C98A;
+    --lms-emerald: #10B981;
+    --lms-emerald-light: #D1FAE5;
+    --lms-cyan: #27B8D6;
+    --lms-cyan-light: #E6F8FB;
+    --lms-rose: #E85D75;
+    --lms-rose-light: #FDE8EC;
+    --lms-amber: #F59E0B;
+    --lms-amber-light: #FFFBEB;
+
+    /* Neutrals & Surfaces - EduPlatform Signature Dark Canvas */
+    --lms-bg: #041822;
+    --lms-surface: #062330;
+    --lms-surface-subtle: #0B3445;
+    --lms-border: rgba(255, 255, 255, 0.12);
+    --lms-border-focus: #FF7A18;
+    --lms-text-main: #FFFFFF;
+    --lms-text-muted: #94A3B8;
+    --lms-text-subtle: #64748B;
+
+    /* Shadows */
+    --lms-shadow-sm: 0 1px 2px 0 rgba(6, 35, 48, 0.04);
+    --lms-shadow: 0 4px 6px -1px rgba(6, 35, 48, 0.07), 0 2px 4px -2px rgba(6, 35, 48, 0.04);
+    --lms-shadow-md: 0 10px 25px -3px rgba(6, 35, 48, 0.08), 0 4px 6px -4px rgba(6, 35, 48, 0.04);
+    --lms-shadow-lg: 0 20px 40px -5px rgba(6, 35, 48, 0.12), 0 8px 10px -6px rgba(6, 35, 48, 0.04);
+    --lms-shadow-floating: 0 20px 50px rgba(6, 35, 48, 0.09);
+    --lms-shadow-glow: 0 0 30px rgba(255, 122, 24, 0.28);
+
+    /* Radii */
+    --lms-radius-sm: 8px;
+    --lms-radius: 14px;
+    --lms-radius-lg: 20px;
+    --lms-radius-xl: 28px;
+    --lms-radius-pill: 9999px;
+
+    /* Transitions */
+    --lms-transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   Typography, Icons & Base Reset
+   ========================================================================== */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #041822;
+    background-image: 
+        radial-gradient(circle at 80% 20%, #0D3B4F 0%, transparent 40%),
+        radial-gradient(circle at 20% 60%, #0B3445 0%, transparent 45%),
+        linear-gradient(180deg, #062330 0%, #041822 100%);
+    background-attachment: fixed;
+    color: var(--lms-text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.main-content-wrapper {
+    overflow-x: hidden;
+    width: 100%;
+    min-width: 0;
+}
+
+/* Headings with Plus Jakarta Sans */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-weight: 700;
+    color: var(--lms-text-main);
+}
+
+/* Editorial Serif for high-impact landing headlines */
+.font-editorial {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* Fluid Responsive Typographic Scale */
+h1, .h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.18;
+    letter-spacing: -0.03em;
+}
+
+h2, .h2 {
+    font-size: clamp(1.5rem, 2.8vw, 2.15rem);
+    line-height: 1.25;
+    letter-spacing: -0.025em;
+}
+
+h3, .h3 {
+    font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+}
+
+h4, .h4 {
+    font-size: 1.2rem;
+    line-height: 1.35;
+}
+
+h5, .h5 {
+    font-size: 1.05rem;
+}
+
+h6, .h6 {
+    font-size: 0.9rem;
+}
+
+p, .lead {
+    font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+    line-height: 1.65;
+    color: var(--lms-text-muted);
+}
+
+.text-orange {
+    color: var(--lms-orange) !important;
+}
+
+.bg-orange {
+    background-color: var(--lms-orange) !important;
+}
+
+.bg-navy {
+    background-color: var(--lms-navy) !important;
+}
+
+.bg-navy-dark {
+    background-color: var(--lms-navy-dark) !important;
+}
+
+/* Squiggly accent underline */
+.squiggly-accent {
+    position: relative;
+    display: inline-block;
+}
+.squiggly-accent::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 8px;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='8' viewBox='0 0 100 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 5.5C12 1.5 24 1.5 35 5.5C46 9.5 58 9.5 69 5.5C80 1.5 91 1.5 99 5.5' stroke='%23FF7A18' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+/* Indian Rupee symbol alignment */
+.rupee-symbol {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+    font-weight: 600;
+    margin-right: 1px;
+}
+
+/* Maximum width boundaries */
+.max-w-7xl {
+    max-width: 1320px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ==========================================================================
+   Master Navbar & Navigation (Deep Petrol Navy #062330)
+   ========================================================================== */
+.navbar-lms {
+    background: var(--lms-navy) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding-top: 0.65rem !important;
+    padding-bottom: 0.65rem !important;
+    min-height: 70px;
+    transition: var(--lms-transition);
+}
+
+.navbar-brand-lms {
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.navbar-brand-lms:hover {
+    color: #FFFFFF;
+}
+
+.navbar-brand-lms .badge-brand-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #FF7A18 0%, #FF9A45 100%);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    box-shadow: 0 4px 12px rgba(255, 122, 24, 0.35);
+}
+
+.navbar-brand-lms .brand-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.03em;
+}
+
+.navbar-brand-lms .brand-subtitle {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    letter-spacing: 0;
+    margin-top: 2px;
+}
+
+.navbar-lms .navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.navbar-lms .nav-item {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-lms .nav-link {
+    font-weight: 500;
+    font-size: 0.92rem;
+    color: rgba(255, 255, 255, 0.82);
+    height: 42px;
+    padding: 0 0.95rem !important;
+    border-radius: 8px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    text-decoration: none;
+    line-height: 1;
+    transition: all 0.2s ease-in-out;
+}
+
+.navbar-lms .nav-link:hover {
+    color: var(--lms-orange);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.navbar-lms .nav-link.active {
+    color: var(--lms-orange) !important;
+    font-weight: 600;
+}
+
+.navbar-lms .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 15%;
+    width: 70%;
+    height: 2.5px;
+    background-color: var(--lms-orange);
+    border-radius: 9999px;
+}
+
+/* Nav Action Buttons */
+.nav-search-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: var(--lms-transition);
+}
+.nav-search-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    color: var(--lms-orange);
+    transform: scale(1.05);
+}
+
+.btn-nav-login {
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: transparent;
+    border-radius: var(--lms-radius-pill);
+    padding: 0.5rem 1.35rem;
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: var(--lms-transition);
+    text-decoration: none;
+}
+.btn-nav-login:hover {
+    border-color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFFFFF !important;
+}
+
+.btn-nav-register {
+    background: linear-gradient(135deg, #FF7A18 0%, #FF9A45 100%) !important;
+    color: #FFFFFF !important;
+    border: none;
+    border-radius: var(--lms-radius-pill);
+    padding: 0.5rem 1.45rem;
+    font-weight: 700;
+    font-size: 0.88rem;
+    box-shadow: 0 4px 14px rgba(255, 122, 24, 0.35);
+    transition: var(--lms-transition);
+    text-decoration: none;
+}
+.btn-nav-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 122, 24, 0.45);
+    color: #FFFFFF !important;
+}
+
+/* User avatar and notification controls in navbar */
+.nav-icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: var(--lms-transition);
+}
+.nav-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    color: var(--lms-orange);
+}
+
+.nav-user-btn {
+    height: 40px;
+    padding: 0 0.85rem 0 0.35rem;
+    border-radius: var(--lms-radius-pill);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #FFFFFF !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: var(--lms-transition);
+}
+.nav-user-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.nav-avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF7A18, #FF9A45);
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 0.825rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Navbar dropdown on dark theme */
+.navbar-lms .dropdown-menu {
+    background: #0A2D3C;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+    padding: 0.5rem;
+}
+.navbar-lms .dropdown-item {
+    color: rgba(255, 255, 255, 0.85);
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.88rem;
+    padding: 0.55rem 0.9rem;
+    transition: var(--lms-transition);
+}
+.navbar-lms .dropdown-item:hover {
+    background: rgba(255, 122, 24, 0.15);
+    color: var(--lms-orange);
+}
+.navbar-lms .dropdown-divider {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+.navbar-lms .dropdown-header {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ==========================================================================
+   Hero Section (Premium Petrol Navy Atmosphere)
+   ========================================================================== */
+.hero-premium {
+    position: relative;
+    background: linear-gradient(135deg, #062330 0%, #041822 55%, #082E3F 100%);
+    color: #FFFFFF;
+    overflow: hidden;
+    padding-top: 3.5rem;
+    padding-bottom: 7rem;
+}
+
+/* Ambient glow orbs in hero */
+.hero-ambient-glow {
+    position: absolute;
+    top: -10%;
+    left: -5%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(39, 184, 214, 0.18) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.hero-ambient-orange {
+    position: absolute;
+    bottom: -15%;
+    right: -5%;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(255, 122, 24, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Floating Badges & Pills */
+.hero-badge-pill {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0.45rem 1.15rem;
+    border-radius: var(--lms-radius-pill);
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+/* Hero Person Terracotta Halo */
+.student-halo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 440px;
+    height: 440px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #E86522 0%, #B84711 60%, transparent 80%);
+    opacity: 0.95;
+    z-index: 1;
+}
+
+/* Hero Persona Visual Stage */
+.hero-visual-stage {
+    position: relative;
+    width: 100%;
+    min-height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.hero-student-img {
+    position: relative;
+    z-index: 3;
+    max-width: 90%;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.35));
+}
+
+/* Floating Glass Cards */
+.floating-glass-card {
+    position: absolute;
+    background: rgba(13, 53, 71, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 175px;
+    animation: floatSlow 5s ease-in-out infinite;
+}
+
+.floating-glass-card .icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: #FFFFFF;
+    flex-shrink: 0;
+}
+
+.floating-glass-card .title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 2px;
+}
+
+.floating-glass-card .progress-bar-mini {
+    width: 65px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.floating-glass-card .progress-bar-mini .fill {
+    height: 100%;
+    border-radius: 9999px;
+}
+
+/* Card positions and float delays */
+.card-video {
+    top: 14%;
+    left: -2%;
+    animation-delay: 0s;
+}
+.card-video .icon-box {
+    background: var(--lms-purple);
+}
+.card-video .fill {
+    width: 70%;
+    background: var(--lms-purple);
+}
+
+.card-quiz {
+    bottom: 28%;
+    left: -6%;
+    animation-delay: 1.5s;
+}
+.card-quiz .icon-box {
+    background: var(--lms-green);
+}
+.card-quiz .fill {
+    width: 85%;
+    background: var(--lms-green);
+}
+
+.card-assignment {
+    top: 12%;
+    right: 0%;
+    animation-delay: 0.8s;
+}
+.card-assignment .icon-box {
+    background: var(--lms-orange);
+}
+.card-assignment .fill {
+    width: 60%;
+    background: var(--lms-orange);
+}
+
+.card-cert {
+    bottom: 25%;
+    right: -4%;
+    animation-delay: 2.3s;
+}
+.card-cert .icon-box {
+    background: var(--lms-rose);
+}
+.card-cert .fill {
+    width: 95%;
+    background: var(--lms-rose);
+}
+
+@keyframes floatSlow {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* Hero Stats Strip */
+.hero-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.hero-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(39, 184, 214, 0.12);
+    border: 1px solid rgba(39, 184, 214, 0.25);
+    color: var(--lms-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.hero-stat-number {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.hero-stat-label {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   Floating Benefit Bar (Overlaps Hero Bottom)
+   ========================================================================== */
+.benefit-bar-floating {
+    background: #FFFFFF;
+    border-radius: var(--lms-radius-xl);
+    box-shadow: var(--lms-shadow-floating);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    padding: 1.75rem 2rem;
+    margin-top: -4.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    padding: 0.5rem 1rem;
+}
+
+.benefit-icon-box {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.benefit-icon-purple {
+    background: var(--lms-purple-light);
+    color: var(--lms-purple);
+}
+.benefit-icon-orange {
+    background: var(--lms-primary-light);
+    color: var(--lms-orange);
+}
+
+.benefit-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--lms-text-main);
+    margin-bottom: 2px;
+}
+
+.benefit-desc {
+    font-size: 0.82rem;
+    color: var(--lms-text-muted);
+    margin-bottom: 0;
+    line-height: 1.4;
+}
+
+.benefit-divider {
+    border-right: 1px solid var(--lms-border);
+}
+
+/* ==========================================================================
+   Why Choose LMS Section
+   ========================================================================== */
+.why-choose-section {
+    padding: 5.5rem 0 4.5rem;
+    background: linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%) !important;
+    color: #FFFFFF;
+    position: relative;
+}
+.why-choose-section .text-dark {
+    color: #FFFFFF !important;
+}
+.why-choose-section .text-muted,
+.why-choose-section .lead {
+    color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.feature-bullet-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1.15rem;
+    border-radius: 14px;
+    background: rgba(6, 35, 48, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(8px);
+    transition: var(--lms-transition);
+}
+
+.feature-bullet-item:hover {
+    background: rgba(11, 52, 69, 0.95) !important;
+    border-color: rgba(255, 122, 24, 0.4) !important;
+    transform: translateX(4px);
+}
+
+.feature-bullet-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.feature-bullet-text {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #FFFFFF !important;
+}
+
+.home-courses-section {
+    background: linear-gradient(180deg, #0B3445 0%, #062330 60%, #041822 100%) !important;
+    color: #FFFFFF;
+}
+.home-courses-section .text-dark {
+    color: #FFFFFF !important;
+}
+.home-courses-section .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+.home-courses-section .course-card-v2 {
+    background: rgba(6, 35, 48, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+.home-courses-section .course-card-v2 .course-card-body {
+    background: transparent !important;
+    color: #FFFFFF !important;
+}
+.home-courses-section .course-card-v2 .course-card-title,
+.home-courses-section .course-card-v2 .course-card-title a {
+    color: #FFFFFF !important;
+}
+.home-courses-section .course-card-v2:hover .course-card-title,
+.home-courses-section .course-card-v2:hover .course-card-title a {
+    color: #FF7A18 !important;
+}
+.home-courses-section .course-card-v2 .text-muted,
+.home-courses-section .course-card-v2 small,
+.home-courses-section .course-card-v2 .course-meta-item,
+.home-courses-section .course-card-v2 .course-instructor-name {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+.home-courses-section .course-card-v2 .course-card-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: transparent !important;
+}
+.home-courses-section .category-pill {
+    background: rgba(6, 35, 48, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #E2E8F0 !important;
+}
+.home-courses-section .category-pill:hover,
+.home-courses-section .category-pill.active {
+    background: #FF7A18 !important;
+    border-color: #FF7A18 !important;
+    color: #FFFFFF !important;
+}
+
+/* ==========================================================================
+   Course Cards & Catalog (Modern EdTech Presentation)
+   ========================================================================== */
+.course-card-v2 {
+    background: #FFFFFF;
+    border-radius: 18px;
+    border: 1px solid var(--lms-border);
+    box-shadow: 0 4px 15px rgba(6, 35, 48, 0.04);
+    overflow: hidden;
+    transition: var(--lms-transition);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.course-card-v2:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 35px rgba(6, 35, 48, 0.12);
+    border-color: rgba(255, 122, 24, 0.35);
+}
+
+.course-thumbnail-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #062330;
+}
+
+.course-thumbnail-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.course-card-v2:hover .course-thumbnail-img {
+    transform: scale(1.05);
+}
+
+.course-card-category-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    color: var(--lms-text-main);
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--lms-radius-pill);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.course-card-body {
+    padding: 1.35rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.course-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--lms-text-main);
+    line-height: 1.35;
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.course-card-v2:hover .course-card-title {
+    color: var(--lms-orange);
+}
+
+/* Category Filter Pills */
+.filter-pills-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+}
+.filter-pills-row::-webkit-scrollbar {
+    display: none;
+}
+
+.category-pill {
+    padding: 0.55rem 1.35rem;
+    border-radius: var(--lms-radius-pill);
+    border: 1px solid var(--lms-border);
+    background: #FFFFFF;
+    color: var(--lms-text-main);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: var(--lms-transition);
+}
+
+.category-pill:hover {
+    border-color: var(--lms-orange);
+    color: var(--lms-orange);
+    background: var(--lms-primary-light);
+}
+
+.category-pill.active {
+    background: var(--lms-orange) !important;
+    border-color: var(--lms-orange) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(255, 122, 24, 0.35);
+}
+
+/* ==========================================================================
+   Buttons & Interactive Elements
+   ========================================================================== */
+.btn {
+    font-weight: 600;
+    border-radius: var(--lms-radius-pill);
+    padding: 0.55rem 1.35rem;
+    transition: var(--lms-transition);
+    letter-spacing: -0.01em;
+}
+
+.btn-primary, .btn-orange {
+    background: linear-gradient(135deg, #FF7A18 0%, #FF9A45 100%) !important;
+    border: none !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(255, 122, 24, 0.32);
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-orange:hover, .btn-orange:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 122, 24, 0.45);
+    color: #FFFFFF !important;
+}
+
+.btn-outline-primary {
+    color: var(--lms-orange) !important;
+    border: 1.5px solid var(--lms-orange) !important;
+    background: transparent !important;
+}
+
+.btn-outline-primary:hover {
+    background: var(--lms-orange) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(255, 122, 24, 0.3);
+}
+
+.btn-navy {
+    background: var(--lms-navy) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+}
+.btn-navy:hover {
+    background: var(--lms-navy-dark) !important;
+    color: #FFFFFF !important;
+    transform: translateY(-2px);
+}
+
+/* Cards & Surfaces */
+.card-custom {
+    border-radius: var(--lms-radius-lg);
+    background: #062330;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    color: #FFFFFF;
+    transition: var(--lms-transition);
+}
+
+.card-custom:hover {
+    box-shadow: var(--lms-shadow-md);
+}
+
+.card-gradient-top {
+    position: relative;
+    overflow: hidden;
+}
+.card-gradient-top::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #FF7A18, #27B8D6);
+}
+
+/* Badges */
+.badge-primary-subtle {
+    background-color: var(--lms-primary-light) !important;
+    color: var(--lms-primary-hover) !important;
+    border: 1px solid var(--lms-primary-border);
+}
+
+.badge-success-subtle {
+    background-color: var(--lms-emerald-light) !important;
+    color: #065f46 !important;
+    border: 1px solid #a7f3d0;
+}
+
+.badge-info-subtle {
+    background-color: var(--lms-cyan-light) !important;
+    color: #0e7490 !important;
+    border: 1px solid #a5f3fc;
+}
+
+.badge-warning-subtle {
+    background-color: var(--lms-amber-light) !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a;
+}
+
+/* Pulse dots */
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    position: relative;
+}
+
+.pulse-primary {
+    background-color: var(--lms-orange);
+    box-shadow: 0 0 0 0 rgba(255, 122, 24, 0.7);
+    animation: pulse 1.8s infinite;
+}
+
+.pulse-success {
+    background-color: var(--lms-green);
+    box-shadow: 0 0 0 0 rgba(53, 201, 138, 0.7);
+    animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 122, 24, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 7px rgba(255, 122, 24, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 122, 24, 0); }
+}
+
+/* Forms & Inputs */
+.form-control, .form-select {
+    border-radius: 12px;
+    border: 1px solid var(--lms-border);
+    padding: 0.65rem 1rem;
+    font-size: 0.95rem;
+    color: var(--lms-text-main);
+    transition: var(--lms-transition);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--lms-orange);
+    box-shadow: 0 0 0 3px rgba(255, 122, 24, 0.18);
+}
+
+/* Learning Player & Classroom */
+.classroom-container {
+    border-radius: var(--lms-radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--lms-border);
+    background: #ffffff;
+    transition: var(--lms-transition);
+}
+
+.theater-mode,
+.focus-mode {
+    background: var(--lms-navy-dark) !important;
+    color: #f1f5f9 !important;
+}
+
+/* ==========================================================================
+   Focus Mode / Distraction-Free Classroom Theater
+   ========================================================================== */
+body.focus-mode-active {
+    overflow: hidden !important;
+    background: #041620 !important;
+}
+
+body.focus-mode-active header,
+body.focus-mode-active footer,
+body.focus-mode-active .navbar-lms,
+body.focus-mode-active .footer-lms {
+    display: none !important;
+}
+
+.classroom-container.focus-mode {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    z-index: 1050 !important;
+    background: #041620 !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.classroom-container.focus-mode .classroom-top-bar {
+    background: #062330 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 0.85rem 1.5rem !important;
+    flex-shrink: 0;
+}
+
+/* In Focus Mode: Curriculum sidebar is toggleable overlay or collapsed */
+.classroom-container.focus-mode .classroom-sidebar {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 65px;
+    bottom: 0;
+    width: 360px;
+    z-index: 1060;
+    background: #062330 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 12px 0 35px rgba(0, 0, 0, 0.55);
+    max-height: calc(100vh - 65px) !important;
+    overflow-y: auto;
+}
+
+.classroom-container.focus-mode .classroom-sidebar.show-in-focus {
+    display: block !important;
+    animation: focusSidebarIn 0.25s ease-out;
+}
+
+@keyframes focusSidebarIn {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.classroom-container.focus-mode .classroom-stage {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 1350px !important;
+    margin: 0 auto !important;
+    background: #041620 !important;
+    color: #F8FAFC !important;
+    padding: 2.25rem 2rem !important;
+    min-height: auto !important;
+}
+
+.classroom-container.focus-mode .classroom-stage h1,
+.classroom-container.focus-mode .classroom-stage h2,
+.classroom-container.focus-mode .classroom-stage h3,
+.classroom-container.focus-mode .classroom-stage h4,
+.classroom-container.focus-mode .classroom-stage h5,
+.classroom-container.focus-mode .classroom-stage h6,
+.classroom-container.focus-mode .classroom-stage strong,
+.classroom-container.focus-mode .classroom-stage .text-dark {
+    color: #FFFFFF !important;
+}
+
+.classroom-container.focus-mode .classroom-stage .text-muted,
+.classroom-container.focus-mode .classroom-stage .text-secondary {
+    color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.classroom-container.focus-mode .video-wrapper,
+.classroom-container.focus-mode .ratio-16x9 {
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 16px !important;
+    overflow: hidden;
+    background: #000000 !important;
+}
+
+/* In Focus Mode: Dark Surfaces & High-Contrast Typography for all sub-components */
+.classroom-container.focus-mode .lesson-notes-box {
+    background: #062330 !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    color: #E2E8F0 !important;
+}
+
+.classroom-container.focus-mode .lesson-notes-box h6 {
+    color: #FFFFFF !important;
+}
+
+.classroom-container.focus-mode .lesson-notes-body {
+    color: #CBD5E1 !important;
+}
+
+.classroom-container.focus-mode .lesson-overview-box h6 {
+    color: #FFFFFF !important;
+}
+
+.classroom-container.focus-mode .lesson-overview-text {
+    color: #CBD5E1 !important;
+}
+
+.classroom-container.focus-mode .lesson-resource-box {
+    background: #062330 !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+
+.classroom-container.focus-mode .lesson-resource-box .resource-title {
+    color: #FFFFFF !important;
+}
+
+.classroom-container.focus-mode .lesson-resource-box .resource-subtitle {
+    color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.classroom-container.focus-mode .lesson-quiz-box {
+    background: #062330 !important;
+    border: 1.5px solid rgba(255, 122, 24, 0.45) !important;
+    color: #FFFFFF !important;
+}
+
+.classroom-container.focus-mode .lesson-quiz-box h4 {
+    color: #FFFFFF !important;
+}
+
+.classroom-container.focus-mode .lesson-quiz-box p {
+    color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.classroom-container.focus-mode .scratchpad-card {
+    background: #062330 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.classroom-container.focus-mode .scratchpad-card h6 {
+    color: #FFFFFF !important;
+}
+
+.classroom-container.focus-mode .scratchpad-card .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.classroom-container.focus-mode .scratchpad-card .bg-white {
+    background: #041620 !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.classroom-container.focus-mode .scratchpad-textarea {
+    background: #041620 !important;
+    color: #FFFFFF !important;
+    border-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+/* ==========================================================================
+   Personal Lesson Scratchpad Component
+   ========================================================================== */
+.scratchpad-card {
+    border-radius: 16px;
+    background: #F8FAFC;
+    border: 1.5px solid #E2E8F0;
+    transition: var(--lms-transition);
+}
+
+.scratchpad-card:hover {
+    border-color: #CBD5E1;
+}
+
+/* Classroom Lesson Sub-components (Normal Mode) */
+.lesson-notes-box {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0 !important;
+    color: #1E293B;
+}
+
+.lesson-notes-box h6 {
+    color: #0F172A;
+}
+
+.lesson-notes-body {
+    color: #334155;
+}
+
+.lesson-resource-box {
+    background: rgba(6, 35, 48, 0.95);
+    border: 1px solid rgba(39, 184, 214, 0.25) !important;
+}
+
+.lesson-resource-box .resource-title {
+    color: #FFFFFF !important;
+}
+
+.lesson-resource-box .resource-subtitle {
+    color: #94A3B8 !important;
+}
+
+.lesson-quiz-box {
+    background: linear-gradient(135deg, #062330 0%, #0B3445 100%) !important;
+    border: 1px solid rgba(39, 184, 214, 0.25) !important;
+    color: #FFFFFF !important;
+}
+
+.lesson-quiz-box h4 {
+    color: #FFFFFF !important;
+}
+
+.scratchpad-textarea {
+    width: 100% !important;
+    min-height: 140px;
+    padding: 0.95rem 1.15rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    border-radius: 12px;
+    border: 1.5px solid #CBD5E1;
+    background-color: #FFFFFF;
+    color: #0F172A;
+    resize: vertical;
+    transition: all 0.2s ease-in-out;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    display: block;
+}
+
+.scratchpad-textarea:focus {
+    border-color: #FF7A18 !important;
+    background-color: #FFFFFF !important;
+    box-shadow: 0 0 0 3.5px rgba(255, 122, 24, 0.2) !important;
+    outline: none !important;
+}
+
+/* ==========================================================================
+   Global Brand Preloader & Route Transition Screen
+   ========================================================================== */
+#globalPreloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #062330;
+    z-index: 9999999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.35s ease-out, visibility 0.35s ease-out;
+    pointer-events: all;
+}
+
+#globalPreloader.fade-out {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+.preloader-card {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+.preloader-logo-wrap {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+}
+
+.preloader-logo {
+    width: 68px;
+    height: 68px;
+    border-radius: 18px;
+    object-fit: contain;
+    box-shadow: 0 10px 25px rgba(255, 122, 24, 0.4);
+    animation: preloaderPulse 1.8s infinite ease-in-out;
+}
+
+.preloader-spinner-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 122, 24, 0.15);
+    border-top-color: #FF7A18;
+    border-right-color: #FF9A45;
+    animation: preloaderSpin 0.9s linear infinite;
+}
+
+@keyframes preloaderSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes preloaderPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(255,122,24,0.4)); }
+    50% { transform: scale(1.06); filter: drop-shadow(0 0 25px rgba(255,122,24,0.7)); }
+}
+
+.preloader-title {
+    color: #FFFFFF;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.65rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    letter-spacing: -0.02em;
+}
+
+.preloader-subtitle {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+}
+
+.preloader-bar-wrap {
+    width: 220px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+    overflow: hidden;
+    position: relative;
+}
+
+.preloader-bar-fill {
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, #FF7A18, #FF9A45, #5B3FE4);
+    border-radius: 9999px;
+    position: absolute;
+    animation: preloaderSlide 1.2s ease-in-out infinite;
+}
+
+@keyframes preloaderSlide {
+    0% { left: -40%; width: 30%; }
+    50% { width: 60%; }
+    100% { left: 100%; width: 30%; }
+}
+
+/* Top Route Progress Bar */
+#routeProgressBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, #FF7A18 0%, #FF9A45 50%, #5B3FE4 100%);
+    box-shadow: 0 0 10px #FF7A18, 0 0 5px #FF9A45;
+    z-index: 10000000;
+    transition: width 0.25s ease-out, opacity 0.3s ease-out;
+    pointer-events: none;
+    opacity: 0;
+}
+
+#routeProgressBar.running {
+    opacity: 1;
+}
+
+/* Route Floating Loading Pill */
+.route-loading-pill {
+    position: fixed;
+    top: 14px;
+    right: 20px;
+    z-index: 10000001;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(6, 35, 48, 0.12);
+    border-radius: 9999px;
+    padding: 0.35rem 0.9rem;
+    display: none;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #062330;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    animation: pillFadeIn 0.2s ease-out;
+}
+
+@keyframes pillFadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Footer (Deep Petrol Navy) */
+.footer-lms {
+    background: var(--lms-navy) !important;
+    color: rgba(255, 255, 255, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: auto;
+}
+
+.footer-lms a {
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none;
+    transition: var(--lms-transition);
+}
+
+.footer-lms a:hover {
+    color: var(--lms-orange);
+}
+
+/* ==========================================================================
+   Responsive Optimizations
+   ========================================================================== */
+@media (max-width: 991.98px) {
+    .benefit-bar-floating {
+        margin-top: 1rem;
+        padding: 1.25rem;
+        border-radius: 20px;
+    }
+    .benefit-divider {
+        border-right: none;
+        border-bottom: 1px solid var(--lms-border);
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+    .student-halo {
+        width: 300px;
+        height: 300px;
+    }
+    .floating-glass-card {
+        display: none; /* Hide floating cards on tablet/mobile to prevent overlapping */
+    }
+    .hero-premium {
+        padding-bottom: 3.5rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hero-premium {
+        padding-top: 2rem;
+        padding-bottom: 2.5rem;
+    }
+    .btn {
+        width: 100%;
+    }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+
+/* ==========================================================================
+   Multi-Atmosphere Page Background System (Unique Visual Atmosphere per Page)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Reusable Ambient Decorative Elements
+   -------------------------------------------------------------------------- */
+.lms-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(75px);
+    pointer-events: none;
+    z-index: 0;
+}
+.lms-orb-cyan {
+    background: radial-gradient(circle, rgba(39, 184, 214, 0.35) 0%, rgba(39, 184, 214, 0) 70%);
+}
+.lms-orb-orange {
+    background: radial-gradient(circle, rgba(255, 122, 24, 0.30) 0%, rgba(255, 122, 24, 0) 70%);
+}
+.lms-orb-purple {
+    background: radial-gradient(circle, rgba(91, 63, 228, 0.28) 0%, rgba(91, 63, 228, 0) 70%);
+}
+.lms-orb-gold {
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.32) 0%, rgba(245, 158, 11, 0) 70%);
+}
+.lms-orb-green {
+    background: radial-gradient(circle, rgba(53, 201, 138, 0.28) 0%, rgba(53, 201, 138, 0) 70%);
+}
+
+.lms-grid-pattern {
+    background-image: 
+        linear-gradient(to right, rgba(226, 232, 240, 0.4) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(226, 232, 240, 0.4) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.lms-dots-pattern {
+    background-image: radial-gradient(#CBD5E1 0.85px, transparent 0.85px);
+    background-size: 20px 20px;
+}
+
+/* ==========================================================================
+   PAGE-SPECIFIC ATMOSPHERES & PALETTE GRADIENT SYSTEM
+   Colors:
+     Darkest:  #041822
+     Dark:     #062330
+     Medium:   #0B3445
+     Medium+:  #0D3B4F
+     Light:    #12495C
+     Accent:   #FF7A18
+   ========================================================================== */
+
+/* Universal Dark Card & Typography Standard for Upgraded Atmospheric Pages */
+body.page-courses,
+body.page-course-details,
+body.page-my-courses,
+body.page-student-dashboard,
+body.page-assignment,
+body.page-quiz,
+body.page-quiz-result,
+body.page-certificate,
+body.page-certificate-verify,
+body.page-instructor-dashboard,
+body.page-instructor-management,
+body.page-admin-dashboard,
+body.page-admin-management,
+body.page-login,
+body.page-register,
+body.page-profile,
+body.page-notifications,
+body.page-about,
+body.page-contact,
+body.page-instructors {
+    color: #E2E8F0;
+}
+
+body.page-courses h1, body.page-courses h2, body.page-courses h3, body.page-courses h4, body.page-courses h5, body.page-courses h6,
+body.page-course-details h1, body.page-course-details h2, body.page-course-details h3, body.page-course-details h4, body.page-course-details h5, body.page-course-details h6,
+body.page-my-courses h1, body.page-my-courses h2, body.page-my-courses h3, body.page-my-courses h4, body.page-my-courses h5, body.page-my-courses h6,
+body.page-student-dashboard h1, body.page-student-dashboard h2, body.page-student-dashboard h3, body.page-student-dashboard h4, body.page-student-dashboard h5, body.page-student-dashboard h6,
+body.page-assignment h1, body.page-assignment h2, body.page-assignment h3, body.page-assignment h4, body.page-assignment h5, body.page-assignment h6,
+body.page-profile h1, body.page-profile h2, body.page-profile h3, body.page-profile h4, body.page-profile h5, body.page-profile h6,
+body.page-notifications h1, body.page-notifications h2, body.page-notifications h3, body.page-notifications h4, body.page-notifications h5, body.page-notifications h6,
+body.page-about h1, body.page-about h2, body.page-about h3, body.page-about h4, body.page-about h5, body.page-about h6,
+body.page-contact h1, body.page-contact h2, body.page-contact h3, body.page-contact h4, body.page-contact h5, body.page-contact h6,
+body.page-instructors h1, body.page-instructors h2, body.page-instructors h3, body.page-instructors h4, body.page-instructors h5, body.page-instructors h6,
+body.page-courses .text-dark, body.page-my-courses .text-dark, body.page-student-dashboard .text-dark,
+body.page-assignment .text-dark, body.page-profile .text-dark, body.page-notifications .text-dark,
+body.page-about .text-dark, body.page-contact .text-dark, body.page-instructors .text-dark {
+    color: #FFFFFF !important;
+}
+
+body.page-courses .text-muted, body.page-my-courses .text-muted, body.page-student-dashboard .text-muted,
+body.page-assignment .text-muted, body.page-profile .text-muted, body.page-notifications .text-muted,
+body.page-about .text-muted, body.page-contact .text-muted, body.page-instructors .text-muted {
+    color: #94A3B8 !important;
+}
+
+/* Transform White Surfaces into Sleek Dark Glass on Upgraded Pages */
+body.page-courses .card.bg-white, body.page-courses .card-custom.bg-white,
+body.page-my-courses .card.bg-white, body.page-my-courses .card-custom.bg-white,
+body.page-student-dashboard .card.bg-white, body.page-student-dashboard .card-custom.bg-white,
+body.page-assignment .card.bg-white, body.page-assignment .card-custom.bg-white,
+body.page-profile .card.bg-white, body.page-profile .card-custom.bg-white,
+body.page-notifications .card.bg-white, body.page-notifications .card-custom.bg-white,
+body.page-about .card.bg-white, body.page-about .card-custom.bg-white,
+body.page-contact .card.bg-white, body.page-contact .card-custom.bg-white,
+body.page-instructors .card.bg-white, body.page-instructors .card-custom.bg-white {
+    background: rgba(6, 35, 48, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* --------------------------------------------------------------------------
+   1. Home Page: Deep Navy + Orange + Cyan Marketing Experience
+   -------------------------------------------------------------------------- */
+body.page-home {
+    background-color: #041822;
+    background-image:
+        radial-gradient(circle at 80% 20%, #0D3B4F 0%, transparent 45%),
+        radial-gradient(circle at 15% 65%, #0B3445 0%, transparent 40%),
+        linear-gradient(180deg, #041822 0%, #062330 45%, #041822 100%);
+    background-attachment: fixed;
+}
+body.page-home .bg-white {
+    background: rgba(6, 35, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #FFFFFF !important;
+}
+body.page-home .bg-light {
+    background: rgba(11, 52, 69, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* --------------------------------------------------------------------------
+   2. Courses Catalog Page: Deep Slate & Cyan Nebula Discovery
+   -------------------------------------------------------------------------- */
+body.page-courses {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 10% 12%, #0D3B4F 0%, transparent 40%),
+        radial-gradient(circle at 90% 25%, #0B3445 0%, transparent 35%),
+        radial-gradient(circle at 50% 85%, rgba(255, 122, 24, 0.09) 0%, transparent 35%),
+        linear-gradient(180deg, #062330 0%, #041822 100%) !important;
+    background-attachment: fixed;
+}
+body.page-courses .course-catalog-item .card {
+    background: rgba(6, 35, 48, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+}
+body.page-courses .card.p-4 {
+    background: rgba(6, 35, 48, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+}
+body.page-courses .category-chip-btn {
+    background: rgba(11, 52, 69, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #E2E8F0 !important;
+}
+body.page-courses .category-chip-btn.active {
+    background: #FF7A18 !important;
+    border-color: #FF7A18 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(255, 122, 24, 0.35) !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. Course Details Page: Deep Slate Gradient Atmosphere
+   -------------------------------------------------------------------------- */
+body.page-course-details {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 80% 20%, #0D3B4F 0%, transparent 40%),
+        radial-gradient(circle at 20% 60%, #0B3445 0%, transparent 45%),
+        linear-gradient(180deg, #062330 0%, #041822 100%) !important;
+    background-attachment: fixed;
+}
+body.page-course-details .card-gradient-top {
+    background: linear-gradient(135deg, #062330 0%, #0B3445 55%, #041822 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4) !important;
+}
+body.page-course-details .card-gradient-top h1,
+body.page-course-details .card-gradient-top .text-dark,
+body.page-course-details .card-gradient-top strong {
+    color: #FFFFFF !important;
+}
+body.page-course-details .card-gradient-top .text-secondary,
+body.page-course-details .card-gradient-top .lead {
+    color: #CBD5E1 !important;
+}
+body.page-course-details .col-lg-4 .card {
+    background: #062330 !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    color: #FFFFFF !important;
+}
+body.page-course-details .col-lg-4 .card .display-6,
+body.page-course-details .col-lg-4 .card .text-dark,
+body.page-course-details .col-lg-4 .card strong {
+    color: #FFFFFF !important;
+}
+body.page-course-details .col-lg-4 .card .text-muted,
+body.page-course-details .col-lg-4 .card .text-secondary {
+    color: #94A3B8 !important;
+}
+body.page-course-details .accordion-item {
+    background: rgba(6, 35, 48, 0.8) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+}
+body.page-course-details .accordion-button {
+    background: rgba(11, 52, 69, 0.6) !important;
+    color: #FFFFFF !important;
+}
+body.page-course-details .accordion-button:not(.collapsed) {
+    background: #0B3445 !important;
+    color: #FF7A18 !important;
+}
+body.page-course-details .list-group-item {
+    background: transparent !important;
+    color: #E2E8F0 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. My Courses Page: Personal Workspace Gradient
+   -------------------------------------------------------------------------- */
+body.page-my-courses,
+body.page-receipt {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 15% 15%, #0D3B4F 0%, transparent 40%),
+        radial-gradient(circle at 85% 12%, rgba(255, 122, 24, 0.1) 0%, transparent 35%),
+        linear-gradient(180deg, #062330 0%, #041822 100%) !important;
+    background-attachment: fixed;
+}
+body.page-my-courses .card.card-custom {
+    background: rgba(6, 35, 48, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. Student Dashboard: Personal Productivity Hub
+   -------------------------------------------------------------------------- */
+body.page-student-dashboard {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 12% 15%, #0D3B4F 0%, transparent 38%),
+        radial-gradient(circle at 88% 22%, #0B3445 0%, transparent 38%),
+        radial-gradient(circle at 50% 85%, rgba(39, 184, 214, 0.08) 0%, transparent 35%),
+        linear-gradient(180deg, #062330 0%, #041822 100%) !important;
+    background-attachment: fixed;
+}
+body.page-student-dashboard .stat-card-courses {
+    background: rgba(11, 52, 69, 0.7) !important;
+    border: 1px solid rgba(39, 184, 214, 0.3) !important;
+    color: #FFFFFF !important;
+}
+body.page-student-dashboard .stat-card-completed {
+    background: rgba(11, 52, 69, 0.7) !important;
+    border: 1px solid rgba(53, 201, 138, 0.3) !important;
+    color: #FFFFFF !important;
+}
+body.page-student-dashboard .stat-card-progress {
+    background: rgba(11, 52, 69, 0.7) !important;
+    border: 1px solid rgba(91, 63, 228, 0.3) !important;
+    color: #FFFFFF !important;
+}
+body.page-student-dashboard .stat-card-certificates {
+    background: rgba(11, 52, 69, 0.7) !important;
+    border: 1px solid rgba(255, 122, 24, 0.3) !important;
+    color: #FFFFFF !important;
+}
+body.page-student-dashboard .card.card-custom {
+    background: rgba(6, 35, 48, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. Learning Page: Focused Immersive Study Room
+   -------------------------------------------------------------------------- */
+body.page-learning {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 18% 15%, rgba(39, 184, 214, 0.18), transparent 45%),
+        radial-gradient(circle at 82% 20%, rgba(255, 122, 24, 0.15), transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(18, 73, 92, 0.25), transparent 45%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%) !important;
+    background-attachment: fixed;
+    color: #FFFFFF !important;
+}
+
+/* Learning Page - Master Classroom Container & Elements */
+body.page-learning .classroom-container {
+    background: #062330 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45) !important;
+    border-radius: var(--lms-radius-lg);
+    overflow: hidden;
+}
+
+body.page-learning .classroom-sidebar {
+    background: #041822 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-learning .classroom-sidebar .border-bottom.bg-white,
+body.page-learning .classroom-sidebar .bg-white {
+    background: #062330 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-learning .classroom-sidebar h6,
+body.page-learning .classroom-sidebar .fw-bold,
+body.page-learning .classroom-sidebar .text-dark {
+    color: #FFFFFF !important;
+}
+
+body.page-learning .classroom-sidebar .text-muted {
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+
+body.page-learning .classroom-sidebar .accordion-button {
+    background: transparent !important;
+    color: #FFFFFF !important;
+}
+
+body.page-learning .classroom-sidebar .list-group-item {
+    background: rgba(6, 35, 48, 0.75) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.page-learning .classroom-sidebar .list-group-item:hover {
+    background: rgba(18, 73, 92, 0.6) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-learning .classroom-sidebar .list-group-item.active-lesson {
+    background: #0B3445 !important;
+    border-left: 4px solid #FF7A18 !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+body.page-learning .classroom-stage,
+body.page-learning:not(.focus-mode-active) .classroom-stage,
+body.page-learning:not(.focus-mode-active) .classroom-stage.bg-white {
+    background: linear-gradient(180deg, #062330 0%, #041822 100%) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-learning .classroom-stage h1,
+body.page-learning .classroom-stage h2,
+body.page-learning .classroom-stage h3,
+body.page-learning .classroom-stage h4,
+body.page-learning .classroom-stage h5,
+body.page-learning .classroom-stage h6,
+body.page-learning .classroom-stage strong,
+body.page-learning .classroom-stage .text-dark {
+    color: #FFFFFF !important;
+}
+
+body.page-learning .classroom-stage p,
+body.page-learning .classroom-stage .lesson-notes-body,
+body.page-learning .classroom-stage .lesson-overview-text {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+body.page-learning .classroom-stage .text-muted,
+body.page-learning .classroom-stage .text-secondary {
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+
+body.page-learning .classroom-stage .lesson-notes-box {
+    background: rgba(11, 52, 69, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-learning .classroom-stage .lesson-notes-box h6 {
+    color: #FFFFFF !important;
+}
+
+body.page-learning .classroom-stage .lesson-resource-box {
+    background: linear-gradient(135deg, #062330 0%, #0B3445 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-learning .classroom-stage .lesson-resource-box .resource-title {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+body.page-learning .classroom-stage .lesson-resource-box .resource-subtitle {
+    color: rgba(255, 255, 255, 0.72) !important;
+}
+
+body.page-learning .classroom-stage .scratchpad-card {
+    background: rgba(6, 35, 48, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-learning .classroom-stage .scratchpad-card h6 {
+    color: #FFFFFF !important;
+}
+
+body.page-learning .classroom-stage .scratchpad-card .text-muted {
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+
+body.page-learning .classroom-stage .scratchpad-textarea {
+    background: #041822 !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    min-height: 140px !important;
+}
+
+/* Learning Page - Focus Mode: Full Dark Theater with Crisp Light Typography */
+.classroom-container.focus-mode .classroom-stage,
+.classroom-container.focus-mode .classroom-stage.bg-white,
+body.focus-mode-active .classroom-stage,
+body.focus-mode-active .classroom-stage.bg-white {
+    background-color: #041620 !important;
+    background: #041620 !important;
+    color: #F8FAFC !important;
+}
+.classroom-container.focus-mode .classroom-stage h1,
+.classroom-container.focus-mode .classroom-stage h2,
+.classroom-container.focus-mode .classroom-stage h3,
+.classroom-container.focus-mode .classroom-stage h4,
+.classroom-container.focus-mode .classroom-stage h5,
+.classroom-container.focus-mode .classroom-stage h6,
+.classroom-container.focus-mode .classroom-stage strong,
+.classroom-container.focus-mode .classroom-stage .text-dark,
+body.focus-mode-active .classroom-stage h1,
+body.focus-mode-active .classroom-stage h2,
+body.focus-mode-active .classroom-stage h3,
+body.focus-mode-active .classroom-stage h4,
+body.focus-mode-active .classroom-stage h5,
+body.focus-mode-active .classroom-stage h6,
+body.focus-mode-active .classroom-stage strong,
+body.focus-mode-active .classroom-stage .text-dark {
+    color: #FFFFFF !important;
+}
+.classroom-container.focus-mode .classroom-stage p,
+.classroom-container.focus-mode .classroom-stage .lesson-notes-body,
+.classroom-container.focus-mode .classroom-stage .lesson-overview-text,
+body.focus-mode-active .classroom-stage p,
+body.focus-mode-active .classroom-stage .lesson-notes-body,
+body.focus-mode-active .classroom-stage .lesson-overview-text {
+    color: #CBD5E1 !important;
+}
+.classroom-container.focus-mode .classroom-stage .text-muted,
+.classroom-container.focus-mode .classroom-stage .text-secondary,
+body.focus-mode-active .classroom-stage .text-muted,
+body.focus-mode-active .classroom-stage .text-secondary {
+    color: rgba(255, 255, 255, 0.72) !important;
+}
+.classroom-container.focus-mode .lesson-notes-box,
+body.focus-mode-active .lesson-notes-box {
+    background: #062330 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #E2E8F0 !important;
+}
+.classroom-container.focus-mode .lesson-notes-box h6,
+body.focus-mode-active .lesson-notes-box h6 {
+    color: #FFFFFF !important;
+}
+.classroom-container.focus-mode .lesson-resource-box,
+body.focus-mode-active .lesson-resource-box {
+    background: #062330 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+.classroom-container.focus-mode .lesson-resource-box .resource-title,
+body.focus-mode-active .lesson-resource-box .resource-title {
+    color: #FFFFFF !important;
+}
+.classroom-container.focus-mode .lesson-resource-box .resource-subtitle,
+body.focus-mode-active .lesson-resource-box .resource-subtitle {
+    color: rgba(255, 255, 255, 0.72) !important;
+}
+.classroom-container.focus-mode .scratchpad-card,
+body.focus-mode-active .scratchpad-card {
+    background: #062330 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+.classroom-container.focus-mode .scratchpad-card h6,
+body.focus-mode-active .scratchpad-card h6 {
+    color: #FFFFFF !important;
+}
+.classroom-container.focus-mode .scratchpad-card .text-muted,
+body.focus-mode-active .scratchpad-card .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+.classroom-container.focus-mode .scratchpad-card .bg-white,
+body.focus-mode-active .scratchpad-card .bg-white {
+    background: #041620 !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+.classroom-container.focus-mode .scratchpad-textarea,
+body.focus-mode-active .scratchpad-textarea {
+    background: #041620 !important;
+    color: #FFFFFF !important;
+    border-color: rgba(255, 255, 255, 0.22) !important;
+    min-height: 140px !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. Quiz Assessment: Enterprise Dark Navy / Teal Focus Environment
+   -------------------------------------------------------------------------- */
+body.page-quiz {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 18% 15%, rgba(39, 184, 214, 0.18), transparent 45%),
+        radial-gradient(circle at 82% 20%, rgba(255, 122, 24, 0.15), transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(18, 73, 92, 0.25), transparent 45%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%) !important;
+    background-attachment: fixed;
+    color: #F8FAFC !important;
+}
+body.page-quiz .card-custom {
+    background: rgba(6, 35, 48, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45) !important;
+    backdrop-filter: blur(8px);
+}
+body.page-quiz h1, body.page-quiz h2, body.page-quiz h3, body.page-quiz h4, body.page-quiz h5, body.page-quiz h6,
+body.page-quiz .text-dark {
+    color: #FFFFFF !important;
+}
+body.page-quiz .text-secondary, body.page-quiz .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+body.page-quiz .quiz-question-box,
+body.page-quiz .question-card {
+    background: rgba(6, 35, 48, 0.88) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-left: 3px solid #27B8D6 !important;
+}
+body.page-quiz .form-check-label {
+    color: #FFFFFF !important;
+}
+body.page-quiz .bg-light,
+body.page-quiz .quiz-option-container {
+    background: rgba(11, 52, 69, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+    transition: all 0.2s ease;
+}
+body.page-quiz .quiz-option-container:hover {
+    background: rgba(18, 73, 92, 0.7) !important;
+    border-color: rgba(255, 122, 24, 0.4) !important;
+}
+body.page-quiz .quiz-option-container:has(input:checked) {
+    background: rgba(255, 122, 24, 0.15) !important;
+    border: 1.5px solid #FF7A18 !important;
+}
+body.page-quiz .quiz-palette-btn {
+    background: rgba(11, 52, 69, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+body.page-quiz .quiz-palette-btn.palette-answered {
+    background: #10B981 !important;
+    border-color: #10B981 !important;
+    color: #FFFFFF !important;
+}
+body.page-quiz .quiz-palette-btn.palette-flagged {
+    background: #FF7A18 !important;
+    border-color: #FF7A18 !important;
+    color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   8. Quiz Result Page: Radiant Achievement Environment
+   -------------------------------------------------------------------------- */
+body.page-quiz-result {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 18% 15%, rgba(39, 184, 214, 0.18), transparent 45%),
+        radial-gradient(circle at 82% 20%, rgba(255, 122, 24, 0.15), transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(18, 73, 92, 0.25), transparent 45%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%) !important;
+    background-attachment: fixed;
+    color: #FFFFFF !important;
+}
+body.page-quiz-result .card-custom {
+    background: rgba(6, 35, 48, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+}
+body.page-quiz-result .card-custom h3,
+body.page-quiz-result .card-custom .text-dark {
+    color: #FFFFFF !important;
+}
+body.page-quiz-result .bg-light {
+    background: rgba(11, 52, 69, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+/* --------------------------------------------------------------------------
+   9. Assignments: Professional Dark Focus Workspace
+   -------------------------------------------------------------------------- */
+body.page-assignment {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 12% 15%, rgba(39, 184, 214, 0.14), transparent 40%),
+        radial-gradient(circle at 88% 20%, rgba(255, 122, 24, 0.12), transparent 35%),
+        radial-gradient(circle at 50% 85%, rgba(18, 73, 92, 0.25), transparent 45%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%);
+    background-attachment: fixed;
+    color: #E2E8F0 !important;
+}
+body.page-assignment .card-custom,
+body.page-assignment .card {
+    background: rgba(6, 35, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+    backdrop-filter: blur(8px);
+}
+body.page-assignment h1, body.page-assignment h2, body.page-assignment h3,
+body.page-assignment h4, body.page-assignment h5, body.page-assignment h6,
+body.page-assignment .text-dark {
+    color: #FFFFFF !important;
+}
+body.page-assignment .text-muted {
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* --------------------------------------------------------------------------
+   10. Certificates: Royal Deep Navy + Gold Honor Platform
+   -------------------------------------------------------------------------- */
+body.page-certificate {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 50% 18%, rgba(255, 122, 24, 0.25), transparent 45%),
+        radial-gradient(circle at 15% 75%, rgba(39, 184, 214, 0.16), transparent 35%),
+        radial-gradient(circle at 85% 80%, rgba(91, 63, 228, 0.18), transparent 35%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%);
+    background-attachment: fixed;
+    color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   11. Certificate Verification: Trust & Authenticity
+   -------------------------------------------------------------------------- */
+body.page-certificate-verify {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 20% 15%, rgba(53, 201, 138, 0.18), transparent 40%),
+        radial-gradient(circle at 80% 25%, rgba(39, 184, 214, 0.15), transparent 40%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%);
+    background-attachment: fixed;
+    color: #E2E8F0 !important;
+}
+body.page-certificate-verify .card-custom,
+body.page-certificate-verify .card {
+    background: rgba(6, 35, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   12. Instructor Dashboard: Creator Studio
+   -------------------------------------------------------------------------- */
+body.page-instructor-dashboard {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 15% 15%, rgba(39, 184, 214, 0.22), transparent 35%),
+        radial-gradient(circle at 85% 20%, rgba(255, 122, 24, 0.18), transparent 30%),
+        radial-gradient(circle at 50% 85%, rgba(53, 201, 138, 0.14), transparent 38%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%);
+    background-attachment: fixed;
+    color: #E2E8F0 !important;
+}
+body.page-instructor-dashboard .card-custom {
+    background: #082635 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+body.page-instructor-dashboard h1, body.page-instructor-dashboard h2, body.page-instructor-dashboard h3,
+body.page-instructor-dashboard h4, body.page-instructor-dashboard h5, body.page-instructor-dashboard h6,
+body.page-instructor-dashboard .text-dark {
+    color: #FFFFFF !important;
+}
+body.page-instructor-dashboard .text-muted {
+    color: #94A3B8 !important;
+}
+
+/* --------------------------------------------------------------------------
+   13. Instructor Management: Content Studio Blueprint
+   -------------------------------------------------------------------------- */
+body.page-instructor-management {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 10% 15%, rgba(39, 184, 214, 0.16), transparent 35%),
+        radial-gradient(circle at 90% 10%, rgba(255, 122, 24, 0.14), transparent 35%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%);
+    background-attachment: fixed;
+    color: #E2E8F0 !important;
+}
+body.page-instructor-management .card-custom,
+body.page-instructor-management .card {
+    background: rgba(6, 35, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+body.page-instructor-management h1, body.page-instructor-management h2, body.page-instructor-management h3,
+body.page-instructor-management h4, body.page-instructor-management h5, body.page-instructor-management h6,
+body.page-instructor-management .text-dark {
+    color: #FFFFFF !important;
+}
+body.page-instructor-management .text-muted {
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+body.page-instructor-management .table {
+    color: #E2E8F0 !important;
+}
+body.page-instructor-management .table td,
+body.page-instructor-management .table th {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #E2E8F0 !important;
+}
+body.page-instructor-management .table th {
+    background: #0B3445 !important;
+}
+
+/* Universal Modals Dark Theme */
+.modal-content {
+    background: #062330 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
+}
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+}
+.modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(4, 24, 34, 0.6) !important;
+}
+.modal-title, .modal-title * {
+    color: #FFFFFF !important;
+}
+.modal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%) !important;
+}
+.modal .form-control,
+.modal .form-select {
+    background-color: rgba(4, 24, 34, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+.modal .form-control:focus,
+.modal .form-select:focus {
+    background-color: rgba(4, 24, 34, 0.95) !important;
+    border-color: #FF7A18 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 122, 24, 0.25) !important;
+}
+.modal .form-control::placeholder {
+    color: #64748B !important;
+}
+.modal label,
+.modal .form-label,
+.modal .form-check-label {
+    color: #E2E8F0 !important;
+}
+.modal .p-3.bg-light,
+.modal .bg-light {
+    background: rgba(11, 52, 69, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+
+/* Universal Dark Success & Info Alerts */
+body.page-instructor-management .alert-success,
+body.page-instructor-dashboard .alert-success,
+body.page-admin-dashboard .alert-success,
+body.page-admin-management .alert-success {
+    background: rgba(53, 201, 138, 0.15) !important;
+    border: 1px solid rgba(53, 201, 138, 0.35) !important;
+    border-left: 5px solid #35C98A !important;
+    color: #35C98A !important;
+    backdrop-filter: blur(8px);
+}
+body.page-instructor-management .alert-success *,
+body.page-instructor-dashboard .alert-success *,
+body.page-admin-dashboard .alert-success *,
+body.page-admin-management .alert-success * {
+    color: #35C98A !important;
+}
+
+/* Universal Badges & Empty State Circles */
+body.page-instructor-management .badge.bg-light,
+body.page-instructor-dashboard .badge.bg-light,
+body.page-instructor-management .badge.bg-secondary-subtle,
+body.page-admin-dashboard .badge.bg-light,
+body.page-admin-management .badge.bg-light {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #E2E8F0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+body.page-instructor-management .rounded-circle.bg-light,
+body.page-instructor-dashboard .rounded-circle.bg-light,
+body.page-admin-dashboard .rounded-circle.bg-light,
+body.page-admin-management .rounded-circle.bg-light {
+    background: rgba(39, 184, 214, 0.12) !important;
+    border: 1px solid rgba(39, 184, 214, 0.3) !important;
+    color: #27B8D6 !important;
+}
+body.page-instructor-management .rounded-circle.bg-light i,
+body.page-instructor-dashboard .rounded-circle.bg-light i,
+body.page-admin-dashboard .rounded-circle.bg-light i,
+body.page-admin-management .rounded-circle.bg-light i {
+    color: #27B8D6 !important;
+}
+
+/* Instructor & Admin Dropdown & Action Buttons */
+body.page-instructor-management .btn-light,
+body.page-instructor-dashboard .btn-light,
+body.page-admin-management .btn-light {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+body.page-instructor-management .btn-light:hover,
+body.page-admin-management .btn-light:hover {
+    background: rgba(255, 255, 255, 0.18) !important;
+    color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   14. Admin Dashboard: Enterprise Command Center
+   -------------------------------------------------------------------------- */
+body.page-admin-dashboard {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 15% 15%, rgba(39, 184, 214, 0.24), transparent 35%),
+        radial-gradient(circle at 85% 20%, rgba(255, 122, 24, 0.18), transparent 30%),
+        radial-gradient(circle at 50% 80%, rgba(18, 73, 92, 0.25), transparent 40%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%);
+    background-attachment: fixed;
+    color: #F1F5F9 !important;
+}
+body.page-admin-dashboard .card-custom {
+    background: #09212E !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+body.page-admin-dashboard h1, body.page-admin-dashboard h2, body.page-admin-dashboard h3,
+body.page-admin-dashboard h4, body.page-admin-dashboard h5, body.page-admin-dashboard h6,
+body.page-admin-dashboard .text-dark {
+    color: #FFFFFF !important;
+}
+body.page-admin-dashboard .text-muted {
+    color: #94A3B8 !important;
+}
+body.page-admin-dashboard .table-custom {
+    background: #09212E !important;
+    color: #FFFFFF !important;
+}
+body.page-admin-dashboard .table-custom th {
+    background: #05141D !important;
+    color: #CBD5E1 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+body.page-admin-dashboard .table-custom td {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #E2E8F0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   15. Admin Management: Enterprise SaaS Management
+   -------------------------------------------------------------------------- */
+body.page-admin-management {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 15% 10%, rgba(39, 184, 214, 0.16), transparent 35%),
+        radial-gradient(circle at 85% 85%, rgba(255, 122, 24, 0.12), transparent 35%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%);
+    background-attachment: fixed;
+    color: #E2E8F0 !important;
+}
+body.page-admin-management .card-custom,
+body.page-admin-management .card {
+    background: rgba(6, 35, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+body.page-admin-management h1, body.page-admin-management h2, body.page-admin-management h3,
+body.page-admin-management h4, body.page-admin-management h5, body.page-admin-management h6,
+body.page-admin-management .text-dark {
+    color: #FFFFFF !important;
+}
+body.page-admin-management .text-muted {
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+body.page-admin-management .table {
+    color: #E2E8F0 !important;
+}
+body.page-admin-management .table td,
+body.page-admin-management .table th {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #E2E8F0 !important;
+}
+body.page-admin-management .table th {
+    background: #0B3445 !important;
+}
+
+/* Universal Overrides for Admin Views */
+body.page-admin-dashboard .bg-white,
+body.page-admin-management .bg-white,
+body.page-admin-dashboard .card-header.bg-white,
+body.page-admin-management .card-header.bg-white {
+    background: rgba(6, 35, 48, 0.9) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-admin-dashboard .card-header,
+body.page-admin-management .card-header {
+    background: rgba(11, 52, 69, 0.7) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-admin-dashboard .bg-light,
+body.page-admin-management .bg-light,
+body.page-admin-dashboard .p-3.bg-light,
+body.page-admin-management .p-3.bg-light,
+body.page-admin-dashboard .modal-footer.bg-light,
+body.page-admin-management .modal-footer.bg-light {
+    background: rgba(11, 52, 69, 0.6) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-admin-dashboard .list-group-item,
+body.page-admin-management .list-group-item {
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-admin-dashboard .table thead,
+body.page-admin-management .table thead,
+body.page-admin-dashboard .table-light,
+body.page-admin-management .table-light {
+    background-color: rgba(4, 24, 34, 0.85) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.page-admin-dashboard .table thead th,
+body.page-admin-management .table thead th {
+    background-color: rgba(4, 24, 34, 0.85) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.page-admin-dashboard .table td,
+body.page-admin-management .table td {
+    color: #E2E8F0 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    background-color: transparent !important;
+}
+
+body.page-admin-dashboard .badge.bg-light,
+body.page-admin-management .badge.bg-light {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #E2E8F0 !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+body.page-admin-dashboard .form-control,
+body.page-admin-management .form-control,
+body.page-admin-dashboard .form-select,
+body.page-admin-management .form-select {
+    background-color: rgba(4, 24, 34, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-admin-dashboard .form-control::placeholder,
+body.page-admin-management .form-control::placeholder {
+    color: #64748B !important;
+}
+
+body.page-admin-dashboard code,
+body.page-admin-management code {
+    background: rgba(39, 184, 214, 0.15) !important;
+    color: #27B8D6 !important;
+    border: 1px solid rgba(39, 184, 214, 0.35) !important;
+}
+
+/* --------------------------------------------------------------------------
+   16. Authentication (Login): Gateway to Learning Split Screen
+   -------------------------------------------------------------------------- */
+body.page-login,
+body.page-account,
+body.page-forgot-password,
+body.page-reset-password {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 20% 25%, rgba(39, 184, 214, 0.16), transparent 45%),
+        radial-gradient(circle at 80% 30%, rgba(255, 122, 24, 0.18), transparent 40%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%) !important;
+    background-attachment: fixed;
+    color: #E2E8F0 !important;
+    min-height: 100vh;
+}
+body.page-login .login-split-card {
+    background: #062330;
+    border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+/* Universal Form Control Visibility Rules (Light background surfaces) */
+.login-split-card .bg-white .form-control,
+.login-split-card .bg-white .input-group-text,
+.login-split-card .bg-white input,
+.login-split-card .bg-white select,
+.login-split-card .bg-white textarea,
+body.page-login .form-control,
+body.page-register .form-control,
+body.page-forgot-password .form-control,
+body.page-reset-password .form-control,
+.bg-white .form-control {
+    color: #062330 !important;
+    background-color: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+}
+
+.login-split-card .bg-white .form-control:focus,
+body.page-login .form-control:focus,
+body.page-register .form-control:focus,
+body.page-forgot-password .form-control:focus,
+body.page-reset-password .form-control:focus {
+    color: #062330 !important;
+    background-color: #FFFFFF !important;
+    border-color: #FF7A18 !important;
+    box-shadow: 0 0 0 3px rgba(255, 122, 24, 0.25) !important;
+}
+
+.login-split-card .bg-white .form-control::placeholder,
+body.page-login .form-control::placeholder,
+body.page-register .form-control::placeholder,
+body.page-forgot-password .form-control::placeholder,
+body.page-reset-password .form-control::placeholder {
+    color: #64748B !important;
+}
+
+body.page-login .login-hero-side {
+    background: linear-gradient(135deg, #041822 0%, #062330 60%, #0B3445 100%);
+    color: #FFFFFF;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   17. Authentication (Register): Start Your Learning Journey
+   -------------------------------------------------------------------------- */
+body.page-register {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 85% 15%, rgba(255, 122, 24, 0.18), transparent 35%),
+        radial-gradient(circle at 15% 80%, rgba(39, 184, 214, 0.15), transparent 35%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%);
+    background-attachment: fixed;
+    color: #FFFFFF !important;
+}
+body.page-register .login-split-card {
+    background: #062330;
+    border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+body.page-register .login-split-card .bg-white .text-dark,
+body.page-register .login-split-card .bg-white h1,
+body.page-register .login-split-card .bg-white h2,
+body.page-register .login-split-card .bg-white h3,
+body.page-register .login-split-card .bg-white .form-label,
+body.page-register .login-split-card .bg-white .role-title {
+    color: #062330 !important;
+}
+body.page-register .login-split-card .bg-white .text-muted,
+body.page-register .login-split-card .bg-white .role-desc {
+    color: #64748B !important;
+}
+body.page-register .role-selector-card {
+    background: #F8FAFC !important;
+    border: 2px solid #E2E8F0 !important;
+}
+body.page-register .role-selector-card .role-icon-circle {
+    background: #EDF2F7;
+    color: #64748B;
+}
+body.page-register .role-selector-card.is-selected {
+    background: rgba(255, 122, 24, 0.08) !important;
+    border: 2px solid #FF7A18 !important;
+    box-shadow: 0 0 16px rgba(255, 122, 24, 0.2) !important;
+}
+body.page-register .role-selector-card.is-selected .role-icon-circle {
+    background: rgba(255, 122, 24, 0.15) !important;
+    color: #FF7A18 !important;
+}
+body.page-register .role-selector-card.is-selected .role-title {
+    color: #C2410C !important;
+    font-weight: 800 !important;
+}
+body.page-register .role-selector-card.is-selected .role-desc {
+    color: #EA580C !important;
+    font-weight: 600 !important;
+}
+
+/* --------------------------------------------------------------------------
+   18. Profile: Personal Identity Hub
+   -------------------------------------------------------------------------- */
+body.page-profile {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 15% 15%, rgba(91, 63, 228, 0.15), transparent 35%),
+        radial-gradient(circle at 85% 25%, rgba(39, 184, 214, 0.14), transparent 30%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%);
+    background-attachment: fixed;
+    color: #E2E8F0 !important;
+}
+body.page-profile .card-custom,
+body.page-profile .card {
+    background: rgba(6, 35, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+body.page-profile h1, body.page-profile h2, body.page-profile h3,
+body.page-profile h4, body.page-profile h5, body.page-profile h6,
+body.page-profile .text-dark {
+    color: #FFFFFF !important;
+}
+body.page-profile .text-muted {
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* --------------------------------------------------------------------------
+   19. Notifications: Communication Center
+   -------------------------------------------------------------------------- */
+body.page-notifications {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 18% 15%, rgba(39, 184, 214, 0.16), transparent 35%),
+        radial-gradient(circle at 82% 70%, rgba(255, 122, 24, 0.12), transparent 30%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%);
+    background-attachment: fixed;
+    color: #E2E8F0 !important;
+}
+body.page-notifications .card-custom,
+body.page-notifications .card {
+    background: rgba(6, 35, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+body.page-notifications h1, body.page-notifications h2, body.page-notifications h3,
+body.page-notifications h4, body.page-notifications h5, body.page-notifications h6,
+body.page-notifications .text-dark {
+    color: #FFFFFF !important;
+}
+body.page-notifications .text-muted {
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* --------------------------------------------------------------------------
+   20. About Page: Brand Story
+   -------------------------------------------------------------------------- */
+body.page-about {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 15% 20%, rgba(39, 184, 214, 0.15), transparent 35%),
+        radial-gradient(circle at 85% 15%, rgba(255, 122, 24, 0.15), transparent 30%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%);
+    background-attachment: fixed;
+    color: #E2E8F0 !important;
+}
+body.page-about .card-custom,
+body.page-about .card {
+    background: rgba(6, 35, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+body.page-about h1, body.page-about h2, body.page-about h3,
+body.page-about h4, body.page-about h5, body.page-about h6,
+body.page-about .text-dark {
+    color: #FFFFFF !important;
+}
+body.page-about .text-muted {
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* --------------------------------------------------------------------------
+   21. Contact Page: Human Connection
+   -------------------------------------------------------------------------- */
+body.page-contact {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 20% 20%, rgba(39, 184, 214, 0.16), transparent 35%),
+        radial-gradient(circle at 80% 30%, rgba(255, 122, 24, 0.12), transparent 30%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%);
+    background-attachment: fixed;
+    color: #E2E8F0 !important;
+}
+body.page-contact .card-custom,
+body.page-contact .card {
+    background: rgba(6, 35, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+body.page-contact h1, body.page-contact h2, body.page-contact h3,
+body.page-contact h4, body.page-contact h5, body.page-contact h6,
+body.page-contact .text-dark {
+    color: #FFFFFF !important;
+}
+body.page-contact .text-muted {
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Global UI Safeguards: Buttons, Role Selectors & Learning Classroom
+   -------------------------------------------------------------------------- */
+.btn-warning {
+    background-color: #FF7A18 !important;
+    border-color: #FF7A18 !important;
+    color: #FFFFFF !important;
+}
+.btn-warning:hover, .btn-warning:focus, .btn-warning:active {
+    background-color: #E6660A !important;
+    border-color: #E6660A !important;
+    color: #FFFFFF !important;
+}
+
+.role-selector-card {
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    background: rgba(6, 35, 48, 0.6) !important;
+    transition: all 0.25s ease;
+    position: relative;
+}
+.role-selector-card:hover {
+    border-color: rgba(255, 122, 24, 0.5) !important;
+    background: rgba(6, 35, 48, 0.85) !important;
+}
+.role-selector-card.is-selected {
+    border-color: #FF7A18 !important;
+    background: rgba(255, 122, 24, 0.12) !important;
+    box-shadow: 0 0 20px rgba(255, 122, 24, 0.25), inset 0 0 12px rgba(255, 122, 24, 0.1) !important;
+}
+
+body.page-learning .lesson-resource-box {
+    background: rgba(6, 35, 48, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+body.page-learning .lesson-resource-box .resource-title {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+body.page-learning .lesson-resource-box .resource-subtitle {
+    color: rgba(255, 255, 255, 0.72) !important;
+}
+
+
+
+/* --------------------------------------------------------------------------
+   Contrast & Readability Refinements for Specialized Atmosphere Pages
+   -------------------------------------------------------------------------- */
+body.page-course-details .card-gradient-top .col-lg-4 .card {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+body.page-course-details .card-gradient-top .col-lg-4 .card .display-6,
+body.page-course-details .card-gradient-top .col-lg-4 .card .text-dark,
+body.page-course-details .card-gradient-top .col-lg-4 .card strong {
+    color: #062330 !important;
+}
+body.page-course-details .card-gradient-top .col-lg-4 .card .text-muted,
+body.page-course-details .card-gradient-top .col-lg-4 .card .text-secondary {
+    color: #64748B !important;
+}
+
+body.page-instructor-dashboard .card-custom.bg-white,
+body.page-instructor-dashboard .card.bg-white {
+    background: #082635 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+body.page-instructor-dashboard .table {
+    color: #E2E8F0 !important;
+}
+body.page-instructor-dashboard .table td,
+body.page-instructor-dashboard .table th {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #E2E8F0 !important;
+}
+body.page-instructor-dashboard .table strong,
+body.page-instructor-dashboard .table a {
+    color: #FFFFFF !important;
+}
+body.page-instructor-dashboard .table .badge-primary-subtle,
+body.page-instructor-dashboard .badge.badge-primary-subtle {
+    background: rgba(39, 184, 214, 0.15) !important;
+    color: #38BDF8 !important;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+}
+
+body.page-admin-dashboard .card-custom.bg-white,
+body.page-admin-dashboard .card.bg-white {
+    background: #09212E !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+body.page-admin-dashboard .table {
+    color: #CBD5E1 !important;
+}
+body.page-admin-dashboard .table td {
+    color: #CBD5E1 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+body.page-admin-dashboard .table td strong,
+body.page-admin-dashboard .table td a {
+    color: #FFFFFF !important;
+}
+body.page-admin-dashboard .table th {
+    background: #05141D !important;
+    color: #FFFFFF !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Instructors Showcase Faculty Page Atmosphere
+   -------------------------------------------------------------------------- */
+body.page-instructors {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 18% 15%, rgba(39, 184, 214, 0.20), transparent 45%),
+        radial-gradient(circle at 82% 20%, rgba(255, 122, 24, 0.16), transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(18, 73, 92, 0.28), transparent 45%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%) !important;
+    background-attachment: fixed;
+    color: #E2E8F0 !important;
+}
+body.page-instructors h1, body.page-instructors h2, body.page-instructors h3,
+body.page-instructors h4, body.page-instructors h5, body.page-instructors h6 {
+    color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   Student Dashboard Card & Text Readability
+   -------------------------------------------------------------------------- */
+body.page-student-dashboard .card-custom.bg-white,
+body.page-student-dashboard .card.bg-white {
+    background: rgba(6, 35, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}
+body.page-student-dashboard .bg-light {
+    background: rgba(11, 52, 69, 0.7) !important;
+    color: #E2E8F0 !important;
+}
+body.page-student-dashboard .text-dark {
+    color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   About & Contact Dark Glass Refinements
+   -------------------------------------------------------------------------- */
+body.page-about .card-custom.bg-white,
+body.page-about .card.bg-white,
+body.page-contact .card-custom.bg-white,
+body.page-contact .card.bg-white {
+    background: rgba(6, 35, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+    backdrop-filter: blur(8px);
+}
+body.page-about .list-group-item {
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #E2E8F0 !important;
+}
+body.page-about .list-group-item .fw-semibold {
+    color: #FFFFFF !important;
+}
+body.page-contact .form-label {
+    color: #FFFFFF !important;
+}
+body.page-contact .form-control {
+    background: rgba(11, 52, 69, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+body.page-contact .form-control:focus {
+    background: rgba(11, 52, 69, 0.9) !important;
+    border-color: #FF7A18 !important;
+    box-shadow: 0 0 0 3px rgba(255, 122, 24, 0.25) !important;
+    color: #FFFFFF !important;
+}
+body.page-contact .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Universal Button Hover Dark-Theme Rules
+   Ensures buttons NEVER flash white / light on hover, focus, or active
+   -------------------------------------------------------------------------- */
+.btn-outline-light:hover,
+.btn-outline-light:focus,
+.btn-outline-light:active,
+.btn-outline-light.active,
+.show > .btn-outline-light.dropdown-toggle,
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active,
+.btn-group .btn-outline-light:hover,
+.btn-group .btn-outline-light:focus,
+.studio-action-btn:hover,
+.studio-action-btn:focus,
+.studio-action-btn:active {
+    background: rgba(39, 184, 214, 0.22) !important;
+    border-color: #27B8D6 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 12px rgba(39, 184, 214, 0.35) !important;
+}
+
+.studio-action-btn:hover *,
+.btn-group .btn-outline-light:hover *,
+.table .btn-outline-light:hover * {
+    color: #FFFFFF !important;
+}
+
+/* Modals High Specificity Safeguards */
+.modal-content,
+.modal-body,
+.modal-header,
+.modal-footer {
+    color: #FFFFFF !important;
+}
+
+.modal-content {
+    background: #062330 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75) !important;
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(4, 24, 34, 0.7) !important;
+}
+
+.modal .form-control,
+.modal .form-select,
+.modal textarea {
+    background: rgba(4, 24, 34, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+
+.modal .form-control:focus,
+.modal .form-select:focus,
+.modal textarea:focus {
+    background: rgba(4, 24, 34, 0.95) !important;
+    border-color: #FF7A18 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 0 3px rgba(255, 122, 24, 0.25) !important;
+}
+
+.modal label,
+.modal .form-label {
+    color: #FFFFFF !important;
+}
+
+.modal .text-dark {
+    color: #FFFFFF !important;
+}
+
+.modal .text-muted {
+    color: #94A3B8 !important;
+}
+
+/* AI Academic Advisor & ChatBot Atmosphere */
+body.page-ai-assistant,
+body.page-chatbot {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 12% 15%, #0D3B4F 0%, transparent 38%),
+        radial-gradient(circle at 88% 22%, #0B3445 0%, transparent 38%),
+        radial-gradient(circle at 50% 85%, rgba(39, 184, 214, 0.08) 0%, transparent 35%),
+        linear-gradient(180deg, #041822 0%, #062330 45%, #041822 100%) !important;
+    background-attachment: fixed !important;
+    color: #FFFFFF !important;
+}
+
+body.page-ai-assistant h1, body.page-ai-assistant h2, body.page-ai-assistant h3, body.page-ai-assistant h4, body.page-ai-assistant h5, body.page-ai-assistant h6,
+body.page-chatbot h1, body.page-chatbot h2, body.page-chatbot h3, body.page-chatbot h4, body.page-chatbot h5, body.page-chatbot h6 {
+    color: #FFFFFF !important;
+}
+
+body.page-ai-assistant .text-muted,
+body.page-chatbot .text-muted {
+    color: #94A3B8 !important;
+}
+
+/* ==========================================================================
+   Comprehensive Dark Contrast & Light Box Eliminators
+   ========================================================================== */
+
+/* Course Details: Curriculum, Exam Box & Reviews Glass Dark Styling */
+body.page-course-details .curriculum-section,
+body.page-course-details .reviews-section,
+body.page-course-details .card-custom,
+body.page-course-details .card.bg-light,
+body.page-course-details .card.border-secondary-subtle,
+body.page-course-details .bg-light {
+    background: rgba(6, 35, 48, 0.95) !important;
+    border: 1px solid rgba(39, 184, 214, 0.25) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-course-details .curriculum-section h4,
+body.page-course-details .reviews-section h4,
+body.page-course-details .card-custom h4,
+body.page-course-details .card-custom h5,
+body.page-course-details .card-custom h6,
+body.page-course-details .card-custom .text-dark,
+body.page-course-details .text-dark {
+    color: #FFFFFF !important;
+}
+
+body.page-course-details .curriculum-section .text-muted,
+body.page-course-details .reviews-section .text-muted,
+body.page-course-details .card-custom .text-muted,
+body.page-course-details .card-custom .text-secondary,
+body.page-course-details .text-muted,
+body.page-course-details .text-secondary {
+    color: #94A3B8 !important;
+}
+
+body.page-course-details .reviews-section .border-bottom {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.page-course-details .card.card-custom.bg-light.text-muted {
+    background: rgba(11, 52, 69, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #E2E8F0 !important;
+}
+
+/* Studio & Table Action Button Hover Inversion Fix (No Solid White Hover) */
+.studio-action-btn:hover,
+.btn-outline-light:hover,
+body.page-admin-dashboard .btn-outline-light:hover,
+body.page-admin-management .btn-outline-light:hover,
+body.page-instructor-dashboard .btn-outline-light:hover,
+body.page-instructor-management .btn-outline-light:hover,
+.table .btn-outline-light:hover {
+    background: rgba(39, 184, 214, 0.25) !important;
+    border-color: #27B8D6 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 14px rgba(39, 184, 214, 0.35) !important;
+}
+
+.studio-action-btn:hover *,
+.btn-outline-light:hover *,
+.table .btn-outline-light:hover * {
+    color: #FFFFFF !important;
+}
+
+/* Category & Level Badges on Tables across Admin and Instructor */
+.course-row .badge-primary-subtle,
+.table .badge-primary-subtle,
+.table .badge.badge-primary-subtle,
+body.page-admin-management .table .badge-primary-subtle,
+body.page-instructor-management .table .badge.bg-light {
+    background: rgba(39, 184, 214, 0.18) !important;
+    color: #27B8D6 !important;
+    border: 1px solid rgba(39, 184, 214, 0.4) !important;
+}
+
+/* Admin / Instructor Inputs and Selects Global High Specificity Safeguards */
+body.page-admin-management .form-control,
+body.page-admin-management .form-select,
+body.page-instructor-management .form-control,
+body.page-instructor-management .form-select {
+    background: rgba(6, 35, 48, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-admin-management .form-control:focus,
+body.page-admin-management .form-select:focus,
+body.page-instructor-management .form-control:focus,
+body.page-instructor-management .form-select:focus {
+    background: rgba(6, 35, 48, 0.95) !important;
+    border-color: #27B8D6 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 0 3px rgba(39, 184, 214, 0.25) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Definitive Course Details Dark Palette Enforcer
+   -------------------------------------------------------------------------- */
+body.page-course-details .curriculum-section,
+body.page-course-details .reviews-section,
+body.page-course-details .col-lg-8 .card {
+    background: #062330 !important;
+    border: 1px solid rgba(39, 184, 214, 0.25) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-course-details .accordion-flush,
+body.page-course-details #curriculumAccordion {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    background: transparent !important;
+}
+
+body.page-course-details #curriculumAccordion .accordion-item {
+    background: rgba(6, 35, 48, 0.9) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+}
+
+body.page-course-details #curriculumAccordion .accordion-button {
+    background: #0B3445 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+body.page-course-details #curriculumAccordion .accordion-button:not(.collapsed) {
+    background: #0d3d52 !important;
+    color: #FF7A18 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body.page-course-details #curriculumAccordion .accordion-button strong,
+body.page-course-details #curriculumAccordion .accordion-button .text-dark {
+    color: #FFFFFF !important;
+}
+
+body.page-course-details #curriculumAccordion .accordion-body {
+    background: #062330 !important;
+    color: #E2E8F0 !important;
+}
+
+body.page-course-details #curriculumAccordion .list-group-item {
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #E2E8F0 !important;
+}
+
+body.page-course-details #curriculumAccordion .list-group-item a,
+body.page-course-details #curriculumAccordion .chapter-direct-link,
+body.page-course-details #curriculumAccordion .btn-trigger-enroll {
+    color: #FFFFFF !important;
+    transition: color 0.2s ease;
+}
+
+body.page-course-details #curriculumAccordion .chapter-direct-link:hover,
+body.page-course-details #curriculumAccordion .btn-trigger-enroll:hover {
+    color: #27B8D6 !important;
+}
+
+body.page-course-details .reviews-section .bg-light,
+body.page-course-details .reviews-section .rounded-3.border {
+    background: rgba(11, 52, 69, 0.45) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #E2E8F0 !important;
+}
+
+body.page-course-details .reviews-section .rounded-3.border strong,
+body.page-course-details .reviews-section .rounded-3.border .text-dark {
+    color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   Definitive Account / Auth Dark Viewport Enforcer
+   -------------------------------------------------------------------------- */
+body.page-login,
+body.page-account,
+body.page-forgot-password,
+body.page-reset-password,
+body.page-register {
+    background-color: #041822 !important;
+    background-image:
+        radial-gradient(circle at 20% 25%, rgba(39, 184, 214, 0.16), transparent 45%),
+        radial-gradient(circle at 80% 30%, rgba(255, 122, 24, 0.18), transparent 40%),
+        linear-gradient(180deg, #041822 0%, #062330 50%, #0B3445 100%) !important;
+    background-attachment: fixed !important;
+    color: #FFFFFF !important;
+    min-height: 100vh !important;
+}
+
+.page-login .main-content-wrapper,
+.page-account .main-content-wrapper,
+.page-forgot-password .main-content-wrapper,
+.page-reset-password .main-content-wrapper {
+    background: transparent !important;
+    color: #FFFFFF !important;
+}
+
+
+
+
+/* --------------------------------------------------------------------------
+   Definitive Dropdowns, Chips & High-Contrast Form Enforcers
+   -------------------------------------------------------------------------- */
+.form-select,
+select.form-select,
+.form-select-sm,
+select {
+    background-color: #062330 !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.form-select option,
+select.form-select option,
+select option {
+    background-color: #062330 !important;
+    color: #FFFFFF !important;
+}
+
+.form-select:focus,
+select:focus {
+    border-color: #27B8D6 !important;
+    box-shadow: 0 0 0 0.25rem rgba(39, 184, 214, 0.25) !important;
+    color: #FFFFFF !important;
+}
+
+/* Category & Difficulty Level Chip Filter Buttons */
+.category-chip-btn,
+body.page-courses .category-chip-btn {
+    background: rgba(11, 52, 69, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #E2E8F0 !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.category-chip-btn:hover,
+body.page-courses .category-chip-btn:hover {
+    background: rgba(39, 184, 214, 0.2) !important;
+    border-color: #27B8D6 !important;
+    color: #FFFFFF !important;
+}
+
+.category-chip-btn.active,
+body.page-courses .category-chip-btn.active {
+    background: #FF7A18 !important;
+    border-color: #FF7A18 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(255, 122, 24, 0.4) !important;
+    font-weight: 700 !important;
+}
+
+.level-chip-btn,
+body.page-courses .level-chip-btn {
+    background: rgba(11, 52, 69, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #E2E8F0 !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.level-chip-btn:hover,
+body.page-courses .level-chip-btn:hover {
+    background: rgba(39, 184, 214, 0.2) !important;
+    border-color: #27B8D6 !important;
+    color: #FFFFFF !important;
+}
+
+.level-chip-btn.active,
+body.page-courses .level-chip-btn.active {
+    background: #FF7A18 !important;
+    border-color: #FF7A18 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(255, 122, 24, 0.4) !important;
+    font-weight: 700 !important;
+}
+
+/* Payment & Checkout Dark Mode Clarity */
+.payment-summary-card,
+.payment-gateway-card {
+    background: rgba(6, 35, 48, 0.95) !important;
+    border: 1px solid rgba(39, 184, 214, 0.25) !important;
+    color: #FFFFFF !important;
+}
+
+.payment-sub-box {
+    background: rgba(4, 24, 34, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #FFFFFF !important;
+}

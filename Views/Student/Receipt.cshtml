@@ -1,0 +1,267 @@
+@model LMS.ViewModels.StudentReceiptViewModel
+@{
+    ViewBag.Title = "Official Payment Receipt - " + Model.InvoiceNumber;
+}
+
+<style>
+    .receipt-container {
+        max-width: 820px;
+        margin: 0 auto;
+    }
+    .receipt-sheet {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        border-radius: 16px;
+        padding: 48px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+    .receipt-sheet h1, .receipt-sheet h2, .receipt-sheet h3, .receipt-sheet h4, .receipt-sheet h5, .receipt-sheet h6, .receipt-sheet p, .receipt-sheet div, .receipt-sheet td, .receipt-sheet span.text-dark {
+        color: #0F172A !important;
+    }
+    .receipt-sheet .text-muted, .receipt-sheet small.text-muted {
+        color: #64748B !important;
+    }
+    .receipt-sheet .text-secondary {
+        color: #475569 !important;
+    }
+    .receipt-sheet .badge.bg-light {
+        background-color: #F1F5F9 !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+    .receipt-sheet .text-primary {
+        color: #0284C7 !important;
+    }
+    .receipt-sheet .text-success {
+        color: #16A34A !important;
+    }
+    .receipt-watermark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-30deg);
+        font-size: 8rem;
+        font-weight: 900;
+        color: #0F172A !important;
+        opacity: 0.04 !important;
+        pointer-events: none;
+        user-select: none;
+        letter-spacing: 10px;
+        z-index: 0;
+    }
+    .receipt-table th {
+        background-color: #F8FAFC;
+        color: #475569;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 12px 16px;
+        border-bottom: 2px solid #E2E8F0;
+    }
+    .receipt-table td {
+        padding: 16px;
+        border-bottom: 1px solid #F1F5F9;
+        color: #1E293B;
+    }
+    .seal-badge {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        border: 2px dashed #0D9488;
+        background: #F0FDFA;
+        color: #0D9488;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-align: center;
+        padding: 8px;
+    }
+
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+        .receipt-sheet, .receipt-sheet * {
+            visibility: visible;
+        }
+        .receipt-sheet {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100% !important;
+            padding: 24px !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>
+
+<div class="py-4 receipt-container">
+    <!-- Top Action Bar (Hidden during print) -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 no-print">
+        <a href="@Url.Action("Payments", "Student")" class="btn rounded-pill px-4 fw-semibold text-white" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.25);">
+            <i class="bi bi-arrow-left me-1"></i> Back to Billing History
+        </a>
+        <div class="d-flex gap-2">
+            <button type="button" onclick="window.print()" class="btn btn-primary rounded-pill px-4 fw-bold text-white shadow-sm" style="background-color: #FF7A18 !important; border-color: #FF7A18 !important;">
+                <i class="bi bi-printer-fill me-1"></i> Print / Download PDF
+            </button>
+            <a href="@Url.Action("Index", "Learning", new { courseId = Model.CourseId })" class="btn rounded-pill px-4 fw-semibold text-white" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.25);">
+                <i class="bi bi-play-circle-fill me-1 text-orange"></i> Go to Classroom
+            </a>
+        </div>
+    </div>
+
+    <!-- Official Printable Receipt Sheet -->
+    <div class="receipt-sheet">
+        <div class="receipt-watermark">PAID</div>
+
+        <!-- Receipt Header -->
+        <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div style="background: #FF7A18; color: #FFFFFF; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <div>
+                        <span class="fs-4 fw-extrabold text-dark" style="letter-spacing: -0.5px;">EDUPLATFORM LMS</span>
+                        <div class="text-muted small" style="font-size: 11px;">ACADEMY OF TECHNICAL ACCREDITATION &amp; LEARNING</div>
+                    </div>
+                </div>
+                <div class="small text-secondary" style="font-size: 12px; line-height: 1.5;">
+                    Platform Campus Hub, Sector V, Salt Lake<br />
+                    Kolkata, West Bengal 700091, India<br />
+                    GSTIN: 19AAACE8291M1ZF &bull; support@lms.edu
+                </div>
+            </div>
+
+            <div class="text-end">
+                <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3 py-1 fw-bold mb-2">
+                    <i class="bi bi-check-circle-fill me-1"></i> PAYMENT COMPLETED
+                </span>
+                <h4 class="fw-extrabold text-dark mb-0 font-monospace">@Model.InvoiceNumber</h4>
+                <div class="text-muted small mt-1">Receipt Date: <strong>@Model.PaymentDate.ToString("MMMM dd, yyyy")</strong></div>
+                <div class="text-muted small">Ref: <span class="font-monospace text-primary">@Model.TransactionId</span></div>
+            </div>
+        </div>
+
+        <!-- Student & Billing Info -->
+        <div class="row mb-4 g-4">
+            <div class="col-6">
+                <div class="small text-uppercase fw-bold text-muted mb-1" style="font-size: 11px;">Billed To (Enrolled Student):</div>
+                <h5 class="fw-bold text-dark mb-1">@Model.StudentName</h5>
+                <div class="small text-secondary">Email: <strong>@Model.StudentEmail</strong></div>
+                <div class="small text-secondary">Student ID: <span class="font-monospace">@Model.StudentId</span></div>
+            </div>
+            <div class="col-6 text-end">
+                <div class="small text-uppercase fw-bold text-muted mb-1" style="font-size: 11px;">Payment Summary:</div>
+                <div class="small text-secondary">Payment Method: <strong>@Model.PaymentMethod</strong></div>
+                <div class="small text-secondary">Gateway Status: <strong class="text-success">Captured (Settled)</strong></div>
+                <div class="small text-secondary">Curriculum Access: <strong class="text-primary">Lifetime Verified</strong></div>
+            </div>
+        </div>
+
+        <!-- Itemized Course Invoice Table -->
+        <div class="table-responsive mb-4">
+            <table class="table receipt-table align-middle mb-0 w-100">
+                <thead>
+                    <tr>
+                        <th style="width: 50%;">Curriculum Item Description</th>
+                        <th>Track</th>
+                        <th>Duration</th>
+                        <th class="text-end">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="fw-bold text-dark fs-6">@Model.CourseTitle</div>
+                            <small class="text-muted d-block">Authorized Faculty Instructor: <strong>@Model.InstructorName</strong></small>
+                            <small class="text-muted">Includes lifetime lesson videos, quizzes, capstone tasks, and accredited credential.</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">@Model.CategoryName</span>
+                        </td>
+                        <td>
+                            <span class="text-dark">@Model.DurationHours hrs</span>
+                        </td>
+                        <td class="text-end fw-bold fs-6">
+                            @if (Model.Amount == 0)
+                            {
+                                <span class="text-success">FREE</span>
+                            }
+                            else
+                            {
+                                <span><span class="rupee-symbol">&#8377;</span>@Model.Amount.ToString("N2")</span>
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Subtotals & Net Amount -->
+        <div class="row align-items-center border-top pt-3 mb-5">
+            <div class="col-6">
+                <div class="p-3 bg-light rounded-3">
+                    <small class="fw-bold d-block text-dark mb-1">Official Payment Verification</small>
+                    <small class="text-secondary d-block" style="font-size: 11px;">
+                        This document serves as an official proof of tuition payment and course enrollment under the EduPlatform LMS Academic Charter.
+                    </small>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex justify-content-between py-1 small text-secondary">
+                    <span>Base Tuition Fee:</span>
+                    <span><span class="rupee-symbol">&#8377;</span>@Model.Amount.ToString("N2")</span>
+                </div>
+                <div class="d-flex justify-content-between py-1 small text-secondary">
+                    <span>Platform &amp; Infrastructure (0%):</span>
+                    <span><span class="rupee-symbol">&#8377;</span>0.00</span>
+                </div>
+                <div class="d-flex justify-content-between py-1 small text-secondary">
+                    <span>Applicable GST / Taxes (Inclusive):</span>
+                    <span><span class="rupee-symbol">&#8377;</span>0.00</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-top border-dark border-2 mt-2">
+                    <strong class="fs-5 text-dark">Total Amount Paid:</strong>
+                    <strong class="fs-4 text-dark font-monospace"><span class="rupee-symbol">&#8377;</span>@Model.Amount.ToString("N2")</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Signatures & Official Stamp -->
+        <div class="row align-items-end pt-3 border-top">
+            <div class="col-4 text-center">
+                <div class="seal-badge mx-auto mb-2">
+                    <i class="bi bi-patch-check-fill fs-3 mb-1"></i>
+                    <span>VERIFIED<br />OFFICIAL SEAL</span>
+                </div>
+                <div class="small fw-bold text-muted" style="font-size: 10px;">REGISTRAR &amp; BURSAR</div>
+            </div>
+            <div class="col-4 text-center">
+                <div class="mb-2">
+                    <img src="@Url.Content("~/Content/images/signatures/dr-evelyn-vance-signature.png")" alt="Director Signature" style="max-height: 44px; max-width: 160px; object-fit: contain;" />
+                </div>
+                <div class="border-top pt-1 small fw-bold text-dark" style="font-size: 11px;">Dr. Evelyn Vance</div>
+                <div class="text-muted small" style="font-size: 10px;">Director of Academic Standards</div>
+            </div>
+            <div class="col-4 text-center">
+                <div class="mb-2" style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 26px; color: #062330; height: 44px; display: flex; align-items: center; justify-content: center;">
+                    EduPlatform Accounts
+                </div>
+                <div class="border-top pt-1 small fw-bold text-dark" style="font-size: 11px;">Accounts &amp; Treasury Office</div>
+                <div class="text-muted small" style="font-size: 10px;">Computer Generated Valid Receipt</div>
+            </div>
+        </div>
+    </div>
+</div>

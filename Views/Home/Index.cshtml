@@ -1,0 +1,451 @@
+@model IEnumerable<LMS.Models.Course>
+@{
+    ViewBag.Title = "Master In-Demand Software & Tech Skills";
+    var categories = ViewBag.Categories as IEnumerable<LMS.Models.Category> ?? Enumerable.Empty<LMS.Models.Category>();
+    int totalCourses = ViewBag.TotalCourses != null ? (int)ViewBag.TotalCourses : (Model != null ? Model.Count() : 0);
+    int totalStudents = ViewBag.TotalStudents != null ? (int)ViewBag.TotalStudents : 0;
+    int totalCerts = ViewBag.TotalCertificates != null ? (int)ViewBag.TotalCertificates : 0;
+}
+
+<!-- ==========================================================================
+     HERO SECTION (Deep Petrol Navy Atmosphere & High-Impact Persona)
+     ========================================================================== -->
+<section class="hero-premium position-relative">
+    <div class="hero-ambient-glow"></div>
+    <div class="hero-ambient-orange"></div>
+
+    <div class="container-fluid max-w-7xl px-3 px-lg-4 position-relative" style="z-index: 2;">
+        <div class="row align-items-center g-5">
+            <!-- Left Editorial Text Content -->
+            <div class="col-lg-6">
+                <!-- Pill Badge -->
+                <div class="d-inline-flex mb-3">
+                    <span class="hero-badge-pill">
+                        <i class="bi bi-rocket-takeoff-fill text-orange"></i>
+                        <span>Online Learning Platform</span>
+                    </span>
+                </div>
+
+                <!-- Editorial Headline -->
+                <h1 class="font-editorial text-white mb-3" style="font-size: clamp(2.4rem, 4.4vw, 3.8rem); line-height: 1.15;">
+                    Learn, Build &amp; Grow<br />
+                    <span class="text-orange squiggly-accent">Your Future</span>
+                </h1>
+
+                <!-- Hero Subtitle -->
+                <p class="text-light opacity-80 mb-4" style="font-size: clamp(1rem, 1.4vw, 1.15rem); line-height: 1.65; max-width: 540px;">
+                    A modern Learning Management System to explore courses, gain real skills, earn certificates, and stay ahead in your career.
+                </p>
+
+                <!-- CTA Action Buttons -->
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-5">
+                    <a href="@Url.Action("Index", "Courses")" class="btn btn-primary rounded-pill px-4 py-3 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                        <span>Explore Courses</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                    <button type="button" class="btn btn-outline-light rounded-pill px-4 py-3 fw-semibold d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#demoVideoModal">
+                        <i class="bi bi-play-circle-fill text-orange fs-5"></i>
+                        <span>Watch Demo</span>
+                    </button>
+                </div>
+
+                <!-- Real Platform Database Statistics -->
+                <div class="row g-3 pt-3 border-top border-secondary border-opacity-25">
+                    <div class="col-6 col-sm-3">
+                        <div class="hero-stat-item">
+                            <div class="hero-stat-icon">
+                                <i class="bi bi-mortarboard"></i>
+                            </div>
+                            <div>
+                                <div class="hero-stat-number">@(totalCourses > 0 ? totalCourses.ToString("N0") : "10")+</div>
+                                <div class="hero-stat-label">Courses</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="hero-stat-item">
+                            <div class="hero-stat-icon">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <div>
+                                <div class="hero-stat-number">@(totalStudents > 0 ? totalStudents.ToString("N0") : "50")+</div>
+                                <div class="hero-stat-label">Learners</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="hero-stat-item">
+                            <div class="hero-stat-icon">
+                                <i class="bi bi-award"></i>
+                            </div>
+                            <div>
+                                <div class="hero-stat-number">@(totalCerts > 0 ? totalCerts.ToString("N0") : "20")+</div>
+                                <div class="hero-stat-label">Certificates</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="hero-stat-item">
+                            <div class="hero-stat-icon text-warning">
+                                <i class="bi bi-star-fill text-warning"></i>
+                            </div>
+                            <div>
+                                <div class="hero-stat-number">4.8/5</div>
+                                <div class="hero-stat-label">Avg. Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Hero Visual Stage with Floating Cards -->
+            <div class="col-lg-6">
+                <div class="hero-visual-stage">
+                    <!-- Warm Terracotta Halo -->
+                    <div class="student-halo"></div>
+
+                    <!-- Authentic Student Persona Visual -->
+                    <img src="~/Content/images/hero-student.png" alt="EduPlatform Learning Experience" class="hero-student-img img-fluid" />
+
+                    <!-- Floating Card 1: Video Lessons (Purple) -->
+                    <div class="floating-glass-card card-video">
+                        <div class="icon-box">
+                            <i class="bi bi-play-fill"></i>
+                        </div>
+                        <div>
+                            <div class="title">Video Lessons</div>
+                            <div class="progress-bar-mini">
+                                <div class="fill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Card 2: Practice Quizzes (Green) -->
+                    <div class="floating-glass-card card-quiz">
+                        <div class="icon-box">
+                            <i class="bi bi-clipboard-check-fill"></i>
+                        </div>
+                        <div>
+                            <div class="title">Practice Quizzes</div>
+                            <div class="progress-bar-mini">
+                                <div class="fill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Card 3: Assignments (Orange) -->
+                    <div class="floating-glass-card card-assignment">
+                        <div class="icon-box">
+                            <i class="bi bi-file-earmark-code-fill"></i>
+                        </div>
+                        <div>
+                            <div class="title">Assignments</div>
+                            <div class="progress-bar-mini">
+                                <div class="fill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Card 4: Certificates (Rose/Pink) -->
+                    <div class="floating-glass-card card-cert">
+                        <div class="icon-box">
+                            <i class="bi bi-award-fill"></i>
+                        </div>
+                        <div>
+                            <div class="title">Certificates</div>
+                            <div class="progress-bar-mini">
+                                <div class="fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================================================
+     FLOATING BENEFIT BAR (Overlaps Hero with 28px Radius & Soft Shadow)
+     ========================================================================== -->
+<div class="container-fluid max-w-7xl px-3 px-lg-4">
+    <div class="benefit-bar-floating">
+        <div class="row g-3 align-items-center">
+            <!-- Benefit 1: Learn Anytime -->
+            <div class="col-md-6 col-lg-3 benefit-divider">
+                <div class="benefit-item">
+                    <div class="benefit-icon-box benefit-icon-purple">
+                        <i class="bi bi-layers-fill"></i>
+                    </div>
+                    <div>
+                        <div class="benefit-title">Learn Anytime</div>
+                        <div class="benefit-desc">Access courses 24/7 on any device</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benefit 2: Industry-Relevant -->
+            <div class="col-md-6 col-lg-3 benefit-divider">
+                <div class="benefit-item">
+                    <div class="benefit-icon-box benefit-icon-orange">
+                        <i class="bi bi-bullseye"></i>
+                    </div>
+                    <div>
+                        <div class="benefit-title">Industry-Relevant</div>
+                        <div class="benefit-desc">Practical, real-world skills</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benefit 3: Expert Instructors -->
+            <div class="col-md-6 col-lg-3 benefit-divider">
+                <div class="benefit-item">
+                    <div class="benefit-icon-box benefit-icon-purple">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div>
+                        <div class="benefit-title">Expert Instructors</div>
+                        <div class="benefit-desc">Learn from top industry veterans</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benefit 4: Get Certified -->
+            <div class="col-md-6 col-lg-3">
+                <div class="benefit-item">
+                    <div class="benefit-icon-box benefit-icon-orange">
+                        <i class="bi bi-patch-check-fill"></i>
+                    </div>
+                    <div>
+                        <div class="benefit-title">Get Certified</div>
+                        <div class="benefit-desc">Earn shareable credentials</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     WHY CHOOSE LMS SECTION
+     ========================================================================== -->
+<section class="why-choose-section">
+    <div class="container-fluid max-w-7xl px-3 px-lg-4">
+        <div class="row align-items-center g-5">
+            <!-- Left Mockup: Real LMS Classroom Laptop -->
+            <div class="col-lg-6">
+                <div class="position-relative">
+                    <img src="~/Content/images/lms-platform-preview.png" alt="EduPlatform Classroom Preview" class="img-fluid rounded-4 shadow-lg w-100" style="object-fit: cover;" />
+                    <div class="position-absolute bottom-0 start-0 p-4 d-none d-sm-block">
+                        <div class="bg-dark bg-opacity-75 backdrop-blur rounded-3 p-3 text-white border border-secondary border-opacity-50" style="backdrop-filter: blur(8px);">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="pulse-dot pulse-success"></span>
+                                <span class="small fw-bold">Live Interactive Studio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Content: Educational Ecosystem -->
+            <div class="col-lg-6">
+                <span class="text-orange fw-bold text-uppercase small tracking-wider mb-2 d-inline-block">
+                    — WHY CHOOSE OUR LMS
+                </span>
+                <h2 class="display-6 fw-extrabold text-white tracking-tight mb-3">
+                    A Complete Learning Experience, <span class="text-orange">All in One Place</span>
+                </h2>
+                <p class="text-white-50 mb-4 lead" style="line-height: 1.7;">
+                    From structured courses and hands-on assignments to progress tracking and certification &mdash; everything you need to learn, practice, and grow is here.
+                </p>
+
+                <!-- 4 Feature Bullets -->
+                <div class="d-flex flex-column gap-3 mb-4">
+                    <div class="feature-bullet-item">
+                        <div class="feature-bullet-icon" style="background: rgba(255, 122, 24, 0.15); color: #FF7A18;">
+                            <i class="bi bi-diagram-3-fill"></i>
+                        </div>
+                        <div class="feature-bullet-text text-white">Structured Learning Paths</div>
+                    </div>
+
+                    <div class="feature-bullet-item">
+                        <div class="feature-bullet-icon" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B;">
+                            <i class="bi bi-bar-chart-line-fill"></i>
+                        </div>
+                        <div class="feature-bullet-text text-white">Track Your Progress</div>
+                    </div>
+
+                    <div class="feature-bullet-item">
+                        <div class="feature-bullet-icon" style="background: rgba(91, 63, 228, 0.15); color: #818CF8;">
+                            <i class="bi bi-patch-question-fill"></i>
+                        </div>
+                        <div class="feature-bullet-text text-white">Engaging Quizzes &amp; Assignments</div>
+                    </div>
+
+                    <div class="feature-bullet-item">
+                        <div class="feature-bullet-icon" style="background: rgba(39, 184, 214, 0.15); color: #27B8D6;">
+                            <i class="bi bi-award-fill"></i>
+                        </div>
+                        <div class="feature-bullet-text text-white">Earn Verified Certificates</div>
+                    </div>
+                </div>
+
+                <a href="@Url.Action("Register", "Account")" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold text-white shadow-sm">
+                    Get Started Free <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================================================
+     POPULAR COURSES SECTION (with Filter Pills & Upgraded Cards)
+     ========================================================================== -->
+<section class="py-5 home-courses-section">
+    <div class="container-fluid max-w-7xl px-3 px-lg-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+            <div>
+                <h2 class="fw-extrabold tracking-tight text-white mb-1">
+                    Explore <span class="text-orange">Popular Courses</span>
+                </h2>
+                <p class="text-white-50 small mb-0">Browse our highest-rated programs and begin your journey today</p>
+            </div>
+
+            <!-- Filter Pills -->
+            <div class="filter-pills-row">
+                <a href="@Url.Action("Index", "Courses")" class="category-pill active">All Courses</a>
+                @foreach (var cat in categories.Take(5))
+                {
+                    <a href="@Url.Action("Index", "Courses", new { categoryId = cat.CategoryId })" class="category-pill">
+                        @cat.CategoryName
+                    </a>
+                }
+                <a href="@Url.Action("Index", "Courses")" class="category-pill" title="View all categories">
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Course Cards Grid -->
+        <div class="row g-4">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var course in Model.Take(6))
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="course-card-v2">
+                            <!-- Course Thumbnail -->
+                            <div class="course-thumbnail-wrapper">
+                                @if (!string.IsNullOrWhiteSpace(course.Thumbnail))
+                                {
+                                    <img src="@course.Thumbnail" alt="@course.Title" class="course-thumbnail-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                }
+                                <div class="w-100 h-100 d-flex align-items-center justify-content-center text-white" style="display: @(string.IsNullOrWhiteSpace(course.Thumbnail) ? "flex" : "none"); background: linear-gradient(135deg, #062330 0%, #0a3547 100%);">
+                                    <i class="bi bi-laptop fs-1 text-orange opacity-75"></i>
+                                </div>
+                                <span class="course-card-category-badge">
+                                    @(course.Category?.CategoryName ?? "General")
+                                </span>
+                            </div>
+
+                            <!-- Course Body -->
+                            <div class="course-card-body">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="badge bg-secondary-subtle text-secondary small">@course.Level</span>
+                                    <span class="small text-muted"><i class="bi bi-clock me-1"></i> @course.DurationInHours hrs</span>
+                                </div>
+
+                                <h5 class="course-card-title">
+                                    <a href="@Url.Action("Details", "Courses", new { id = course.CourseId })" class="text-decoration-none text-dark">
+                                        @course.Title
+                                    </a>
+                                </h5>
+
+                                <div class="small text-muted mb-3 d-flex align-items-center gap-1">
+                                    <i class="bi bi-person-circle text-secondary"></i>
+                                    <span>@(course.Instructor?.FullName ?? "Staff Educator")</span>
+                                </div>
+
+                                <!-- Rating & Learners -->
+                                <div class="d-flex align-items-center justify-content-between small mb-3 pt-2 border-top">
+                                    <div class="d-flex align-items-center gap-1 text-warning fw-bold">
+                                        <i class="bi bi-star-fill"></i>
+                                        <span>@course.Rating.ToString("0.0")</span>
+                                        <span class="text-muted fw-normal">(@(course.CourseReviews != null ? course.CourseReviews.Count : 0))</span>
+                                    </div>
+                                    <div class="text-muted">
+                                        <i class="bi bi-people me-1"></i> @course.TotalStudents learners
+                                    </div>
+                                </div>
+
+                                <!-- Price & CTA Button -->
+                                <div class="mt-auto d-flex align-items-center justify-content-between pt-2">
+                                    <div>
+                                        @if (course.Price <= 0)
+                                        {
+                                            <span class="fs-5 fw-extrabold text-success">FREE</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="fs-5 fw-extrabold text-dark">
+                                                <span class="rupee-symbol">&#8377;</span>@course.Price.ToString("N2")
+                                            </span>
+                                        }
+                                    </div>
+                                    <a href="@Url.Action("Details", "Courses", new { id = course.CourseId })" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-1">
+                                        <span>View Course</span>
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No published courses available yet. Visit Course Catalog to explore.</p>
+                    <a href="@Url.Action("Index", "Courses")" class="btn btn-primary rounded-pill px-4">Browse Catalog</a>
+                </div>
+            }
+        </div>
+
+        <!-- View All Catalog CTA -->
+        <div class="text-center mt-5">
+            <a href="@Url.Action("Index", "Courses")" class="btn btn-navy rounded-pill px-5 py-3 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                <span>View All Courses in Catalog</span>
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================================================
+     INTERACTIVE DEMO VIDEO MODAL (Watch Demo Button)
+     ========================================================================== -->
+<div class="modal fade" id="demoVideoModal" tabindex="-1" aria-labelledby="demoVideoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark border-0 rounded-4 shadow-lg overflow-hidden">
+            <div class="modal-header border-0 bg-dark py-3 px-4">
+                <h5 class="modal-title text-white fw-bold d-flex align-items-center gap-2" id="demoVideoModalLabel">
+                    <i class="bi bi-play-circle-fill text-orange"></i>
+                    <span>EduPlatform Learning Experience Tour</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 bg-black">
+                <div class="ratio ratio-16x9">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0" title="EduPlatform Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-dark py-3 px-4 justify-content-between">
+                <div class="text-light opacity-75 small">
+                    Explore modern classrooms, hands-on tasks, and accredited credentials.
+                </div>
+                <a href="@Url.Action("Index", "Courses")" class="btn btn-primary rounded-pill px-4 btn-sm fw-bold">
+                    Start Learning Now
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

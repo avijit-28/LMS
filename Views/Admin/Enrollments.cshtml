@@ -1,0 +1,147 @@
+@model IEnumerable<LMS.Models.Enrollment>
+@{
+    ViewBag.Title = "Global Course Enrollments";
+}
+
+<div class="py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin")" class="text-decoration-none">Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Enrollments</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <span class="badge badge-primary-subtle px-3 py-1 rounded-pill mb-2 fw-semibold">
+                <span class="pulse-dot pulse-primary"></span> Learning Roster
+            </span>
+            <h2 class="fw-extrabold mb-1 tracking-tight">Global Course Enrollments</h2>
+            <p class="text-muted small mb-0">System-wide enrollment logs, student progress trajectories, and curriculum completion records</p>
+        </div>
+        <div>
+            <span class="badge bg-white text-dark border px-3 py-2 rounded-pill shadow-xs">
+                Total Enrollments: <strong>@Model.Count()</strong>
+            </span>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="card card-custom p-3 mb-4 shadow-sm bg-white border-0">
+        <div class="row g-2 align-items-center justify-content-between">
+            <div class="col-md-5">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" id="enrollmentQuickSearch" class="form-control border-start-0" placeholder="Filter by course title or student ID..." />
+                </div>
+            </div>
+            <div class="col-md-7 d-flex justify-content-md-end gap-2">
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 small fw-semibold">
+                    Completed: @Model.Count(e => e.Status == "Completed")
+                </span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2 small fw-semibold">
+                    In Progress: @Model.Count(e => e.Status == "Active")
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-custom shadow-sm overflow-hidden bg-white border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light small">
+                    <tr>
+                        <th class="ps-4">Enrollment #</th>
+                        <th>Student Key</th>
+                        <th>Course Curriculum</th>
+                        <th>Enrolled Date</th>
+                        <th>Progress Trajectory</th>
+                        <th>Status</th>
+                        <th class="pe-4">Completed Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">No enrollments recorded in the system yet.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr class="enrollment-row" data-course="@(item.Course?.Title.ToLower() ?? "")" data-student="@item.StudentId.ToLower()">
+                                <td class="ps-4"><span class="fw-bold font-monospace text-primary">#@item.EnrollmentId</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle bg-light text-muted p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                            <i class="bi bi-person-fill small"></i>
+                                        </div>
+                                        <code class="small text-dark font-monospace">@item.StudentId.Substring(0, Math.Min(10, item.StudentId.Length))...</code>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark text-truncate" style="max-width: 280px;">
+                                        @(item.Course != null ? item.Course.Title : "Course #" + item.CourseId)
+                                    </div>
+                                </td>
+                                <td><span class="small text-muted">@item.EnrollmentDate.ToString("MMM dd, yyyy")</span></td>
+                                <td style="width: 200px;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 6px;">
+                                            <div class="progress-bar @(item.ProgressPercentage >= 100 ? "bg-success" : "bg-primary")" role="progressbar" style="width: @item.ProgressPercentage%;"></div>
+                                        </div>
+                                        <span class="small fw-bold @(item.ProgressPercentage >= 100 ? "text-success" : "text-primary")">@item.ProgressPercentage%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (item.Status == "Completed")
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Completed
+                                        </span>
+                                    }
+                                    else if (item.Status == "Cancelled")
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1">
+                                            Cancelled
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1">
+                                            <span class="pulse-dot pulse-primary"></span> Active
+                                        </span>
+                                    }
+                                </td>
+                                <td class="pe-4">
+                                    <span class="small text-muted">@(item.CompletedDate.HasValue ? item.CompletedDate.Value.ToString("MMM dd, yyyy") : "--")</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#enrollmentQuickSearch').on('input', function () {
+                var q = $(this).val().toLowerCase().trim();
+                $('.enrollment-row').each(function () {
+                    var course = $(this).data('course') || '';
+                    var student = $(this).data('student') || '';
+                    if (!q || course.indexOf(q) !== -1 || student.indexOf(q) !== -1) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+        });
+    </script>
+}

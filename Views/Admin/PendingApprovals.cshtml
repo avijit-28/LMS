@@ -1,0 +1,348 @@
+@model IEnumerable<LMS.ViewModels.PendingUserApprovalViewModel>
+@{
+    ViewBag.Title = "Registration Approvals";
+    int pendingCount = ViewBag.TotalPendingCount != null ? (int)ViewBag.TotalPendingCount : 0;
+    string currentStatus = ViewBag.StatusFilter as string ?? "Pending";
+    string currentRole = ViewBag.RoleFilter as string ?? "";
+    string search = ViewBag.Search as string ?? "";
+}
+
+<div class="py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin")" class="text-decoration-none">Admin</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Users", "Admin")" class="text-decoration-none">Users</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Registration Approvals</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-semibold">
+                    <i class="bi bi-shield-check me-1"></i> User Verification Portal
+                </span>
+                @if (pendingCount > 0)
+                {
+                    <span class="badge bg-danger rounded-pill px-2 py-1">@pendingCount Awaiting Review</span>
+                }
+            </div>
+            <h2 class="fw-extrabold mb-1 tracking-tight">Student & Teacher Registration Approvals</h2>
+            <p class="text-muted small mb-0">
+                Review new user registrations, verify requested roles, and approve or decline account activations.
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <a href="@Url.Action("PasswordResets", "Admin")" class="btn rounded-pill px-3 fw-semibold text-white shadow-xs" style="background: rgba(255, 122, 24, 0.2); border: 1.5px solid #FF7A18;">
+                <i class="bi bi-key-fill me-1 text-orange"></i> Password Resets
+            </a>
+            <a href="@Url.Action("Users", "Admin")" class="btn btn-outline-secondary rounded-pill px-3 fw-semibold">
+                <i class="bi bi-people me-1"></i> All Users Directory
+            </a>
+            <a href="@Url.Action("Index", "Admin")" class="btn btn-primary rounded-pill px-3 fw-semibold shadow-sm">
+                <i class="bi bi-speedometer2 me-1"></i> Admin Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm border-0 border-start border-4 border-success mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2 text-success"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show rounded-3 shadow-sm border-0 border-start border-4 border-warning mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2 text-warning"></i>@TempData["WarningMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm border-0 border-start border-4 border-danger mb-4" role="alert">
+            <i class="bi bi-x-circle-fill me-2 text-danger"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Filter & Search Controls -->
+    <div class="card p-3 mb-4 shadow-sm" style="background: rgba(11, 52, 69, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px);">
+        @using (Html.BeginForm("PendingApprovals", "Admin", FormMethod.Get, new { @class = "row g-2 align-items-center" }))
+        {
+            <div class="col-lg-7 d-flex flex-wrap gap-2 align-items-center">
+                <span class="small fw-bold text-white-50 text-uppercase me-1" style="font-size: 11px;">Status:</span>
+                <a href="@Url.Action("PendingApprovals", "Admin", new { statusFilter = "Pending", roleFilter = currentRole, search = search })" 
+                   class="btn btn-sm rounded-pill px-3 fw-bold @(currentStatus == "Pending" ? "text-white" : "text-white-50")"
+                   style="@(currentStatus == "Pending" ? "background: #FF7A18; border: 1px solid #FF7A18;" : "background: rgba(6, 35, 48, 0.6); border: 1px solid rgba(255,255,255,0.1);")">
+                    <i class="bi bi-clock-history me-1"></i> Pending (@pendingCount)
+                </a>
+                <a href="@Url.Action("PendingApprovals", "Admin", new { statusFilter = "Approved", roleFilter = currentRole, search = search })" 
+                   class="btn btn-sm rounded-pill px-3 fw-bold @(currentStatus == "Approved" ? "text-white" : "text-white-50")"
+                   style="@(currentStatus == "Approved" ? "background: #35C98A; border: 1px solid #35C98A;" : "background: rgba(6, 35, 48, 0.6); border: 1px solid rgba(255,255,255,0.1);")">
+                    <i class="bi bi-check-circle me-1"></i> Approved
+                </a>
+                <a href="@Url.Action("PendingApprovals", "Admin", new { statusFilter = "Declined", roleFilter = currentRole, search = search })" 
+                   class="btn btn-sm rounded-pill px-3 fw-bold @(currentStatus == "Declined" ? "text-white" : "text-white-50")"
+                   style="@(currentStatus == "Declined" ? "background: #EF4444; border: 1px solid #EF4444;" : "background: rgba(6, 35, 48, 0.6); border: 1px solid rgba(255,255,255,0.1);")">
+                    <i class="bi bi-x-circle me-1"></i> Declined
+                </a>
+                <a href="@Url.Action("PendingApprovals", "Admin", new { statusFilter = "All", roleFilter = currentRole, search = search })" 
+                   class="btn btn-sm rounded-pill px-3 fw-bold @(currentStatus == "All" ? "text-white" : "text-white-50")"
+                   style="@(currentStatus == "All" ? "background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);" : "background: rgba(6, 35, 48, 0.6); border: 1px solid rgba(255,255,255,0.1);")">
+                    All Statuses
+                </a>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="input-group input-group-sm">
+                    <input type="hidden" name="statusFilter" value="@currentStatus" />
+                    <select name="roleFilter" class="form-select flex-grow-0 text-white" style="width: 140px; background: rgba(6, 35, 48, 0.85); border-color: rgba(255, 255, 255, 0.15);">
+                        <option value="" style="background: #062330;">All Roles</option>
+                        <option value="Student" style="background: #062330;" @(currentRole == "Student" ? "selected" : "")>Students</option>
+                        <option value="Instructor" style="background: #062330;" @(currentRole == "Instructor" ? "selected" : "")>Instructors</option>
+                    </select>
+                    <input type="text" name="search" value="@search" class="form-control text-white" placeholder="Search name or email..." style="background: rgba(6, 35, 48, 0.85); border-color: rgba(255, 255, 255, 0.15);" />
+                    <button type="submit" class="btn text-white fw-bold px-3" style="background: #FF7A18; border-color: #FF7A18;">
+                        <i class="bi bi-search"></i>
+                    </button>
+                    @if (!string.IsNullOrEmpty(search) || !string.IsNullOrEmpty(currentRole) || currentStatus != "Pending")
+                    {
+                        <a href="@Url.Action("PendingApprovals", "Admin")" class="btn btn-outline-light" title="Reset Filters">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Approvals Table Card -->
+    <div class="card shadow-sm overflow-hidden" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(255, 255, 255, 0.12);">
+        <div class="card-header py-3 px-4 d-flex justify-content-between align-items-center" style="background: rgba(11, 52, 69, 0.7); border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+            <h5 class="fw-bold mb-0 text-white">
+                <i class="bi bi-person-check me-2 text-cyan"></i>Registrations List
+                <span class="badge rounded-pill ms-2" style="background: rgba(39, 184, 214, 0.2); border: 1px solid rgba(39, 184, 214, 0.4); color: #27B8D6;">@Model.Count() records</span>
+            </h5>
+            <span class="small text-white-50">Showing: <strong class="text-white">@currentStatus</strong> accounts</span>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <div class="mb-3 text-muted">
+                    <i class="bi bi-check2-circle fs-1 text-success d-block mb-2"></i>
+                    <h5 class="fw-bold text-white">No registrations found</h5>
+                    <p class="small text-white-50 mb-3">There are currently no registrations matching the selected filters.</p>
+                </div>
+                @if (currentStatus != "Pending")
+                {
+                    <a href="@Url.Action("PendingApprovals", "Admin", new { statusFilter = "Pending" })" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                        <i class="bi bi-clock-history me-1"></i> View Pending Queue
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-white" style="border-color: rgba(255, 255, 255, 0.08);">
+                    <thead style="background: rgba(4, 24, 34, 0.8); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                        <tr>
+                            <th class="ps-4 text-white-50">Applicant / Email</th>
+                            <th class="text-white-50">Requested Role</th>
+                            <th class="text-white-50">Registered Date</th>
+                            <th class="text-white-50">Verification Status</th>
+                            <th class="text-white-50">Notes / Rejection Reason</th>
+                            <th class="text-end pe-4 text-white-50">Review Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        @foreach (var user in Model)
+                        {
+                            bool isUserPending = string.Equals(user.ApprovalStatus, "Pending", StringComparison.OrdinalIgnoreCase);
+                            bool isUserApproved = string.Equals(user.ApprovalStatus, "Approved", StringComparison.OrdinalIgnoreCase);
+                            bool isUserDeclined = string.Equals(user.ApprovalStatus, "Declined", StringComparison.OrdinalIgnoreCase);
+
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white" style="width: 38px; height: 38px; background: #FF7A18; flex-shrink: 0;">
+                                            @(string.IsNullOrEmpty(user.FullName) ? "U" : user.FullName.Substring(0, 1).ToUpper())
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-white">@user.FullName</div>
+                                            <div class="text-white-50 font-monospace" style="font-size: 11px;">@user.Email</div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @if (user.RequestedRole == "Instructor")
+                                    {
+                                        <span class="badge px-2 py-1 rounded-pill" style="background: rgba(39, 184, 214, 0.2); color: #27B8D6; border: 1px solid rgba(39, 184, 214, 0.4);">
+                                            <i class="bi bi-mortarboard me-1"></i> Instructor
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge px-2 py-1 rounded-pill" style="background: rgba(53, 201, 138, 0.2); color: #35C98A; border: 1px solid rgba(53, 201, 138, 0.4);">
+                                            <i class="bi bi-backpack2 me-1"></i> @(user.RequestedRole ?? "Student")
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="text-white-50">
+                                    <div class="text-white">@user.RegisteredDate.ToLocalTime().ToString("dd MMM yyyy")</div>
+                                    <div class="font-monospace" style="font-size: 11px;">@user.RegisteredDate.ToLocalTime().ToString("hh:mm tt")</div>
+                                </td>
+
+                                <td>
+                                    @if (isUserPending)
+                                    {
+                                        <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold">
+                                            Pending Verification
+                                        </span>
+                                    }
+                                    else if (isUserApproved)
+                                    {
+                                        <span class="badge bg-success rounded-pill px-3 py-1 fw-bold">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Approved
+                                        </span>
+                                    }
+                                    else if (isUserDeclined)
+                                    {
+                                        <span class="badge bg-danger rounded-pill px-3 py-1 fw-bold">
+                                            <i class="bi bi-x-circle-fill me-1"></i> Declined
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (!string.IsNullOrEmpty(user.RejectionReason))
+                                    {
+                                        <span class="text-danger small" title="@user.RejectionReason">
+                                            <i class="bi bi-chat-left-text me-1"></i>@(user.RejectionReason.Length > 35 ? user.RejectionReason.Substring(0, 32) + "..." : user.RejectionReason)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-white-50">&mdash;</span>
+                                    }
+                                </td>
+
+                                <td class="text-end pe-4">
+                                    <div class="d-flex gap-2 justify-content-end align-items-center">
+                                        @if (!isUserApproved)
+                                        {
+                                            using (Html.BeginForm("ApproveUser", "Admin", FormMethod.Post, new { @class = "d-inline m-0" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="userId" value="@user.Id" />
+                                                <button type="submit" class="btn btn-sm text-white rounded-pill px-3 fw-bold" style="background: #35C98A; border: none;"
+                                                        data-fullname="@user.FullName" 
+                                                        data-role="@user.RequestedRole" 
+                                                        onclick="return confirm('Approve registration for ' + this.getAttribute('data-fullname') + ' as ' + this.getAttribute('data-role') + '?');">
+                                                    <i class="bi bi-check-lg me-1"></i> Approve
+                                                </button>
+                                            }
+                                        }
+
+                                        @if (!isUserDeclined)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold shadow-xs" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#declineModal" 
+                                                    data-userid="@user.Id" 
+                                                    data-fullname="@user.FullName" 
+                                                    data-email="@user.Email" 
+                                                    data-role="@user.RequestedRole">
+                                                <i class="bi bi-x-lg me-1"></i> Decline
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-muted border">Declined</span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Decline Modal -->
+<div class="modal fade" id="declineModal" tabindex="-1" aria-labelledby="declineModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            @using (Html.BeginForm("DeclineUser", "Admin", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="modalUserId" name="userId" value="" />
+
+                <div class="modal-header border-bottom py-3">
+                    <h5 class="modal-title fw-bold text-danger d-flex align-items-center gap-2" id="declineModalLabel">
+                        <i class="bi bi-shield-x"></i> Decline Registration Application
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <p class="small text-muted mb-3">
+                        You are about to decline registration for <strong id="modalUserName" class="text-dark">User</strong> (<span id="modalUserEmail">email</span>) as <span id="modalUserRole" class="badge bg-secondary-subtle text-secondary">Role</span>.
+                    </p>
+
+                    <div class="mb-3">
+                        <label for="modalReason" class="form-label fw-bold small text-dark">
+                            Reason for Declining (Optional):
+                        </label>
+                        <textarea class="form-control" id="modalReason" name="reason" rows="3" placeholder="e.g. Incomplete instructor bio, unverified credentials, duplicate application, or platform policy mismatch..."></textarea>
+                        <div class="form-text small text-muted">
+                            This explanation will be shared with the applicant on their status page and in their system notification.
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning py-2 small border-0 border-start border-3 border-warning mb-0">
+                        <i class="bi bi-exclamation-triangle me-1"></i> Declining will prevent the user from logging in until reviewed again.
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top py-2 px-4 bg-light">
+                    <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-danger rounded-pill px-4 fw-semibold shadow-sm">
+                        <i class="bi bi-x-circle me-1"></i> Confirm Decline
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var declineModalEl = document.getElementById('declineModal');
+        if (declineModalEl) {
+            declineModalEl.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var userId = button.getAttribute('data-userid');
+                var fullName = button.getAttribute('data-fullname');
+                var email = button.getAttribute('data-email');
+                var role = button.getAttribute('data-role');
+
+                document.getElementById('modalUserId').value = userId;
+                document.getElementById('modalUserName').textContent = fullName;
+                document.getElementById('modalUserEmail').textContent = email;
+                document.getElementById('modalUserRole').textContent = role;
+                document.getElementById('modalReason').value = '';
+            });
+        }
+    </script>
+}

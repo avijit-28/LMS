@@ -1,0 +1,113 @@
+@model IEnumerable<LMS.Models.Quiz>
+@{
+    var course = ViewBag.Course as LMS.Models.Course;
+    ViewBag.Title = "Quizzes - " + (course?.Title ?? "Course");
+}
+
+<div class="py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Instructor")" class="text-decoration-none">Studio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Courses", "Instructor")" class="text-decoration-none">My Courses</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Quizzes</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <span class="badge bg-warning-subtle text-dark border border-warning-subtle px-3 py-1 rounded-pill mb-2 fw-semibold">
+                <i class="bi bi-patch-question-fill text-warning me-1"></i> Knowledge Assessments
+            </span>
+            <h2 class="fw-extrabold mb-1 tracking-tight">Quizzes & Evaluations: @(course?.Title ?? "Course")</h2>
+            <p class="text-muted small mb-0">Construct objective multiple-choice exams, configure time limits, and set passing standards</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Courses", "Instructor")" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Back to Courses
+            </a>
+            <a href="@Url.Action("CreateQuiz", "Instructor", new { courseId = course?.CourseId })" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> Create Quiz
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card card-custom p-5 text-center shadow-sm bg-white border-0">
+            <div class="rounded-circle bg-light p-4 d-inline-flex mx-auto mb-3">
+                <i class="bi bi-patch-question text-muted display-4"></i>
+            </div>
+            <h4 class="fw-bold">No quizzes created for this course yet</h4>
+            <p class="text-muted small mb-3">Create automated timed multiple-choice assessments with immediate feedback.</p>
+            <div>
+                <a href="@Url.Action("CreateQuiz", "Instructor", new { courseId = course?.CourseId })" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Create First Quiz
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var q in Model)
+            {
+                <div class="col-md-6">
+                    <div class="card card-custom p-4 shadow-sm h-100 bg-white border-0 card-hover d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex flex-wrap gap-1 align-items-center">
+                                @if (q.IsFinalExam)
+                                {
+                                    <span class="badge bg-warning text-dark fw-bold border border-warning rounded-pill px-3 py-1 small">
+                                        <i class="bi bi-award-fill me-1"></i> Final Mandatory Exam
+                                    </span>
+                                }
+                                else if (q.Module != null)
+                                {
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 small fw-semibold">
+                                        <i class="bi bi-collection-play-fill me-1"></i> Mod @q.Module.ModuleOrder: @q.Module.ModuleName
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-muted border rounded-pill px-2 py-1 small">
+                                        Module Checkpoint
+                                    </span>
+                                }
+                                <span class="badge bg-warning-subtle text-dark border border-warning-subtle px-2 py-1 rounded-pill small fw-bold">
+                                    Pass: @q.PassingPercentage%
+                                </span>
+                            </div>
+                            <span class="badge bg-light text-dark border rounded-pill px-3 py-1 small">
+                                <i class="bi bi-list-ol me-1 text-primary"></i> @q.Questions.Count Questions
+                            </span>
+                        </div>
+
+                        <h5 class="fw-bold text-dark mb-1">@q.Title</h5>
+                        <p class="small text-muted mb-3 flex-grow-1" style="line-height: 1.6;">@(string.IsNullOrEmpty(q.Description) ? "Knowledge assessment evaluation." : q.Description)</p>
+
+                        <div class="d-flex align-items-center gap-3 small text-muted mb-3 p-2 bg-light rounded-3 border">
+                            <div><i class="bi bi-stopwatch text-primary me-1"></i> <strong>@(q.TimeLimitMinutes ?? 30)</strong> min limit</div>
+                            <div><i class="bi bi-award text-success me-1"></i> <strong>@q.TotalMarks</strong> total pts</div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2 mt-auto pt-2 border-top">
+                            <a href="@Url.Action("EditQuiz", "Instructor", new { id = q.QuizId })" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold">
+                                <i class="bi bi-pencil me-1"></i> Edit Quiz
+                            </a>
+                            <a href="@Url.Action("Questions", "Instructor", new { quizId = q.QuizId })" class="btn btn-sm btn-primary rounded-pill flex-grow-1 fw-bold shadow-sm py-2">
+                                <i class="bi bi-list-task me-1"></i> Manage Questions (@q.Questions.Count)
+                            </a>
+                            @using (Html.BeginForm("DeleteQuiz", "Instructor", new { id = q.QuizId }, FormMethod.Post, new { @class = "d-inline" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2" title="Delete Quiz" onclick="return confirm('Are you sure you want to delete quiz \'@Html.Raw(HttpUtility.JavaScriptStringEncode(q.Title))\'?');">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

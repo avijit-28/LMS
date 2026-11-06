@@ -1,0 +1,22 @@
+# ==============================================================================
+# EduPlatform LMS - RAG (Retrieval-Augmented Generation) ChatBot Dependencies
+# Compatible with Python 3.9 - 3.12+
+# ==============================================================================
+
+# Official Google GenAI SDK (Gemini 1.5 Flash / Pro)
+google-genai>=1.0.0
+
+# Database Connectivity to SQL Server LMS Database
+pyodbc>=4.0.39
+
+# Microservice REST API (Optional high-performance bridge to ASP.NET MVC)
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.0
+
+# Vector Search & Semantic Chunking (Optional local vector store)
+chromadb>=0.4.22
+sentence-transformers>=2.3.1
+numpy>=1.24.0
+python-dotenv>=1.0.0
+requests>=2.31.0

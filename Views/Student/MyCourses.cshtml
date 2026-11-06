@@ -1,0 +1,111 @@
+@model IEnumerable<LMS.Models.Enrollment>
+@{
+    ViewBag.Title = "My Enrolled Courses";
+}
+
+<div class="py-4">
+    <!-- Personal Learning Workspace Hero (Deep Teal / Navy + Soft Orange Curve) -->
+    <div class="card border-0 p-4 p-md-5 mb-5 rounded-4 shadow-sm text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #053745 0%, #062330 65%, #041620 100%);">
+        <div class="position-absolute top-0 end-0 p-4 opacity-15 d-none d-md-block pointer-events-none">
+            <i class="bi bi-laptop display-1 text-white"></i>
+        </div>
+        <div class="position-absolute bottom-0 end-0 me-5 mb-2 opacity-10 d-none d-lg-block pointer-events-none">
+            <i class="bi bi-book-half display-3 text-warning"></i>
+        </div>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center position-relative z-1 gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-white bg-opacity-15 text-orange px-3 py-1 rounded-pill fw-semibold">
+                        <i class="bi bi-laptop me-1"></i> Personal Workspace
+                    </span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-semibold small">
+                        <i class="bi bi-check-circle-fill me-1"></i> Active Session
+                    </span>
+                </div>
+                <h2 class="fw-extrabold mb-1 tracking-tight text-white display-6">My Enrolled Courses</h2>
+                <p class="text-light text-opacity-75 small mb-0">Continue where you left off across your active technical curriculums and projects</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="@Url.Action("Payments", "Student")" class="btn btn-outline-light rounded-pill px-4 fw-semibold" style="border-color: rgba(255, 255, 255, 0.35);">
+                    <i class="bi bi-receipt me-1 text-orange"></i> Receipts &amp; Billing
+                </a>
+                <a href="@Url.Action("Index", "Courses")" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" style="background-color: #FF7A18 !important; border-color: #FF7A18 !important;">
+                    <i class="bi bi-compass me-1"></i> Explore More Courses
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card card-custom p-5 text-center shadow-sm bg-white">
+            <div class="rounded-circle bg-light p-4 d-inline-flex mx-auto mb-3">
+                <i class="bi bi-journal-x fs-1 text-muted"></i>
+            </div>
+            <h5 class="fw-bold">No enrolled courses in your curriculum yet.</h5>
+            <p class="text-muted small mb-3">Browse our curated courses and enroll in tracks that match your career goals.</p>
+            <div>
+                <a href="@Url.Action("Index", "Courses")" class="btn btn-primary rounded-pill px-4">Browse Course Catalog</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom card-hover h-100 overflow-hidden shadow-sm d-flex flex-column border-0 rounded-4" style="background: rgba(6, 35, 48, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); color: #FFFFFF;">
+                        @if (!string.IsNullOrWhiteSpace(item.Course?.Thumbnail))
+                        {
+                            <div class="position-relative overflow-hidden bg-dark" style="height: 160px;">
+                                <img src="@item.Course.Thumbnail" alt="@item.Course.Title" class="w-100 h-100" style="object-fit: cover;" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'text-center py-4 h-100 d-flex align-items-center justify-content-center\' style=\'background: linear-gradient(135deg, #062330 0%, #0B3445 50%, #12495C 100%);\'><i class=\'bi bi-mortarboard-fill display-4 text-orange opacity-75\'></i></div>';" />
+                                <span class="position-absolute top-0 end-0 m-2 badge @(item.Status == "Completed" ? "bg-success" : "bg-primary") rounded-pill px-3 py-1 small shadow-xs">
+                                    @item.Status
+                                </span>
+                                <span class="position-absolute bottom-0 start-0 m-2 badge bg-dark bg-opacity-75 text-white rounded-pill px-3 py-1 small">
+                                    <i class="bi bi-clock me-1 text-warning"></i> @item.Course.DurationInHours hrs
+                                </span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4 border-bottom position-relative" style="height: 160px; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #041822 0%, #062330 50%, #0B3445 100%);">
+                                <i class="bi bi-mortarboard-fill display-4 text-orange opacity-75"></i>
+                                <span class="position-absolute top-0 end-0 m-2 badge @(item.Status == "Completed" ? "bg-success" : "bg-primary") rounded-pill px-3 py-1 small">
+                                    @item.Status
+                                </span>
+                                <span class="position-absolute bottom-0 start-0 m-2 badge bg-dark bg-opacity-75 text-white shadow-xs border border-secondary small">
+                                    <i class="bi bi-clock me-1 text-orange"></i> @item.Course.DurationInHours hrs
+                                </span>
+                            </div>
+                        }
+                        <div class="card-body d-flex flex-column p-4">
+                            <span class="badge badge-primary-subtle small align-self-start mb-2">
+                                @(item.Course?.Category?.CategoryName ?? "General")
+                            </span>
+                            <h5 class="card-title fw-bold mb-2 text-white">@item.Course.Title</h5>
+
+                            <div class="mb-3 mt-2">
+                                <div class="d-flex justify-content-between align-items-center small mb-1" style="color: rgba(255, 255, 255, 0.7);">
+                                    <span>Curriculum Completion</span>
+                                    <strong class="text-white">@item.CompletionPercentage%</strong>
+                                </div>
+                                <div class="progress" style="height: 8px; background: rgba(255, 255, 255, 0.1);">
+                                    <div class="progress-bar @(item.Status == "Completed" ? "bg-success" : "bg-primary")" role="progressbar" style="width: @item.CompletionPercentage%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                                <small style="color: rgba(255, 255, 255, 0.6);"><i class="bi bi-calendar-check me-1 text-orange"></i> @item.EnrollmentDate.ToString("MMM dd")</small>
+                                <a href="@Url.Action("Index", "Learning", new { courseId = item.CourseId })" class="btn btn-sm btn-primary rounded-pill px-4 fw-semibold shadow-xs">
+                                    <i class="bi bi-play-circle-fill me-1"></i> Continue
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

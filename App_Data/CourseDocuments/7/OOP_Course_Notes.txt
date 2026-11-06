@@ -1,0 +1,32 @@
+# Object-Oriented Programming (OOP) Master Guide - Module 1
+
+Object-Oriented Programming (OOP) is a fundamental programming paradigm based on the concept of "objects", which contain data in the form of fields (attributes) and code in the form of procedures (methods).
+
+## The Four Core Pillars of OOP
+
+1. Encapsulation:
+Encapsulation binds data and code into a single unit (class). It prevents direct unauthorized access to object state by marking fields private and providing public getters and setters.
+
+2. Abstraction:
+Abstraction exposes only essential features to the outer world while concealing intricate background mechanics. In C#, abstract classes and interfaces establish abstract contracts.
+
+3. Inheritance:
+Inheritance is the mechanism by which a derived class inherits state and behaviors from a base class. It promotes DRY (Don't Repeat Yourself) architecture.
+
+4. Polymorphism:
+Polymorphism permits entities to behave differently in diverse contexts. It comes in two flavors:
+- Compile-time (Static): Method overloading.
+- Runtime (Dynamic): Method overriding using virtual and override keywords.
+
+## Real-World Example in C#
+```csharp
+public abstract class Animal
+{
+    public abstract void MakeSound();
+}
+
+public class Dog : Animal
+{
+    public override void MakeSound() => Console.WriteLine("Bark!");
+}
+```
