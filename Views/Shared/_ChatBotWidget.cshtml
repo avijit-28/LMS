@@ -95,7 +95,7 @@
     <div class="edubot-footer p-3 border-top border-secondary border-opacity-10">
         <form id="edubot-form" onsubmit="handleEduBotSubmit(event)" class="d-flex align-items-end gap-2">
             <input type="hidden" id="edubot-session-guid" value="@activeSessionGuid" />
-            <textarea id="edubot-input" class="form-control edubot-textarea" rows="1" placeholder="Ask anything about courses, modules, exams..." onkeydown="handleEduBotKeyDown(event)"></textarea>
+            <textarea id="edubot-input" class="form-control edubot-textarea" rows="1" style="resize: none; overflow-y: hidden;" placeholder="Ask anything about courses, modules, exams..." onkeydown="handleEduBotKeyDown(event)"></textarea>
             <button type="submit" id="edubot-send-btn" class="btn edubot-send-btn d-flex align-items-center justify-content-center" title="Send Message">
                 <i class="bi bi-arrow-up-short fs-4"></i>
             </button>

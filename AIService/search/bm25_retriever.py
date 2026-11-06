@@ -1,14 +1,43 @@
 """
 Pillar 2: Sparse Lexical BM25 Retriever.
 Scores exact keyword matches, code tokens, and acronyms across indexed course chunks.
+Implements:
+- T-01: PascalCase, camelCase, and Underscore Code Tokenizer
+- T-02: Exact Code Syntax & Symbol Matching
 """
 import math
 import re
 from typing import List, Dict, Any, Optional
 
 def tokenize(text: str) -> List[str]:
-    """Tokenizes text preserving alphanumeric keywords, underscores, and code tokens."""
-    return re.findall(r"[A-Za-z0-9_#]+", text.lower())
+    """
+    Tokenizes text preserving alphanumeric keywords, underscores, and code tokens.
+    Splits PascalCase and camelCase into subwords for precise code search (T-01).
+    """
+    if not text:
+        return []
+    base_tokens = re.findall(r"[A-Za-z0-9_#]+", text)
+    tokens: List[str] = []
+    for tok in base_tokens:
+        tok_lower = tok.lower()
+        tokens.append(tok_lower)
+        
+        # Split camelCase / PascalCase (e.g. ActionFilterAttribute -> Action, Filter, Attribute)
+        parts = re.findall(r"[A-Z]?[a-z]+|[A-Z]+(?=[A-Z][a-z]|\d|\W|$)|[0-9]+", tok)
+        if len(parts) > 1:
+            for p in parts:
+                p_lower = p.lower()
+                if p_lower != tok_lower and len(p_lower) > 1:
+                    tokens.append(p_lower)
+                    
+        # Split underscore identifiers (e.g. get_user_by_id -> get, user, by, id)
+        if "_" in tok:
+            for sub in tok.split("_"):
+                sub_lower = sub.lower()
+                if sub_lower and sub_lower != tok_lower:
+                    tokens.append(sub_lower)
+
+    return tokens
 
 class BM25Retriever:
     def __init__(self, k1: float = 1.5, b: float = 0.75):

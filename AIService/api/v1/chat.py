@@ -1,6 +1,12 @@
 """
 Chat and RAG query processing endpoints with Hard RBAC Security.
+Implements:
+- C-01: In-Memory Sliding-Window Rate Limiter (5 requests / 30 seconds)
+- T-04: Buffer Overflow & Repetitive Spam Truncator / Validator
+- N-05: Socratic Mode Domain Drift Lock integration
 """
+import time
+from collections import defaultdict
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
@@ -10,11 +16,59 @@ from core.logger import logger
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
+# C-01: In-memory sliding window rate limiter
+_RATE_LIMIT_STORE: Dict[str, List[float]] = defaultdict(list)
+RATE_LIMIT_MAX_REQ = 5
+RATE_LIMIT_WINDOW_SEC = 30.0
+
+def enforce_sliding_rate_limit(user_id: str) -> None:
+    """Enforces sliding window limit of 5 requests per 30 seconds per user (C-01)."""
+    now = time.time()
+    history = _RATE_LIMIT_STORE[user_id]
+    # Keep only timestamps within the window
+    valid_history = [t for t in history if now - t < RATE_LIMIT_WINDOW_SEC]
+    _RATE_LIMIT_STORE[user_id] = valid_history
+
+    if len(valid_history) >= RATE_LIMIT_MAX_REQ:
+        oldest = valid_history[0]
+        cooldown = int(RATE_LIMIT_WINDOW_SEC - (now - oldest)) + 1
+        logger.warning(f"C-01 Rate Limit Exceeded for user '{user_id}'. Cooldown: {cooldown}s.")
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Rate limit exceeded: Maximum {RATE_LIMIT_MAX_REQ} requests per {int(RATE_LIMIT_WINDOW_SEC)} seconds allowed. Please wait {cooldown} seconds before sending another message."
+        )
+    valid_history.append(now)
+
+def validate_and_truncate_query(query: str) -> str:
+    """Enforces 2,000-character ceiling and checks for repetitive spam patterns (T-04)."""
+    if not query:
+        raise HTTPException(status_code=400, detail="Query cannot be empty.")
+    
+    # 2,000 char truncation ceiling
+    truncated = query[:2000].strip()
+
+    # Repetitive spam pattern detection
+    words = truncated.split()
+    if len(words) > 25:
+        counts: Dict[str, int] = {}
+        for w in words:
+            w_lower = w.lower()
+            counts[w_lower] = counts.get(w_lower, 0) + 1
+        max_freq = max(counts.values())
+        if (max_freq / len(words)) > 0.65:
+            logger.warning(f"T-04 Spam Alert: Highly repetitive query rejected: '{truncated[:60]}...'")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Query rejected (T-04): Excessive repetitive spam pattern detected. Please enter a meaningful course question."
+            )
+    return truncated
+
 class ChatAskRequest(BaseModel):
     user_id: str
     user_role: str = "Student"
     session_id: Optional[str] = None
     course_id: Optional[int] = None
+    course_name: Optional[str] = None
     module_id: Optional[int] = None
     lesson_id: Optional[int] = None
     query: str
@@ -52,6 +106,12 @@ def ask_chat(
     """
     RAG-grounded query processing with hard RBAC security and multi-pillar pipeline.
     """
+    # C-01: Sliding-Window Rate Limiter
+    enforce_sliding_rate_limit(req.user_id)
+
+    # T-04: Buffer Overflow & Repetitive Spam Validation
+    clean_query = validate_and_truncate_query(req.query)
+
     authorized_courses = parse_authorized_courses(authorized_courses_header)
     
     # Enforce Hard RBAC authorization check
@@ -66,12 +126,13 @@ def ask_chat(
     logger.info(f"Processing query from user {req.user_id} ({req.user_role}) on course {req.course_id} [Mode: {req.learning_mode}]")
 
     result = rag_engine.process_query(
-        query=req.query,
+        query=clean_query,
         user_id=req.user_id,
         user_role=req.user_role,
         course_id=req.course_id,
         learning_mode=req.learning_mode,
-        chat_history=req.history
+        chat_history=req.history,
+        course_name=req.course_name
     )
 
     citations = [

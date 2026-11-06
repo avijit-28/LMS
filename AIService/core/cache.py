@@ -2,6 +2,10 @@
 Pillar 4: High-Performance Semantic Caching Layer.
 Caches query embeddings and answers. Queries with >= 0.95 similarity return
 instant (<50ms), 0-token, 0-cost cached responses.
+Implements:
+- C-03: Semantic Cache Hit (>= 0.95)
+- C-04: Semantic Cache Divergence (< 0.95)
+- N-07: Targeted Cache Invalidation on Course Update
 """
 import time
 import numpy as np
@@ -110,5 +114,16 @@ class SemanticCache:
         )
         self.entries.append(entry)
         logger.info(f"Cached new response for query '{query[:40]}...' (Total cached: {len(self.entries)})")
+
+    def invalidate_course_cache(self, course_id: int) -> int:
+        """
+        N-07: Targeted Cache Invalidation on Course Update.
+        Purges all cached answers associated with the specified course_id.
+        """
+        initial_count = len(self.entries)
+        self.entries = [e for e in self.entries if e.course_id != course_id]
+        evicted = initial_count - len(self.entries)
+        logger.info(f"N-07 Cache Invalidation: Evicted {evicted} cached queries for Course #{course_id}.")
+        return evicted
 
 semantic_cache = SemanticCache()

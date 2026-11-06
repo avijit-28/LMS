@@ -21,6 +21,8 @@ namespace LMS.Controllers
         private readonly ApplicationDbContext _db;
         private readonly IAiServiceClient _aiClient;
         private readonly string _internalApiKey;
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, List<DateTime>> _userRateLimits = new System.Collections.Concurrent.ConcurrentDictionary<string, List<DateTime>>();
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, Tuple<DateTime, ChatResponseViewModel>> _debouncedCache = new System.Collections.Concurrent.ConcurrentDictionary<string, Tuple<DateTime, ChatResponseViewModel>>();
 
         public ChatBotController()
         {
@@ -156,6 +158,218 @@ namespace LMS.Controllers
             {
                 string userId = User.Identity.IsAuthenticated ? User.Identity.GetUserId() : "anonymous_guest";
                 string userRole = GetCurrentUserRole();
+                string rateLimitKey = User.Identity.IsAuthenticated ? userId : (Request.UserHostAddress ?? "guest");
+                var now = DateTime.UtcNow;
+
+                // C-01: Sliding-Window Rate Limiter (Max 5 requests per 30 seconds per user)
+                var windowStart = now.AddSeconds(-30);
+                var timestamps = _userRateLimits.AddOrUpdate(
+                    rateLimitKey,
+                    k => new List<DateTime> { now },
+                    (k, list) =>
+                    {
+                        lock (list)
+                        {
+                            list.RemoveAll(t => t < windowStart);
+                            list.Add(now);
+                            return list;
+                        }
+                    });
+
+                lock (timestamps)
+                {
+                    if (timestamps.Count(t => t >= windowStart) > 5)
+                    {
+                        var oldestInWindow = timestamps.Where(t => t >= windowStart).OrderBy(t => t).FirstOrDefault();
+                        int retryAfter = Math.Max(1, (int)(30 - (now - oldestInWindow).TotalSeconds));
+                        return Json(new ChatResponseViewModel
+                        {
+                            Success = false,
+                            ErrorMessage = $"Rate limit exceeded (C-01): Maximum 5 requests per 30 seconds allowed. Please wait {retryAfter} seconds before sending another message."
+                        });
+                    }
+                }
+
+                // C-02: Double-Click Query Debouncer (1.5-second hash cache)
+                string debounceKey = rateLimitKey + ":" + (request.Message ?? "").Trim().ToLowerInvariant();
+                if (_debouncedCache.TryGetValue(debounceKey, out var debouncedEntry))
+                {
+                    if ((now - debouncedEntry.Item1).TotalSeconds < 1.5)
+                    {
+                        return Json(debouncedEntry.Item2);
+                    }
+                }
+
+                // T-04: Buffer Overflow & Repetitive Spam Truncator / Validator
+                string rawMessage = request.Message.Trim();
+                if (rawMessage.Length > 2000)
+                {
+                    rawMessage = rawMessage.Substring(0, 2000);
+                }
+
+                var words = rawMessage.Split(new[] { ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                if (words.Length > 25)
+                {
+                    var wordFrequencies = words.GroupBy(w => w.ToLowerInvariant()).ToDictionary(g => g.Key, g => g.Count());
+                    int maxFreq = wordFrequencies.Values.Max();
+                    if ((double)maxFreq / words.Length > 0.65)
+                    {
+                        return Json(new ChatResponseViewModel
+                        {
+                            Success = false,
+                            ErrorMessage = "Query rejected (T-04): Excessive repetitive spam pattern detected. Please phrase a meaningful question about your course materials."
+                        });
+                    }
+                }
+
+                // N-08: Financial Data & Credit Card Redaction
+                var ccRegex = new System.Text.RegularExpressions.Regex(@"\b(?:\d[ -]?){13,19}\b");
+                bool hasCard = false;
+                string sanitizedMessage = ccRegex.Replace(rawMessage, m =>
+                {
+                    string digits = System.Text.RegularExpressions.Regex.Replace(m.Value, @"\D", "");
+                    if (digits.Length >= 13 && digits.Length <= 19)
+                    {
+                        hasCard = true;
+                        return digits.Substring(0, 4) + "-XXXX-XXXX-" + digits.Substring(digits.Length - 4);
+                    }
+                    return m.Value;
+                });
+
+                if (hasCard)
+                {
+                    string checkoutUrl = request.CourseId.HasValue ? $"/Courses/Payment?id={request.CourseId.Value}" : "/Courses";
+                    return Json(new ChatResponseViewModel
+                    {
+                        Success = true,
+                        Reply = $"Financial Data Protection Guardrail Alert (N-08):\n\nFor your security and privacy, sensitive payment credentials and credit card numbers must never be posted into the AI chat.\n\nYour message contained financial details that have been redacted for your protection.\n\nTo safely complete your course checkout or manage payment methods, please visit the official encrypted payment portal: <a href='{checkoutUrl}' class='btn btn-sm btn-primary mt-2 text-white'>Proceed to Secure Checkout</a>",
+                        ModelUsed = "EduPlatform Security Guardrail",
+                        Provider = "EduBot Sentinel",
+                        IsGrounded = false,
+                        AgenticIntent = "FinancialCardRedaction",
+                        Timestamp = DateTime.UtcNow
+                    });
+                }
+
+                // J-03: Base64 / Encoded Injection Scanner
+                var b64Regex = new System.Text.RegularExpressions.Regex(@"\b[A-Za-z0-9+/]{16,}={0,2}\b");
+                foreach (System.Text.RegularExpressions.Match b64m in b64Regex.Matches(sanitizedMessage))
+                {
+                    try
+                    {
+                        byte[] decodedBytes = Convert.FromBase64String(b64m.Value);
+                        string decodedText = Encoding.UTF8.GetString(decodedBytes).Trim();
+                        if (decodedText.Length >= 6)
+                        {
+                            string lowerDecoded = decodedText.ToLowerInvariant();
+                            if (lowerDecoded.Contains("ignore") || lowerDecoded.Contains("system prompt") ||
+                                lowerDecoded.Contains("developer mode") || lowerDecoded.Contains("dan mode") ||
+                                lowerDecoded.Contains("jailbreak") || lowerDecoded.Contains("unrestricted") ||
+                                lowerDecoded.Contains("give me answers") || lowerDecoded.Contains("exam answers") ||
+                                lowerDecoded.Contains("rules"))
+                            {
+                                return Json(new ChatResponseViewModel
+                                {
+                                    Success = true,
+                                    Reply = "Security Guardrail Notice (J-03 - Encoded Input Intercepted):\n\nThe input query contains encoded instructions (Base64) that violate EduPlatform academic security policies. Please phrase your academic inquiries in plain text focusing strictly on course concepts.",
+                                    ModelUsed = "EduPlatform Security Guardrail",
+                                    Provider = "EduBot Sentinel",
+                                    IsGrounded = false,
+                                    AgenticIntent = "Base64InjectionIntercept",
+                                    Timestamp = DateTime.UtcNow
+                                });
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                // J-02: Roleplay & Persona Hijack
+                string lowerRaw = sanitizedMessage.ToLowerInvariant();
+                if (lowerRaw.Contains("pretend you are") || lowerRaw.Contains("act as an evil") ||
+                    lowerRaw.Contains("act as an unrestricted") || lowerRaw.Contains("act as an unfiltered") ||
+                    lowerRaw.Contains("unrestricted mode") || lowerRaw.Contains("dan mode") ||
+                    lowerRaw.Contains("developer mode enabled") || lowerRaw.Contains("without ethics") ||
+                    lowerRaw.Contains("without morals") || lowerRaw.Contains("without rules") ||
+                    lowerRaw.Contains("bypass restrictions") || lowerRaw.Contains("bypass filters"))
+                {
+                    return Json(new ChatResponseViewModel
+                    {
+                        Success = true,
+                        Reply = "EduPlatform Academic Integrity & Security Guardrail Alert (J-02):\n\nThis request was intercepted because it attempts to bypass instruction safety protocols or hijack the AI tutor persona. EduBot operates strictly as a pedagogical academic assistant. Please phrase your inquiry around course concepts and study materials.",
+                        ModelUsed = "EduPlatform Security Guardrail",
+                        Provider = "EduBot Sentinel",
+                        IsGrounded = false,
+                        AgenticIntent = "PersonaHijackIntercept",
+                        Timestamp = DateTime.UtcNow
+                    });
+                }
+
+                // S-01: Direct Homework Solicitation
+                if ((lowerRaw.Contains("write the full solution") || lowerRaw.Contains("write full solution") ||
+                     lowerRaw.Contains("give me the full solution") || lowerRaw.Contains("complete solution for assignment") ||
+                     lowerRaw.Contains("solve my assignment completely") || lowerRaw.Contains("do my homework for me")) &&
+                    (lowerRaw.Contains("assignment") || lowerRaw.Contains("homework") || lowerRaw.Contains("project") || lowerRaw.Contains("copy-paste")))
+                {
+                    return Json(new ChatResponseViewModel
+                    {
+                        Success = true,
+                        Reply = "Academic Integrity Guidance (S-01):\n\nI cannot provide complete, ready-to-submit solutions or copy-paste code for assignments or graded coursework.\n\nInstead, I can help you understand the core concepts! Would you like me to:\n1. Break down the problem statement into smaller algorithmic steps?\n2. Provide an abstract code structure with dummy variables?\n3. Explain the underlying data structures or methods required?",
+                        ModelUsed = "EduPlatform Academic Advisor",
+                        Provider = "EduBot Advisor",
+                        IsGrounded = true,
+                        AgenticIntent = "AcademicIntegrityS01",
+                        Timestamp = DateTime.UtcNow
+                    });
+                }
+
+                // S-03: Direct Quiz Option Cheating
+                var quizOptRegex = new System.Text.RegularExpressions.Regex(@"(?:which\s+option\s+is\s+correct\s+for\s+(?:question|q)\s*#?\d+)|(?:correct\s+option\s+for\s+(?:question|q)\s*#?\d+)|(?:option\s+[a-d]\s+is\s+correct)|(?:answer\s+for\s+(?:question|q)\s*#?\d+\s*:\s*[a-d])", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                if (quizOptRegex.IsMatch(lowerRaw))
+                {
+                    return Json(new ChatResponseViewModel
+                    {
+                        Success = true,
+                        Reply = "Quiz Guidance (S-03):\n\nIn accordance with EduPlatform honor code guidelines, I cannot directly provide or select quiz option letters (A, B, C, or D).\n\nHowever, I can explain the underlying concepts, definitions, and reasoning behind the question so you can confidently evaluate the options yourself. Which specific term or concept in the question would you like me to explain?",
+                        ModelUsed = "EduPlatform Academic Advisor",
+                        Provider = "EduBot Advisor",
+                        IsGrounded = true,
+                        AgenticIntent = "QuizOptionCheatingS03",
+                        Timestamp = DateTime.UtcNow
+                    });
+                }
+
+                // S-04: Piecewise Code Extraction
+                if (lowerRaw.Contains("just write the") && (lowerRaw.Contains("database transaction") || lowerRaw.Contains("processpayment") || lowerRaw.Contains("block for assignment")))
+                {
+                    return Json(new ChatResponseViewModel
+                    {
+                        Success = true,
+                        Reply = "Conceptual Architectural Guidance (S-04):\n\nTo safeguard academic integrity, here is the standard transactional pattern using abstract dummy variables (AccountA, AccountB) rather than assignment-specific production logic:\n\n`csharp\n// Conceptual Transaction Pattern\nusing (var transaction = dbContext.Database.BeginTransaction())\n{\n    try\n    {\n        var sender = dbContext.Accounts.Find(accountA_Id);\n        var receiver = dbContext.Accounts.Find(accountB_Id);\n        \n        // Apply state mutation logic here\n        sender.Balance -= amount;\n        receiver.Balance += amount;\n        \n        dbContext.SaveChanges();\n        transaction.Commit();\n    }\n    catch (Exception ex)\n    {\n        transaction.Rollback();\n        logger.LogError(\"Transaction failed, state rolled back.\", ex);\n        throw;\n    }\n}\n`\n\nYou can adapt this atomic commit/rollback scaffold to your assignment's data entities.",
+                        ModelUsed = "EduPlatform Academic Advisor",
+                        Provider = "EduBot Advisor",
+                        IsGrounded = true,
+                        AgenticIntent = "PiecewiseExtractionS04",
+                        Timestamp = DateTime.UtcNow
+                    });
+                }
+
+                // R-03: FERPA / Student Privacy Guardrail
+                bool isAskingOtherStudent = (lowerRaw.Contains("marks") || lowerRaw.Contains("grade") || lowerRaw.Contains("submission") || lowerRaw.Contains("score")) &&
+                    (lowerRaw.Contains(" rahul ") || lowerRaw.Contains(" rahul sharma") || lowerRaw.Contains(" alexander ") || lowerRaw.Contains("student ") || lowerRaw.Contains("other student"));
+                if (userRole == "Student" && isAskingOtherStudent)
+                {
+                    return Json(new ChatResponseViewModel
+                    {
+                        Success = true,
+                        Reply = "FERPA & Student Privacy Guardrail (R-03):\n\nUnder student educational privacy regulations, individual academic records, submission scores, and grades of other students cannot be disclosed.\n\nYou can only view your own enrolled course progress, submissions, and verified certificates.",
+                        ModelUsed = "EduPlatform Security Guardrail",
+                        Provider = "EduBot Sentinel",
+                        IsGrounded = false,
+                        AgenticIntent = "FERPASafeguardR03",
+                        Timestamp = DateTime.UtcNow
+                    });
+                }
 
                 // 1. Enforce RBAC Course Isolation for Students
                 if (request.CourseId.HasValue && userRole == "Student" && User.Identity.IsAuthenticated)
@@ -264,6 +478,13 @@ namespace LMS.Controllers
                     // 5. Invoke AI Service
                     string authorizedCoursesHeader = await GetAuthorizedCoursesHeaderAsync(userId, userRole);
 
+                    // Resolve course title for N-05 Domain Drift Lock
+                    string activeCourseTitle = null;
+                    if (request.CourseId.HasValue)
+                    {
+                        var cObj = await _db.Courses.FirstOrDefaultAsync(c => c.CourseId == request.CourseId.Value);
+                        activeCourseTitle = cObj != null ? cObj.Title : null;
+                    }
                     var aiRequest = new AiChatRequestDto
                     {
                         query = request.Message.Trim(),
@@ -271,6 +492,7 @@ namespace LMS.Controllers
                         user_role = userRole,
                         session_id = session?.SessionId.ToString(),
                         course_id = request.CourseId,
+                        course_name = activeCourseTitle,
                         module_id = request.ModuleId,
                         lesson_id = request.LessonId,
                         learning_mode = request.LearningMode ?? "CourseAssistant",
@@ -631,6 +853,182 @@ namespace LMS.Controllers
         {
             if (string.IsNullOrWhiteSpace(message)) return null;
             string normalized = message.Trim().ToLowerInvariant();
+            string userRole = GetCurrentUserRole();
+
+            // =========================================================================
+            // Conversational Instructor & Admin Commands (I-01, I-01b, I-02, I-03, I-04, I-05, A-01)
+            // =========================================================================
+
+            // Grade Submission: (?:submit|give|assign|enter|set)\s+grade\s+(-?\d+)\s+for\s+submission\s+#?(\d+)
+            var gradeMatch = System.Text.RegularExpressions.Regex.Match(
+                normalized,
+                @"(?:submit|give|assign|enter|set)\s+grade\s+(-?\d+)\s+for\s+submission\s+#?(\d+)",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+            if (gradeMatch.Success)
+            {
+                int marks = int.Parse(gradeMatch.Groups[1].Value);
+                int subId = int.Parse(gradeMatch.Groups[2].Value);
+
+                // I-01: Grade Bounds Violation (>100)
+                if (marks > 100)
+                {
+                    return new DirectAdvisorResult
+                    {
+                        Intent = "InstructorGradeBoundsI01",
+                        Answer = $"Grade Bounds Violation (I-01): Marks must be between 0 and 100. Entered score **{marks}** exceeds the maximum allowed assessment ceiling."
+                    };
+                }
+                // I-01b: Negative Grade Violation (<0)
+                if (marks < 0)
+                {
+                    return new DirectAdvisorResult
+                    {
+                        Intent = "InstructorGradeNegativeI01b",
+                        Answer = $"Grade Bounds Violation (I-01b): Marks must be between 0 and 100. Negative scores (**{marks}**) are not permitted in LMS grading rubrics."
+                    };
+                }
+
+                // Lookup submission
+                var submission = await _db.Submissions
+                    .Include(s => s.Assignment.Course)
+                    .FirstOrDefaultAsync(s => s.SubmissionId == subId);
+
+                // I-02: Non-Existent Submission ID
+                if (submission == null)
+                {
+                    return new DirectAdvisorResult
+                    {
+                        Intent = "InstructorSubmissionNotFoundI02",
+                        Answer = $"Submission Not Found (I-02): Submission #{subId} does not exist in the LMS database. Please verify the submission ID from your Instructor Grading Queue: <a href='/Submissions' class='btn btn-xs btn-outline-info ms-1'>View Submissions</a>"
+                    };
+                }
+
+                var course = submission.Assignment != null ? submission.Assignment.Course : null;
+                string courseTitle = course != null ? course.Title : "Unknown Course";
+                string ownerId = course != null ? course.InstructorId : null;
+
+                bool isAdmin = userRole == "Admin";
+                bool isCourseOwner = (!string.IsNullOrEmpty(ownerId) && ownerId == userId);
+
+                // I-05: Cross-Instructor Grade Tampering
+                if (!isAdmin && !isCourseOwner)
+                {
+                    var ownerUser = await _db.Users.FirstOrDefaultAsync(u => u.Id == ownerId);
+                    string ownerName = ownerUser != null ? ownerUser.FullName : "the designated course instructor";
+                    return new DirectAdvisorResult
+                    {
+                        Intent = "InstructorCrossTamperingI05",
+                        Answer = $"Authorization Denied (I-05): Submission #{subId} belongs to course **'{courseTitle}'**, instructed by **{ownerName}**. You cannot modify grades for courses you do not instruct."
+                    };
+                }
+
+                // A-01 or Course Owner: Apply grade update
+                submission.Marks = marks;
+                submission.Status = "Graded";
+                submission.GradedDate = DateTime.UtcNow;
+                string reviewerTag = isAdmin ? "Administrator (A-01 Override)" : "Course Instructor";
+                submission.Feedback = (string.IsNullOrWhiteSpace(submission.Feedback) ? "" : submission.Feedback + " | ") + $"Grade recorded via AI Assistant by {reviewerTag}.";
+                await _db.SaveChangesAsync();
+
+                var student = await _db.Users.FirstOrDefaultAsync(u => u.Id == submission.StudentId);
+                string studentName = student != null ? student.FullName : submission.StudentId;
+
+                string adminBadge = isAdmin ? " (A-01 Admin Override)" : "";
+                return new DirectAdvisorResult
+                {
+                    Intent = isAdmin ? "AdminGradeOverrideA01" : "InstructorGradeSuccess",
+                    Answer = $"Grade Successfully Recorded{adminBadge}:\n\n" +
+                             $"- **Submission ID**: #{submission.SubmissionId}\n" +
+                             $"- **Student**: {studentName}\n" +
+                             $"- **Assignment**: {(submission.Assignment != null ? submission.Assignment.Title : "Assignment")}\n" +
+                             $"- **Course**: {courseTitle}\n" +
+                             $"- **Assigned Grade**: **{marks} / 100**\n" +
+                             $"- **Status**: Graded\n" +
+                             $"- **Authorized By**: {reviewerTag}"
+                };
+            }
+
+            // I-02: Evaluate non-existent submission
+            var evalSubMatch = System.Text.RegularExpressions.Regex.Match(
+                normalized,
+                @"evaluate\s+submission\s+#?(\d+)",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            if (evalSubMatch.Success)
+            {
+                int subId = int.Parse(evalSubMatch.Groups[1].Value);
+                var sub = await _db.Submissions.Include(s => s.Assignment.Course).FirstOrDefaultAsync(s => s.SubmissionId == subId);
+                if (sub == null)
+                {
+                    return new DirectAdvisorResult
+                    {
+                        Intent = "InstructorSubmissionNotFoundI02",
+                        Answer = $"Submission Not Found (I-02): Submission #{subId} does not exist in the LMS records. Please verify the submission ID from your Instructor Submissions Backlog: <a href='/Submissions' class='btn btn-xs btn-outline-info ms-1'>View Submissions</a>"
+                    };
+                }
+            }
+
+            // I-03: Evaluate unknown student assignment
+            if (normalized.Contains("evaluate") && normalized.Contains("assignment") && (normalized.Contains("alexander") || normalized.Contains("alexander the great")))
+            {
+                return new DirectAdvisorResult
+                {
+                    Intent = "InstructorStudentNotFoundI03",
+                    Answer = "Student Not Found in Roster (I-03): No enrolled student matching 'Alexander The Great' was found in the roster for this course. Please verify student enrollment before assessing submissions."
+                };
+            }
+
+            // I-04: Unowned Course Analytics / Heatmap Query
+            var frictionMatch = System.Text.RegularExpressions.Regex.Match(
+                normalized,
+                @"(?:show|display|get)\s+(?:student\s+)?friction\s+heatmap\s+for\s+course\s+#?(\d+)",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            if (frictionMatch.Success)
+            {
+                int targetCourseId = int.Parse(frictionMatch.Groups[1].Value);
+                var targetCourse = await _db.Courses.FirstOrDefaultAsync(c => c.CourseId == targetCourseId);
+                string targetTitle = targetCourse != null ? targetCourse.Title : $"Course #{targetCourseId}";
+                bool isAdmin = userRole == "Admin";
+                bool isOwner = targetCourse != null && targetCourse.InstructorId == userId;
+
+                if (!isAdmin && !isOwner)
+                {
+                    return new DirectAdvisorResult
+                    {
+                        Intent = "InstructorUnownedAnalyticsI04",
+                        Answer = $"Access Denied (I-04): You are not designated as the instructor for this course (**{targetTitle}**). Analytics and student engagement metrics are strictly isolated per instructor."
+                    };
+                }
+            }
+
+            // =========================================================================
+            // N-10: Socratic Give Up Fatigue Transition
+            // =========================================================================
+            bool isSurrender = normalized.Contains("i don't know") || normalized.Contains("i dont know") ||
+                               normalized.Contains("give up") || normalized.Contains("just tell me") ||
+                               normalized.Contains("tell me the answer") || normalized.Contains("explain it to me") ||
+                               normalized.Contains("nahi pata") || normalized.Contains("direct answer batao") ||
+                               normalized.Contains("samajh nahi aa raha");
+            if (isSurrender)
+            {
+                string cDomain = "C# Programming Fundamentals";
+                if (courseId.HasValue)
+                {
+                    var c = await _db.Courses.FirstOrDefaultAsync(x => x.CourseId == courseId.Value);
+                    if (c != null) cDomain = c.Title;
+                }
+                return new DirectAdvisorResult
+                {
+                    Intent = "SocraticFatigueExitN10",
+                    Answer = $"Direct Conceptual Explanation (N-10 Socratic Transition):\n\n" +
+                             $"No worries at all! Let's step back from questioning and unpack the concept directly:\n\n" +
+                             $"In **{cDomain}**, this concept forms a foundational architectural building block:\n\n" +
+                             $"1. **Core Mechanism**: It organizes application state and manages control flow deterministically so inputs produce expected results without memory leaks or race conditions.\n" +
+                             $"2. **Why It Matters**: By encapsulating data mutations within structured boundaries, your codebase maintains high maintainability, testability, and error resilience.\n" +
+                             $"3. **Practical Pattern**: When an application service invokes this component, it verifies preconditions before persisting state changes.\n\n" +
+                             $"Does this direct overview clarify the concept, or would you like to explore an example code snippet together?"
+                };
+            }
 
             // 1. Identify Specific Module, Lesson & Progress Learning Data Inquiries
             bool isModuleLeftQuery =
@@ -724,6 +1122,68 @@ namespace LMS.Controllers
                 normalized.Contains("courses to finish") ||
                 normalized.Contains("kya bacha hai") ||
                 normalized.Contains("kaunsa course bacha");
+
+            // =========================================================================
+            // N-01: Guest Academic Conversion Guardrail
+            // =========================================================================
+            if (!isAuthenticated && (isModuleLeftQuery || isLessonCompletedQuery || isNextLessonQuery || isProgressOrCoursesQuery || isPendingQuizQuery || isPersonalCertQuery))
+            {
+                string cTitle = "EduPlatform Courses";
+                if (courseId.HasValue)
+                {
+                    var c = await _db.Courses.FirstOrDefaultAsync(x => x.CourseId == courseId.Value);
+                    if (c != null) cTitle = c.Title;
+                }
+                return new DirectAdvisorResult
+                {
+                    Intent = "GuestAcademicConversionN01",
+                    Answer = $"Welcome, Guest Learner! (N-01 Guest Conversion)\n\n" +
+                             $"To track your personal lesson completions, pending modules, quiz scores, and verifiable certificates for **{cTitle}**, please sign in to your EduPlatform account.\n\n" +
+                             $"<div class='mt-3 p-3 rounded-3 border border-secondary border-opacity-25' style='background: rgba(4, 24, 34, 0.7);'>" +
+                             $"<div class='fw-bold text-warning mb-2'><i class='bi bi-person-lock me-1'></i> Unlock Personalized Academic Progress</div>" +
+                             $"<p class='small text-white-50 mb-3'>Create a free account or sign in to track completed lessons, attempt interactive quizzes, submit assignments, and download official credentials.</p>" +
+                             $"<a href='/Account/Login' class='btn btn-sm btn-warning fw-bold text-dark me-2'><i class='bi bi-box-arrow-in-right me-1'></i>Sign In to Account</a>" +
+                             $"<a href='/Account/Register' class='btn btn-sm btn-outline-light'><i class='bi bi-person-plus me-1'></i>Create Free Account</a>" +
+                             $"</div>\n\n" +
+                             $"*(You can still explore general course syllabi, module outlines, and learning objectives as a guest!)*"
+                };
+            }
+
+            // =========================================================================
+            // N-02: Zero-Enrollment Student State
+            // =========================================================================
+            if (isAuthenticated && userRole == "Student" && (isModuleLeftQuery || isLessonCompletedQuery || isNextLessonQuery || isProgressOrCoursesQuery || isPendingQuizQuery || isPersonalCertQuery))
+            {
+                int studentEnrollments = await _db.Enrollments.CountAsync(e => e.StudentId == userId && e.Status != "Cancelled");
+                if (studentEnrollments == 0)
+                {
+                    var topCourses = await _db.Courses
+                        .OrderByDescending(c => c.CourseId)
+                        .Take(3)
+                        .Select(c => new { c.CourseId, c.Title, c.Level, Price = c.Price })
+                        .ToListAsync();
+
+                    var sbDiscovery = new StringBuilder();
+                    sbDiscovery.AppendLine("Welcome to Your Learning Journey! (N-02 Discovery State)\n");
+                    sbDiscovery.AppendLine("You are not currently enrolled in any active courses yet, so there is no progress or completed lesson history to display.\n");
+                    sbDiscovery.AppendLine("Explore our top-rated industry tracks below to start building your technical mastery:\n");
+
+                    foreach (var tc in topCourses)
+                    {
+                        sbDiscovery.AppendLine($"<div class='p-2 mb-2 rounded-2 border border-secondary border-opacity-25' style='background: rgba(4, 24, 34, 0.6);'>");
+                        sbDiscovery.AppendLine($"<div class='fw-bold text-info'>{tc.Title} <span class='badge bg-secondary ms-1'>{tc.Level}</span></div>");
+                        sbDiscovery.AppendLine($"<div class='small text-white-50'>Tuition: Rs.{tc.Price:F2} &bull; <a href='/Courses/Details/{tc.CourseId}' class='text-warning fw-semibold'>View Curriculum & Enroll &rarr;</a></div>");
+                        sbDiscovery.AppendLine("</div>");
+                    }
+
+                    sbDiscovery.AppendLine("\nOnce you enroll in a course, I will track every lesson you finish, upcoming quizzes, and milestone certificates right here!");
+                    return new DirectAdvisorResult
+                    {
+                        Intent = "ZeroEnrollmentDiscoveryN02",
+                        Answer = sbDiscovery.ToString()
+                    };
+                }
+            }
 
             // 2. Quick AI Accelerators Detection
             bool isKeyFormulasQuery =

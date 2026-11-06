@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EduPlatform LMS - Complete Tech Stack & Architecture Guide</title>
+<style>
+    @page {
+        size: A4 portrait;
+        margin: 12mm 14mm 12mm 14mm;
+    }
+    * {
+        box-sizing: border-box;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+        color: #0f172a;
+        background: #ffffff;
+        margin: 0;
+        padding: 0;
+        font-size: 9.5pt;
+        line-height: 1.4;
+    }
+    .header {
+        border-bottom: 3px solid #0284c7;
+        padding-bottom: 10px;
+        margin-bottom: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+    .title-area h1 {
+        margin: 0 0 4px 0;
+        font-size: 20pt;
+        color: #0369a1;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .title-area p {
+        margin: 0;
+        font-size: 10pt;
+        color: #64748b;
+        font-weight: 500;
+    }
+    .badge-bar {
+        text-align: right;
+    }
+    .pill {
+        display: inline-block;
+        padding: 3px 9px;
+        border-radius: 9999px;
+        font-size: 8pt;
+        font-weight: 700;
+        background: #e0f2fe;
+        color: #0369a1;
+        border: 1px solid #bae6fd;
+        margin-left: 4px;
+    }
+    .section-title {
+        font-size: 11pt;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 12px 0 6px 0;
+        padding-left: 8px;
+        border-left: 3.5px solid #0284c7;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 12px;
+        font-size: 8.8pt;
+        page-break-inside: avoid;
+    }
+    th {
+        background: #0f172a;
+        color: #ffffff;
+        text-align: left;
+        padding: 6px 9px;
+        font-weight: 700;
+        font-size: 8.5pt;
+        letter-spacing: 0.3px;
+        border: 1px solid #0f172a;
+    }
+    td {
+        padding: 6px 9px;
+        border: 1px solid #e2e8f0;
+        vertical-align: top;
+    }
+    tr:nth-child(even) td {
+        background-color: #f8fafc;
+    }
+    .tech-name {
+        font-weight: 700;
+        color: #0369a1;
+        white-space: nowrap;
+    }
+    .tech-type {
+        font-weight: 600;
+        color: #475569;
+        font-size: 8.2pt;
+    }
+    .tech-desc {
+        color: #1e293b;
+        line-height: 1.35;
+    }
+    .cost-badge {
+        display: inline-block;
+        background: #dcfce7;
+        color: #15803d;
+        font-size: 7.5pt;
+        font-weight: 700;
+        padding: 1px 5px;
+        border-radius: 4px;
+        margin-top: 3px;
+    }
+    .footer {
+        margin-top: 14px;
+        border-top: 1px solid #cbd5e1;
+        padding-top: 8px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 8pt;
+        color: #64748b;
+    }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="title-area">
+        <h1>EduPlatform LMS - Architecture & Tech Stack</h1>
+        <p>Complete Technical Specification & Zero-Cost Infrastructure Directory</p>
+    </div>
+    <div class="badge-bar">
+        <span class="pill">Self-Hosted</span>
+        <span class="pill">100% Free ($0 Cost)</span>
+        <span class="pill">Production Ready</span>
+    </div>
+</div>
+
+<!-- Section 1 -->
+<div class="section-title">1. Web & Application Layer (Front-End & Core Web Server)</div>
+<table>
+    <thead>
+        <tr>
+            <th style="width: 26%;">Technology</th>
+            <th style="width: 24%;">Role / Category</th>
+            <th style="width: 50%;">Why We Use It In This Project (In Simple Words)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="tech-name">C# & ASP.NET MVC 5 (.NET 4.8)</td>
+            <td class="tech-type">Core Web Framework</td>
+            <td class="tech-desc">Runs the main web application, user routing, security pipelines, student enrollments, exam submissions, and certificates with high enterprise performance.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Razor Views (.cshtml)</td>
+            <td class="tech-type">Server Templating Engine</td>
+            <td class="tech-desc">Blends HTML with C# code to render dynamic pages on the server, ensuring rapid page loads without client-side framework complexity.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Bootstrap 5 &amp; Bootstrap Icons</td>
+            <td class="tech-type">Responsive UI Framework</td>
+            <td class="tech-desc">Provides the responsive dark theme, high-contrast layouts, forms, buttons, and iconography tailored for desktop, tablet, and mobile screens.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Vanilla JavaScript &amp; Fetch API</td>
+            <td class="tech-type">Client-Side Scripting</td>
+            <td class="tech-desc">Powers real-time interactive experiences: one-by-one MCQ quiz runner, instant answer checks, live score tallies, and asynchronous AI chat.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Windows IIS (Web Server)</td>
+            <td class="tech-type">Native Production Server</td>
+            <td class="tech-desc">Hosts the .NET 4.8 web app directly on Windows with worker-process recycling, kernel-mode caching, and zero license costs.</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Section 2 -->
+<div class="section-title">2. Database & Data Storage Layer</div>
+<table>
+    <thead>
+        <tr>
+            <th style="width: 26%;">Technology</th>
+            <th style="width: 24%;">Role / Category</th>
+            <th style="width: 50%;">Why We Use It In This Project (In Simple Words)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="tech-name">Microsoft SQL Server Express 2022</td>
+            <td class="tech-type">Relational Database (RDBMS)</td>
+            <td class="tech-desc">Safely persists relational entities: users, credentials, courses, modules, lessons, student progress, quiz attempts, and payment records (Free forever, up to 10 GB).</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Entity Framework 6 (EF6)</td>
+            <td class="tech-type">Object-Relational Mapping (ORM)</td>
+            <td class="tech-desc">Bridges C# objects with relational tables, automating CRUD operations, schema migrations, and parameterized queries that protect against SQL injection.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Redis 7 (Community Edition)</td>
+            <td class="tech-type">In-Memory Cache &amp; Key-Value</td>
+            <td class="tech-desc">Stores temporary user sessions, rate-limiting tokens, and caches frequent AI responses so repeated queries return in milliseconds with zero LLM API cost.</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Section 3 -->
+<div class="section-title">3. AI, RAG & Vector Intelligence (AIService Microservice)</div>
+<table>
+    <thead>
+        <tr>
+            <th style="width: 26%;">Technology</th>
+            <th style="width: 24%;">Role / Category</th>
+            <th style="width: 50%;">Why We Use It In This Project (In Simple Words)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="tech-name">Python 3.10+ &amp; FastAPI</td>
+            <td class="tech-type">Async AI Microservice</td>
+            <td class="tech-desc">Dedicated high-speed Python service dedicated to vector search, document indexing, and generative AI orchestration without blocking the main web app.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Google Gemini API (Flash Lite / 2.5)</td>
+            <td class="tech-type">Primary LLM Engine</td>
+            <td class="tech-desc">Powers the Socratic Tutor, Exam Prep &amp; Rubrics, Course Assistant, Summarizer, and 5-Question Practice Quiz Generator on Google's generous free tier.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Groq API (Llama 3.3 70B)</td>
+            <td class="tech-type">Failover / Backup LLM</td>
+            <td class="tech-desc">Provides sub-second, zero-cost fallback responses if Google Gemini experiences rate-limits or network interruptions, ensuring 100% uptime.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Qdrant Vector Database</td>
+            <td class="tech-type">Open-Source Vector DB</td>
+            <td class="tech-desc">Stores 3072-dimensional vector embeddings of course materials and syllabi, enabling deep semantic concept search beyond literal keyword matching.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Rank-BM25 &amp; RRF Fusion</td>
+            <td class="tech-type">Hybrid Search Algorithm</td>
+            <td class="tech-desc">Merges exact lexical keyword matching (BM25) with vector semantic search (Qdrant) via Reciprocal Rank Fusion for maximum academic retrieval accuracy.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">PyMuPDF (fitz) &amp; pdfplumber</td>
+            <td class="tech-type">PDF Text &amp; Layout Extractors</td>
+            <td class="tech-desc">Rapidly parses complex multi-column textbook PDFs, slide decks, and syllabi into clean markdown chunks ready for embedding.</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Section 4 -->
+<div class="section-title">4. Background Processing & Queue Infrastructure</div>
+<table>
+    <thead>
+        <tr>
+            <th style="width: 26%;">Technology</th>
+            <th style="width: 24%;">Role / Category</th>
+            <th style="width: 50%;">Why We Use It In This Project (In Simple Words)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="tech-name">RabbitMQ 3 (Community Edition)</td>
+            <td class="tech-type">AMQP Message Broker</td>
+            <td class="tech-desc">Queues heavy asynchronous background tasks (such as large course textbook parsing and bulk vector indexing) to prevent web worker thread starvation.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Dead-Letter Queue (DLQ / DLX)</td>
+            <td class="tech-type">Fault-Tolerance Pipeline</td>
+            <td class="tech-desc">Catches malformed, password-protected, or timed-out document files during ingestion, storing them for inspection without crashing worker nodes.</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Section 5 -->
+<div class="section-title">5. Payments, Security, Certificates & Gateway</div>
+<table>
+    <thead>
+        <tr>
+            <th style="width: 26%;">Technology</th>
+            <th style="width: 24%;">Role / Category</th>
+            <th style="width: 50%;">Why We Use It In This Project (In Simple Words)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="tech-name">Stripe API &amp; Webhooks</td>
+            <td class="tech-type">Payment Gateway</td>
+            <td class="tech-desc">Manages secure PCI-compliant card transactions in both test sandbox and live production, triggering verified course unlock webhooks.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Cloudflare Tunnels (cloudflared)</td>
+            <td class="tech-type">Zero-Trust Network Tunnel</td>
+            <td class="tech-desc">Securely exposes the local Windows IIS instance to the public internet (custom domain) without opening inbound router ports or paying for static public IPs.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Cloudflare Free Tier WAF &amp; SSL</td>
+            <td class="tech-type">Edge Security &amp; CDN</td>
+            <td class="tech-desc">Delivers free universal SSL certificates (HTTPS), DDoS mitigation, edge caching, and Web Application Firewall rules at zero cost.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">BCrypt.Net &amp; Role-Based Security</td>
+            <td class="tech-type">Security &amp; Auth Enforcement</td>
+            <td class="tech-desc">Performs adaptive salted hashing for passwords and enforces strict role-based authorization for Students, Instructors, and System Administrators.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Rotativa / wkhtmltopdf</td>
+            <td class="tech-type">Document Generation Engine</td>
+            <td class="tech-desc">Renders HTML/CSS templates into pixel-perfect PDF billing receipts and verifiable, tamper-evident graduation certificates.</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Section 6 -->
+<div class="section-title">6. DevOps, Containerization & Telemetry</div>
+<table>
+    <thead>
+        <tr>
+            <th style="width: 26%;">Technology</th>
+            <th style="width: 24%;">Role / Category</th>
+            <th style="width: 50%;">Why We Use It In This Project (In Simple Words)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="tech-name">Docker Desktop (WSL 2)</td>
+            <td class="tech-type">Container Orchestration</td>
+            <td class="tech-desc">Runs Redis, Qdrant, RabbitMQ, and Grafana in unified Linux containers with health checks, local volume persistence, and one-command boot.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Prometheus OSS</td>
+            <td class="tech-type">Metrics Collection Engine</td>
+            <td class="tech-desc">Continuously samples RAM consumption, CPU utilization, RAG pipeline latency, and endpoint throughput.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">Grafana OSS</td>
+            <td class="tech-type">Monitoring Dashboard</td>
+            <td class="tech-desc">Visualizes real-time performance graphs, student traffic curves, database pool utilization, and confirms $0.00 cloud spending.</td>
+        </tr>
+        <tr>
+            <td class="tech-name">k6 by Grafana</td>
+            <td class="tech-type">Load &amp; Stress Testing Suite</td>
+            <td class="tech-desc">Executes graduated stress scenarios (10 &rarr; 25 &rarr; 50 &rarr; 100 concurrent virtual users) to prove sub-200ms latency SLAs under heavy exam traffic.</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="footer">
+    <div><strong>Project:</strong> EduPlatform LMS (ASP.NET MVC 5 + Hybrid RAG AI Service)</div>
+    <div><strong>Deployment Model:</strong> 100% Free / Self-Hosted Production Stack</div>
+    <div><strong>Date:</strong> November 2026</div>
+</div>
+
+</body>
+</html>

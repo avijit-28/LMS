@@ -1,6 +1,8 @@
 """
 PyMuPDF Multi-page PDF Extractor.
 Extracts text page-by-page preserving document flow and page coordinates.
+Implements:
+- N-06: Zero-Text / Scanned PDF Ingestion Interceptor (< 50 chars validation)
 """
 from pathlib import Path
 from typing import List, Dict, Any
@@ -20,15 +22,22 @@ class PdfExtractor:
         try:
             total = len(doc)
             logger.info(f"Extracting {total} pages from PDF '{path.name}'...")
+            total_chars = 0
             for idx in range(total):
                 page = doc[idx]
                 text = clean_text(page.get_text("text"))
                 if text:
+                    total_chars += len(text)
                     pages.append({
                         "page_number": idx + 1,
                         "section_title": f"{path.stem} (Page {idx + 1})",
                         "text": text
                     })
+
+            # N-06: Zero-Text / Scanned PDF Ingestion Interceptor
+            if total_chars < 50:
+                logger.warning(f"N-06 Ingestion Hygiene Alert: '{path.name}' yielded only {total_chars} characters.")
+                raise ValueError("ParsingFailed: ScannedOrEncrypted - Insufficient readable text extracted (< 50 characters). The document may be image-only, scanned, or encrypted.")
         finally:
             doc.close()
 

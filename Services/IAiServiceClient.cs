@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,6 +10,7 @@ namespace LMS.Services
         public string user_role { get; set; } = "Student"; // Student, Instructor, Admin
         public string session_id { get; set; }
         public int? course_id { get; set; }
+        public string course_name { get; set; }
         public int? module_id { get; set; }
         public int? lesson_id { get; set; }
         public string query { get; set; }
@@ -120,6 +121,7 @@ namespace LMS.Services
         public string language { get; set; } = "python";
         public string error_message { get; set; }
         public int? course_id { get; set; }
+        public string course_name { get; set; }
         public string user_id { get; set; }
         public string user_role { get; set; } = "Student";
     }

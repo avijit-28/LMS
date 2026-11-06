@@ -397,6 +397,18 @@
 
     function onCourseScopeChanged() {
         const select = document.getElementById('studio-course-select');
+        // N-03: Mid-Quiz Course Switching Isolation
+        if (window.activeStudioQuiz && !window.activeStudioQuiz.isComplete && window.activeStudioQuiz.questions && window.activeStudioQuiz.currentIndex < window.activeStudioQuiz.questions.length) {
+            const confirmSwitch = confirm('âš ï¸ Active Practice Quiz in Progress!\n\nSwitching courses will reset your active quiz progress. Do you wish to continue and switch courses?');
+            if (!confirmSwitch) {
+                if (window.activeStudioQuiz.courseId) {
+                    select.value = window.activeStudioQuiz.courseId;
+                }
+                return;
+            }
+            window.activeStudioQuiz = null;
+        }
+
         const courseId = select.value;
         const url = new URL(window.location.href);
         if (courseId) {
@@ -902,6 +914,7 @@
     }
 
     function showStudioQuizMasteryResults() {
+        if (window.activeStudioQuiz) window.activeStudioQuiz.isComplete = true;
         if (!window.activeStudioQuiz) return;
         const qState = window.activeStudioQuiz;
         const box = document.getElementById(qState.id);

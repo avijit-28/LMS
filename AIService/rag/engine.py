@@ -3,6 +3,10 @@ Enterprise Agentic RAG Engine.
 Orchestrates:
 Semantic Cache -> Guardrails -> Query Router -> Hybrid Search (Dense+BM25) ->
 RRF Fusion -> Self-RAG Context Verification -> Model Cascading -> Telemetry.
+Implements:
+- N-05: Socratic Mode Domain Drift Lock
+- S-04: Piecewise Code Extraction Safeguard
+- N-10: Socratic Fatigue & Give-Up Handler
 """
 from typing import Dict, Any, List, Optional
 from config import settings
@@ -27,11 +31,12 @@ class EnterpriseRAGEngine:
         user_role: str = "Student",
         course_id: Optional[int] = None,
         learning_mode: str = "CourseAssistant",
-        chat_history: Optional[List[Dict[str, str]]] = None
+        chat_history: Optional[List[Dict[str, str]]] = None,
+        course_name: Optional[str] = None
     ) -> Dict[str, Any]:
         tracer = RequestTracer(query=query, user_id=user_id, course_id=course_id)
         
-        # 1. Pillar 6: Prompt Injection & Adversarial Guardrails
+        # 1. Pillar 6: Prompt Injection & Adversarial Guardrails (J-01, J-02, J-03, S-01, S-03, N-08)
         is_safe, guardrail_reason = check_prompt_security(query)
         if not is_safe:
             return {
@@ -119,8 +124,16 @@ class EnterpriseRAGEngine:
         # 8. Pillar 1: Corrective RAG (CRAG) Gap Detection
         has_sufficient_context, crag_action = self_rag.evaluate_retrieval_gap(fused_chunks)
 
-        # 9. Prompt Assembly & Context Grounding
-        system_instruction = build_system_prompt(user_role=user_role, learning_mode=active_mode)
+        # 9. Prompt Assembly & Context Grounding (N-05: Domain Drift Lock)
+        resolved_course_name = course_name
+        if not resolved_course_name and fused_chunks:
+            resolved_course_name = fused_chunks[0].get("section_title", "").split(" - ")[0]
+
+        system_instruction = build_system_prompt(
+            user_role=user_role,
+            learning_mode=active_mode,
+            course_name=resolved_course_name
+        )
         context_block = format_context_block(fused_chunks)
 
         user_prompt = f"""CONTEXT FROM COURSE REPOSITORY:

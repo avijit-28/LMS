@@ -106,11 +106,11 @@
                     <div class="mb-4">
                         <label class="form-label small fw-bold text-white">Sort By</label>
                         <select name="sortBy" class="form-select form-select-sm" onchange="this.form.submit()" style="background-color: #062330 !important; color: #FFFFFF !important; border: 1px solid rgba(255, 255, 255, 0.2) !important;">
-                            <option value="newest" @(Model.SortBy == "newest" ? "selected" : "")>Newest Additions</option>
-                            <option value="rating" @(Model.SortBy == "rating" ? "selected" : "")>Highest Rated</option>
-                            <option value="popular" @(Model.SortBy == "popular" ? "selected" : "")>Most Learners</option>
-                            <option value="price_asc" @(Model.SortBy == "price_asc" ? "selected" : "")>Price: Low to High</option>
-                            <option value="price_desc" @(Model.SortBy == "price_desc" ? "selected" : "")>Price: High to Low</option>
+                            <option value="newest" style="background-color: #062330 !important; color: #FFFFFF !important;" @(Model.SortBy == "newest" ? "selected" : "")>Newest Additions</option>
+                            <option value="rating" style="background-color: #062330 !important; color: #FFFFFF !important;" @(Model.SortBy == "rating" ? "selected" : "")>Highest Rated</option>
+                            <option value="popular" style="background-color: #062330 !important; color: #FFFFFF !important;" @(Model.SortBy == "popular" ? "selected" : "")>Most Learners</option>
+                            <option value="price_asc" style="background-color: #062330 !important; color: #FFFFFF !important;" @(Model.SortBy == "price_asc" ? "selected" : "")>Price: Low to High</option>
+                            <option value="price_desc" style="background-color: #062330 !important; color: #FFFFFF !important;" @(Model.SortBy == "price_desc" ? "selected" : "")>Price: High to Low</option>
                         </select>
                     </div>
 

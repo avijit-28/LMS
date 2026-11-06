@@ -32,7 +32,7 @@
         <div class="row g-4">
             <!-- Course Summary -->
             <div class="col-md-5 order-md-2">
-                <div class="card card-custom p-4 shadow-sm text-white payment-summary-card" style="background: rgba(6, 35, 48, 0.95); border: 1px solid rgba(39, 184, 214, 0.25); border-radius: 16px;">
+                <div class="card card-custom p-4 shadow-sm text-white payment-summary-card" style="background-color: #062330 !important; color: #FFFFFF !important; border: 1px solid rgba(39, 184, 214, 0.25) !important;" style="background: rgba(6, 35, 48, 0.95); border: 1px solid rgba(39, 184, 214, 0.25); border-radius: 16px;">
                     <h5 class="fw-bold mb-3 text-white"><i class="bi bi-cart3 me-2 text-info"></i> Order Summary</h5>
                     
                     <!-- Course Title & Specs Box (High Contrast Dark Glassmorphism) -->
@@ -138,12 +138,12 @@
                                 <span><i class="bi bi-sliders me-1 text-info"></i> Choose Stripe Test Case Scenario:</span>
                             </label>
                             <select id="stripeTestCaseSelect" class="form-select form-select-sm" onchange="applyStripeTestCase(this.value)" style="background-color: #062330 !important; color: #FFFFFF !important; border: 1px solid rgba(39, 184, 214, 0.4) !important;">
-                                <option value="visa_success" selected>&#10004; Success - Visa (4242 4242 4242 4242)</option>
-                                <option value="mastercard_success">&#10004; Success - Mastercard (5555 5555 5555 4444)</option>
-                                <option value="declined">&#10008; Decline - Generic Card Declined (4000 0000 0000 0002)</option>
-                                <option value="insufficient_funds">&#10008; Decline - Insufficient Funds (4000 0000 0000 9995)</option>
-                                <option value="expired">&#10008; Decline - Expired Card (4000 0000 0000 0069)</option>
-                                <option value="incorrect_cvc">&#10008; Decline - Incorrect Security Code (4000 0000 0000 0127)</option>
+                                <option value="visa_success" style="background-color: #062330 !important; color: #FFFFFF !important;" selected>&#10004; Success - Visa (4242 4242 4242 4242)</option>
+                                <option value="mastercard_success" style="background-color: #062330 !important; color: #FFFFFF !important;">&#10004; Success - Mastercard (5555 5555 5555 4444)</option>
+                                <option value="declined" style="background-color: #062330 !important; color: #FFFFFF !important;">&#10008; Decline - Generic Card Declined (4000 0000 0000 0002)</option>
+                                <option value="insufficient_funds" style="background-color: #062330 !important; color: #FFFFFF !important;">&#10008; Decline - Insufficient Funds (4000 0000 0000 9995)</option>
+                                <option value="expired" style="background-color: #062330 !important; color: #FFFFFF !important;">&#10008; Decline - Expired Card (4000 0000 0000 0069)</option>
+                                <option value="incorrect_cvc" style="background-color: #062330 !important; color: #FFFFFF !important;">&#10008; Decline - Incorrect Security Code (4000 0000 0000 0127)</option>
                             </select>
                             <div id="testCaseFeedback" class="small text-success mt-1 fw-semibold">
                                 <i class="bi bi-check-circle me-1"></i> Pre-configured for immediate successful payment & classroom unlock.
